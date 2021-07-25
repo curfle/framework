@@ -1,0 +1,38 @@
+{
+  "name": "curfle/framework",
+  "type": "library",
+  "description": "A lightweight, yet powerful PHP framework",
+  "homepage": "https://github.com/curfle/framework",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "joon",
+      "email": "info@joonlabs.com"
+    }
+  ],
+  "keywords": [
+    "curfle",
+    "framework"
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "9.5.4",
+    "phpbench/phpbench": "1.0.1"
+  },
+  "require": {
+    "php": ">=8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Curfle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GraphQL\\Tests\\": "tests/",
+      "GraphQL\\Benchmarks\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit tests"
+  }
+}
