@@ -1,11 +1,20 @@
 <?php
 
-use Curfle\Contracts\FileSystem\FileNotFoundException;
+namespace Curfle\Tests\FileSystem;
+
+use Curfle\Support\Exceptions\FileNotFoundException;
 use PHPUnit\Framework\TestCase;
 use Curfle\FileSystem\FileSystem;
 
 class FileSystemTest extends TestCase
 {
+    private FileSystem $fileSystem;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->fileSystem = new FileSystem();
+    }
     /**
      * test ::get()
      * @throws FileNotFoundException
@@ -14,7 +23,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertEquals(
             file_get_contents(__DIR__ . "/FileSystemTest.php"),
-            FileSystem::get(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->get(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -24,7 +33,7 @@ class FileSystemTest extends TestCase
     public function testExists()
     {
         $this->assertTrue(
-            FileSystem::exists(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->exists(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -35,7 +44,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertSame(
             "FileSystemTest",
-            FileSystem::name(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->name(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -46,7 +55,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertSame(
             "php",
-            FileSystem::extension(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->extension(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -57,7 +66,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertGreaterThan(
             0,
-            FileSystem::size(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->size(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -68,7 +77,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertSame(
             "FileSystem",
-            FileSystem::basename(__DIR__)
+            $this->fileSystem->basename(__DIR__)
         );
     }
 
@@ -78,7 +87,7 @@ class FileSystemTest extends TestCase
     public function testIsFile()
     {
         $this->assertTrue(
-            FileSystem::isFile(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->isFile(__DIR__ . "/FileSystemTest.php")
         );
     }
 
@@ -88,7 +97,7 @@ class FileSystemTest extends TestCase
     public function testIsDirectory()
     {
         $this->assertTrue(
-            FileSystem::isDirectory(__DIR__)
+            $this->fileSystem->isDirectory(__DIR__)
         );
     }
 
@@ -99,7 +108,7 @@ class FileSystemTest extends TestCase
     {
         $this->assertSame(
             "text/x-php",
-            FileSystem::mimeType(__DIR__ . "/FileSystemTest.php")
+            $this->fileSystem->mimeType(__DIR__ . "/FileSystemTest.php")
         );
     }
 }
