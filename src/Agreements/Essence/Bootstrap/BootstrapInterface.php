@@ -11,5 +11,5 @@ interface BootstrapInterface
      *
      * @param Application $app
      */
-    function bootstrap(Application $app) : void;
+    function bootstrap(Application $app) ;
 }
