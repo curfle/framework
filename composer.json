@@ -22,6 +22,9 @@
     "php": ">=8.0"
   },
   "autoload": {
+    "files": [
+      "src/Essence/helpers.php"
+    ],
     "psr-4": {
       "Curfle\\": "src/"
     }
