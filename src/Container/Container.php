@@ -2,17 +2,19 @@
 
 namespace Curfle\Container;
 
+use ArrayAccess;
 use Closure;
+use Curfle\Agreements\Container\Container as ContainerAgreement;
 use Curfle\Support\Exceptions\BindingResolutionException;
 use Curfle\Support\Exceptions\CircularDependencyException;
-use Curfle\Support\Exceptions\ClassNotFoundException;
 use Curfle\Support\Exceptions\LogicException;
 use Curfle\Utilities\Utilities;
+use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
 
-class Container
+class Container implements ArrayAccess, ContainerAgreement
 {
     /**
      * The current globally available container (if any).
@@ -34,6 +36,13 @@ class Container
      * @var array
      */
     private array $bindings = [];
+
+    /**
+     * The container's method bindings.
+     *
+     * @var Closure[]
+     */
+    protected array $methodBindings = [];
 
     /**
      * The list of all resolved bindings.
@@ -84,6 +93,19 @@ class Container
      */
     public array $contextual = [];
 
+
+    /**
+     * Determine if the given abstract type has been bound.
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function bound(string $id): bool
+    {
+        return isset($this->bindings[$id]) ||
+            isset($this->instances[$id]) ||
+            $this->isAlias($id);
+    }
 
     /**
      * Determine if the given abstract type has been resolved.
@@ -168,15 +190,38 @@ class Container
     }
 
     /**
+     * Determine if the container has a method binding.
+     *
+     * @param string $method
+     * @return bool
+     */
+    public function hasMethodBinding(string $method): bool
+    {
+        return isset($this->methodBindings[$method]);
+    }
+
+    /**
+     * Get the method binding for the given method.
+     *
+     * @param string $method
+     * @param mixed $instance
+     * @return mixed
+     */
+    public function callMethodBinding(string $method, mixed $instance): mixed
+    {
+        return call_user_func($this->methodBindings[$method], $instance, $this);
+    }
+
+    /**
      * Resolves a bound singleton instance from the container.
      *
      * @param string $id
      * @param array $parameters
-     * @return object
+     * @return object|string
      * @throws BindingResolutionException
      * @throws ReflectionException|CircularDependencyException
      */
-    public function resolve(string $id, array $parameters = []): object
+    public function resolve(string $id, array $parameters = []): object|string
     {
         // resolve potential alias(es)
         $id = $this->getAlias($id);
@@ -319,6 +364,7 @@ class Container
         }
 
         try {
+            //var_dump($resolver, $this->buildStack);
             $reflector = new ReflectionClass($resolver);
         } catch (ReflectionException $e) {
             throw new BindingResolutionException("Target class [$resolver] does not exist.", 0, $e);
@@ -564,11 +610,11 @@ class Container
      * Creates an instance of a bound class.
      *
      * @param string $id
-     * @return object
+     * @return object|string
      * @throws BindingResolutionException|ReflectionException
      * @throws CircularDependencyException
      */
-    public function make(string $id): object
+    public function make(string $id): object|string
     {
         return $this->resolve($id);
     }
@@ -578,10 +624,10 @@ class Container
      * Binds a concrete instance and returns it.
      *
      * @param string $id
-     * @param object $instance
-     * @return object
+     * @param object|string $instance
+     * @return object|string
      */
-    public function instance(string $id, object $instance): object
+    public function instance(string $id, object|string $instance): object|string
     {
         return $this->instances[$id] = $instance;
     }
@@ -607,6 +653,21 @@ class Container
     }
 
     /**
+     * Call the given Closure / class@method and inject its dependencies.
+     *
+     * @param callable|string $callback
+     * @param array<string, mixed> $parameters
+     * @param string|null $defaultMethod
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null): mixed
+    {
+        return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
+    }
+
+    /**
      * Get the alias for an abstract if available.
      *
      * @param string $id
@@ -619,6 +680,33 @@ class Container
             : $id;
     }
 
+
+
+    /**
+     * Get the globally available instance of the container.
+     *
+     * @return static
+     */
+    public static function getInstance(): Container
+    {
+        if (is_null(static::$instance)) {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
+    }
+
+    /**
+     * Set the shared instance of the container.
+     *
+     * @param Container|null $container
+     * @return Container|ContainerAgreement|null
+     */
+    public static function setInstance(ContainerAgreement $container = null): Container|ContainerAgreement|null|static
+    {
+        return static::$instance = $container;
+    }
+
     /**
      * Get the extender callbacks for a given type.
      *
@@ -628,5 +716,53 @@ class Container
     protected function getExtenders(string $id): array
     {
         return $this->extenders[$this->getAlias($id)] ?? [];
+    }
+
+    /**
+     * Determine if a given offset exists.
+     *
+     * @param string $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
+    {
+        return $this->bound($offset);
+    }
+
+    /**
+     * Get the value at a given offset.
+     *
+     * @param string $offset
+     * @return object
+     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
+     */
+    public function offsetGet($offset): object
+    {
+        return $this->make($offset);
+    }
+
+    /**
+     * Set the value at a given offset.
+     *
+     * @param string $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->bind($offset, $value instanceof Closure ? $value : function () use ($value) {
+            return $value;
+        });
+    }
+
+    /**
+     * Unset the value at a given offset.
+     *
+     * @param string $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->bindings[$offset], $this->instances[$offset], $this->resolved[$offset]);
     }
 }
