@@ -13,7 +13,7 @@ use Curfle\Database\Query\SQLQueryBuilder;
  * @method static ?array row(string $query = null)
  * @method static mixed field(string $query = null)
  * @method static SQLConnectorInterface prepare(string $query)
- * @method static SQLConnectorInterface bind(mixed $value, int $type = null
+ * @method static SQLConnectorInterface bind(mixed $value, int $type = null)
  * @method static bool execute()
  * @method static mixed lastInsertedId()
  * @method static string escape(string $string)
