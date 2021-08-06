@@ -39,9 +39,9 @@ class Env
      *
      * @param string $key
      * @param mixed|null $default
-     * @return string|null
+     * @return mixed
      */
-    public static function get(string $key, mixed $default = null): ?string
+    public static function get(string $key, mixed $default = null): mixed
     {
         $value = static::getRepository()->get($key) ?? $default;
         return match (strtolower($value)) {

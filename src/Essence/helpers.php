@@ -85,9 +85,9 @@ if (!function_exists('env')) {
      *
      * @param string $key
      * @param mixed|null $default
-     * @return string|null
+     * @return mixed
      */
-    function env(string $key, mixed $default = null): ?string
+    function env(string $key, mixed $default = null): mixed
     {
         return Env::get($key, $default);
     }
