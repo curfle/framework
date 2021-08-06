@@ -18,7 +18,7 @@ abstract class Facade
      * Instance of the facade's root instance
      * @var object
      */
-    protected static object $instance;
+    protected static array $instance = [];
 
     /**
      * Returns the id of the singleton that is being returned
@@ -40,12 +40,14 @@ abstract class Facade
      * @return object
      * @throws BindingResolutionException
      */
-    public function getFacadeInstance(): object
+    public static function getFacadeInstance(): object
     {
-        if (isset(static::$instance))
-            return static::$instance;
+        $name = static::getSingletonId();
 
-        return static::$instance = static::$app->resolve(static::getSingletonId());
+        if (isset(static::$instance[$name]))
+            return static::$instance[$name];
+
+        return static::$instance[$name] = static::$app->resolve($name);
     }
 
     /**
@@ -57,12 +59,12 @@ abstract class Facade
      * @throws RuntimeException
      * @throws BindingResolutionException
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic(string $method, array $args)
     {
         $instance = static::getFacadeInstance();
 
         if (!$instance) {
-            throw new RuntimeException('A facade root has not been set.');
+            throw new RuntimeException("A facade root has not been set.");
         }
 
         return $instance->$method(...$args);
