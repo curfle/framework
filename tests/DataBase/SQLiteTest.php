@@ -1,8 +1,10 @@
 <?php
 
-use Curfle\Contracts\FileSystem\FileNotFoundException;
+namespace Curfle\Tests\Database;
+
+use Curfle\Support\Exceptions\FileNotFoundException;
+use Curfle\Support\Exceptions\LogicException;
 use PHPUnit\Framework\TestCase;
-use Curfle\FileSystem\FileSystem;
 
 class SQLiteTest extends TestCase
 {
@@ -12,7 +14,7 @@ class SQLiteTest extends TestCase
     {
         parent::__construct();
         $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(
-            __DIR__ . "/../_resources/database.db"
+            __DIR__ . "/../Resources/Database/database.db"
         );
     }
 
@@ -28,6 +30,7 @@ class SQLiteTest extends TestCase
 
     /**
      * test ::exec()
+     * @throws FileNotFoundException
      */
     public function testExec()
     {
@@ -41,6 +44,53 @@ class SQLiteTest extends TestCase
                     City varchar(255) 
                 );
             ")
+        );
+    }
+
+    /**
+     * test ::prepare()
+     * @throws LogicException
+     * @throws FileNotFoundException
+     */
+    public function testPrepareExecute()
+    {
+        // create table
+        $this->connector->exec("
+            CREATE TABLE Persons (
+                PersonId int,
+                LastName varchar(255),
+                FirstName varchar(255),
+                Address varchar(255),
+                City varchar(255) 
+            );
+        ");
+
+        // insert data
+        $this->connector
+            ->prepare("INSERT INTO Persons (PersonId, FirstName, LastName, Address, City) VALUES (?, ?, ?, ?, ?)")
+            ->bind(42)
+            ->bind("Jane")
+            ->bind("Doe")
+            ->bind("Example Street 42")
+            ->bind("Example City")
+            ->execute();
+
+        // get the person
+        $person = $this->connector
+            ->prepare("SELECT * FROM Persons WHERE PersonId = ?")
+            ->bind(42)
+            ->row();
+
+        // make assertion
+        $this->assertSame(
+            [
+                "PersonId" => 42,
+                "LastName" => "Doe",
+                "FirstName" => "Jane",
+                "Address" => "Example Street 42",
+                "City" => "Example City",
+            ],
+            $person
         );
     }
 }

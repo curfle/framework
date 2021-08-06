@@ -1,5 +1,7 @@
 <?php
 
+namespace Curfle\Tests\Database;
+
 use PHPUnit\Framework\TestCase;
 use Curfle\Database\Connectors\SQLiteConnector;
 
@@ -12,7 +14,7 @@ class SQLQueryBuilderTest extends TestCase
     {
         parent::__construct();
         $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(
-            __DIR__ . "/../_resources/database.db"
+            __DIR__ . "/../Resources/Database/database.db"
         );
     }
 
@@ -25,11 +27,12 @@ class SQLQueryBuilderTest extends TestCase
     {
         $this->connector->rollbackTransaction();
     }
-    
+
     /**
      * Builds simple SELECT query
      */
-    public function testsimpleSelectQuery() {
+    public function testsimpleSelectQuery()
+    {
         $this->assertEquals(
             "SELECT * FROM users",
             $this->connector->table("users")
@@ -40,7 +43,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests value() and where()
      */
-    public function testValueAndWhereInSelect() {
+    public function testValueAndWhereInSelect()
+    {
         $this->assertEquals(
             "SELECT email FROM users WHERE name = 'John'",
             $this->connector->table("users")
@@ -53,7 +57,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests multiple value() and where()
      */
-    public function testMultipleValueAndWhereInSelect() {
+    public function testMultipleValueAndWhereInSelect()
+    {
         $this->assertEquals(
             "SELECT email, name, created FROM users WHERE name = 'John'",
             $this->connector->table("users")
@@ -76,7 +81,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests orderBy() and where()
      */
-    public function testOrderByAndWhereInSelect() {
+    public function testOrderByAndWhereInSelect()
+    {
         $this->assertEquals(
             "SELECT * FROM users WHERE email = 'john@example.de' ORDER BY id",
             $this->connector->table("users")
@@ -89,7 +95,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests orderBy() and multiple where()
      */
-    public function testOrderByAndMultipleWhereInSelect() {
+    public function testOrderByAndMultipleWhereInSelect()
+    {
         $this->assertEquals(
             "SELECT name FROM users WHERE email = 'john@example.de' AND registered = 1 AND id = 5 ORDER BY id DESC",
             $this->connector->table("users")
@@ -105,7 +112,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests distinct()
      */
-    public function testDistinctInSelect() {
+    public function testDistinctInSelect()
+    {
         $this->assertEquals(
             "SELECT DISTINCT * FROM users",
             $this->connector->table("users")
@@ -117,7 +125,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests groupBy()
      */
-    public function testGroupByInSelect() {
+    public function testGroupByInSelect()
+    {
         $this->assertEquals(
             "SELECT * FROM users GROUP BY registered, created",
             $this->connector->table("users")

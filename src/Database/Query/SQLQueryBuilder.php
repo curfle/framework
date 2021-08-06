@@ -2,7 +2,7 @@
 
 namespace Curfle\Database\Query;
 
-use Curfle\Database\Connectors\SQLConnectorInterface;
+use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Utilities\Constants\IgnoreValue;
 use Exception;
 
@@ -146,7 +146,7 @@ class SQLQueryBuilder
      * @param string $columnB
      * @return void
      */
-    private function addJoin(string $type, string $table, string $columnA, string $operator, string $columnB): void
+    private function addJoin(string $type, string $table, string $columnA, string $operator, string $columnB)
     {
         $this->_joins[] = [
             $type,

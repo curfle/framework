@@ -2,57 +2,97 @@
 
 namespace Curfle\Database\Connectors;
 
+use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Support\Exceptions\LogicException;
 use mysqli;
+use mysqli_stmt;
+use mysqli_result;
+use function React\Promise\map;
 
 /**
  * Class MySQL
- * @package DAO\Connectors
+ * @package DAOInterface\Connectors
  */
 class MySQLConnector implements SQLConnectorInterface
 {
+    /**
+     * MySQLi connection.
+     *
+     * @var mysqli|null
+     */
     private mysqli|null $connection = null;
-    
-    public function __construct(
-        public string $DB_HOST,
-        public string $DB_USER,
-        public string $DB_PASSWORD,
-        public string $DB_DATABASE,
-        public ?string $DB_PORT = null,
-        public ?string $DB_SOCKET = null,
-        public bool $DB_UTF8MB = false
-    )
-    {}
 
     /**
-     * connects to a MySQL-DataBase.
-     * Constants that need to be defined are: DB_HOST, DB_USER, DB_PASSWORD and DB_DATABASE.
-     * Optional constants are DB_PORT and DB_SOCKET.
-     * @return mysqli
+     * MySQLi statement.
+     *
+     * @var mysqli_stmt|null
+     */
+    private mysqli_stmt|null $stmt = null;
+
+    /**
+     * MySQLi statement result.
+     *
+     * @var mysqli_result|null
+     */
+    private mysqli_result|null $result = null;
+
+    /**
+     * @param string $host
+     * @param string $user
+     * @param string $password
+     * @param string $database
+     * @param string|null $port
+     * @param string|null $socket
+     * @param string|null $charset
+     */
+    public function __construct(
+        public string  $host,
+        public string  $user,
+        public string  $password,
+        public string  $database,
+        public ?string $port = null,
+        public ?string $socket = null,
+        public ?string $charset = null
+    )
+    {
+    }
+
+    /**
+     * @inheritDoc
      */
     function connect(): mysqli
     {
         if ($this->connection === null) {
             $this->connection = new mysqli(
-                $this->DB_HOST,
-                $this->DB_USER,
-                $this->DB_PASSWORD,
-                $this->DB_DATABASE,
-                $this->DB_PORT,
-                $this->DB_SOCKET,
+                $this->host,
+                $this->user,
+                $this->password,
+                $this->database,
+                $this->port,
+                $this->socket,
             );
 
-            if ($this->DB_UTF8MB)
-                $this->connection->query("SET NAMES utf8mb4");
+            if ($this->charset !== null)
+                $this->connection->set_charset($this->charset);
         }
 
         return $this->connection;
     }
 
     /**
-     * executes a query and returns a result or a success indicating bool
-     * @param string $query
-     * @return mixed
+     * @inheritDoc
+     */
+    function disconnect(): void
+    {
+        if($this->connection !== null) {
+            $this->connect()->kill($this->connect()->thread_id);
+            $this->connect()->close();
+        }
+    }
+
+    /**
+     * @inheritDoc
      */
     function query(string $query): mixed
     {
@@ -60,9 +100,7 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * executes a query and returns a result or a success indicating bool (alias for query())
-     * @param string $query
-     * @return bool|\mysqli_result
+     * @inheritDoc
      */
     function exec(string $query): bool
     {
@@ -70,39 +108,95 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * fetches multiple rows
-     * @param string $query
-     * @return array
+     * @inheritDoc
+     * @throws LogicException
      */
-    function rows(string $query): array
+    function rows(string $query = null): array
     {
-        return $this->connect()->query($query)->fetch_all(MYSQLI_ASSOC);
+        if ($query !== null) {
+            // use given query
+            return $this->connect()->query($query)->fetch_all(MYSQLI_ASSOC);
+        } else {
+            // use stmt
+            if ($this->result === null){
+                if($this->stmt !== null)
+                    $this->execute();
+                else
+                    throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
+            }
+
+            return $this->result->fetch_all(MYSQLI_ASSOC);
+        }
     }
 
     /**
-     * fetches a single row
-     * @param string $query
-     * @return array|null
+     * @inheritDoc
+     * @throws LogicException
      */
-    function row(string $query): ?array
+    function row(string $query = null): ?array
     {
         return $this->rows($query)[0] ?? null;
     }
 
     /**
-     * returns a field value
-     * @param string $query
-     * @return mixed
+     * @inheritDoc
+     * @throws LogicException
      */
-    function field(string $query): mixed
+    function field(string $query = null): mixed
     {
         $row = $this->row($query);
         return $row[array_key_first($row)] ?? null;
     }
 
     /**
-     * returns the last inserted row id
-     * @return int
+     * @inheritDoc
+     */
+    function prepare(string $query): static
+    {
+        $this->stmt = $this->connect()->prepare($query);
+        $this->result = null;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws LogicException
+     */
+    function bind(mixed $value, int $type = null): static
+    {
+        if ($this->stmt === null)
+            throw new LogicException("Cannot bind value to [null]. No prepared statement found.");
+
+        if($type === null){
+            if(is_int($value)) $type = static::INTEGER;
+            else if(is_float($value)) $type = static::FLOAT;
+            else if(is_string($value)) $type = static::STRING;
+            else $type = static::BLOB;
+        }
+
+        $type = match ($type) {
+            static::INTEGER => "i",
+            static::FLOAT => "d",
+            static::BLOB => "b",
+            default => "s",
+        };
+        $this->stmt->bind_param($type, $value);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function execute(): bool
+    {
+        $success = $this->stmt->execute();
+        $this->result = $this->stmt->get_result();
+        $this->stmt = null;
+        return $success;
+    }
+
+    /**
+     * @inheritDoc
      */
     function lastInsertedId(): int
     {
@@ -110,9 +204,7 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * escapes a string
-     * @param string $string
-     * @return string
+     * @inheritDoc
      */
     function escape(string $string): string
     {
@@ -120,7 +212,7 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * begins a transaction
+     * @inheritDoc
      */
     function beginTransaction()
     {
@@ -128,7 +220,7 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * rolls a transaction back
+     * @inheritDoc
      */
     function rollbackTransaction()
     {
@@ -136,9 +228,7 @@ class MySQLConnector implements SQLConnectorInterface
     }
 
     /**
-     * entry point for executing a sql query via the SQLQueryBuilder
-     * @param string $table
-     * @return SQLQueryBuilder
+     * @inheritDoc
      */
     function table(string $table): SQLQueryBuilder
     {

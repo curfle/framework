@@ -2,49 +2,80 @@
 
 namespace Curfle\Database\Connectors;
 
-use Curfle\Contracts\FileSystem\FileNotFoundException;
+use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
-use Curfle\FileSystem\FileSystem;
+use Curfle\Support\Exceptions\FileNotFoundException;
+use Curfle\Support\Exceptions\LogicException;
 use SQLite3;
 use SQLite3Result;
+use SQLite3Stmt;
 
 /**
  * Class MySQL
- * @package DAO\Connectors
+ * @package DAOInterface\Connectors
  */
 class SQLiteConnector implements SQLConnectorInterface
 {
+    /**
+     * SQLite3 conneciton.
+     *
+     * @var SQLite3|null
+     */
     private SQLite3|null $connection = null;
 
+    /**
+     * SQLite3 statement.
+     *
+     * @var SQLite3Stmt|null
+     */
+    private SQLite3Stmt|null $stmt = null;
+
+    /**
+     * SQLite3 result.
+     *
+     * @var SQLite3Result|null
+     */
+    private SQLite3Result|null $result = null;
+
+    /**
+     * Internal SQLite3 bound counter for positional params.
+     *
+     * @var int
+     */
+    private int $boundCounter = 1;
+
+    /**
+     * @param string $filename
+     * @param bool $foreign_keys
+     * @param int|string $flags
+     * @param null $encryptionKey
+     */
     public function __construct(
-        public string $DB_FILENAME,
-        public bool $DB_FOREIGN_KEYS = false,
-        public $DB_FLAGS = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE,
-        public $DB_ENCRYPTION_KEY = null
+        public string     $filename,
+        public bool       $foreign_keys = false,
+        public int|string $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE,
+        public            $encryptionKey = null
     )
     {
     }
 
     /**
-     * connects to a SQLite-DataBase.
-     * Constants that need to be defined are: DB_FILENAME.
-     * Optional constants are DB_FLAGS and DB_ENCRYPTION_KEY.
-     * @return SQLite3
+     * @inheritDoc
      * @throws FileNotFoundException
      */
     function connect(): SQLite3
     {
         if ($this->connection === null) {
-            if(FileSystem::missing($this->DB_FILENAME))
+            if (!file_exists($this->filename))
                 throw new FileNotFoundException("The given SQLite database file could not be found.");
 
             $this->connection = new SQLite3(
-                $this->DB_FILENAME,
-                $this->DB_FLAGS,
-                $this->DB_ENCRYPTION_KEY,
+                $this->filename,
+                $this->flags,
+                $this->encryptionKey,
             );
 
-            if ($this->DB_FOREIGN_KEYS === true)
+            if ($this->foreign_keys === true)
                 $this->connection->query("PRAGMA foreign_keys=ON");
         }
 
@@ -52,9 +83,18 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * executes a query and returns a result
-     * @param string $query
-     * @return SQLite3Result
+     * @inheritDoc
+     * @throws FileNotFoundException
+     */
+    function disconnect(): void
+    {
+        if ($this->connection !== null)
+            $this->connect()->close();
+    }
+
+    /**
+     * @inheritDoc
+     * @throws FileNotFoundException
      */
     function query(string $query): SQLite3Result
     {
@@ -63,9 +103,8 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * executes a query and returs a success indicating bool
-     * @param string $query
-     * @return bool
+     * @inheritDoc
+     * @throws FileNotFoundException
      */
     function exec(string $query): bool
     {
@@ -74,44 +113,113 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * fetches multiple rows
-     * @param string $query
-     * @return array
+     * @inheritDoc
+     * @throws FileNotFoundException
+     * @throws LogicException
      */
-    function rows(string $query): array
+    function rows(string $query = null): array
     {
-        $db = $this->connect();
-        $res = $db->query($query);
         $rows = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC))
-            $rows[] = $row;
+        if ($query !== null) {
+            // use given query
+            $db = $this->connect();
+            $result = $db->query($query);
+            while ($row = $result->fetchArray(SQLITE3_ASSOC))
+                $rows[] = $row;
+        } else {
+            // use stmt
+            if ($this->result === null) {
+                if ($this->stmt !== null)
+                    $this->execute();
+                else
+                    throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
+            }
+
+            while ($row = $this->result->fetchArray(SQLITE3_ASSOC))
+                $rows[] = $row;
+        }
         return $rows;
     }
 
     /**
-     * fetches a single row
-     * @param string $query
-     * @return array
+     * @inheritDoc
+     * @throws FileNotFoundException
+     * @throws LogicException
      */
-    function row(string $query): array
+    function row(string $query = null): ?array
     {
-        return $this->rows($query)[0];
+        return $this->rows($query)[0] ?? null;
     }
 
     /**
-     * returns a field value
-     * @param string $query
-     * @return mixed
+     * @inheritDoc
+     * @throws FileNotFoundException
+     * @throws LogicException
      */
-    function field(string $query): mixed
+    function field(string $query = null): mixed
     {
-        $db = $this->connect();
-        return $db->querySingle($query);
+        $row = $this->row($query);
+        return $row[array_key_first($row)] ?? null;
     }
 
     /**
-     * returns the last inserted row id
-     * @return int
+     * @inheritDoc
+     * @throws FileNotFoundException
+     */
+    function prepare(string $query): static
+    {
+        $this->stmt = $this->connect()->prepare($query);
+        $this->result = null;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function bind(mixed $value, int $type = null): static
+    {
+        if ($this->stmt === null)
+            throw new LogicException("Cannot bind value to [null]. No prepared statement found.");
+
+        if ($type === null) {
+            if (is_int($value)) $type = static::INTEGER;
+            else if (is_float($value)) $type = static::FLOAT;
+            else if (is_string($value)) $type = static::STRING;
+            else $type = static::BLOB;
+        }
+
+        $type = match ($type) {
+            static::INTEGER => SQLITE3_INTEGER,
+            static::FLOAT => SQLITE3_FLOAT,
+            static::BLOB => SQLITE3_BLOB,
+            default => SQLITE3_TEXT,
+        };
+
+        if ($value === null)
+            $type = SQLITE3_NULL;
+
+        $this->stmt->bindParam($this->boundCounter, $value, $type);
+
+        $this->boundCounter++;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function execute(): bool
+    {
+        $result = $this->stmt->execute();
+        $this->result = $result !== false ? $result : null;
+        $this->boundCounter = 1;
+        $this->stmt = null;
+        return $result !== false;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws FileNotFoundException
      */
     function lastInsertedId(): int
     {
@@ -120,9 +228,7 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * escapes a string
-     * @param string $string
-     * @return string
+     * @inheritDoc
      */
     function escape(string $string): string
     {
@@ -130,7 +236,8 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * begins a transaction
+     * @inheritDoc
+     * @throws FileNotFoundException
      */
     function beginTransaction()
     {
@@ -138,7 +245,8 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * rolls a transaction back
+     * @inheritDoc
+     * @throws FileNotFoundException
      */
     function rollbackTransaction()
     {
@@ -146,9 +254,7 @@ class SQLiteConnector implements SQLConnectorInterface
     }
 
     /**
-     * entry point for executing a sql query via the SQLQueryBuilder
-     * @param string $table
-     * @return SQLQueryBuilder
+     * @inheritDoc
      */
     function table(string $table): SQLQueryBuilder
     {
