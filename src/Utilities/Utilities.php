@@ -10,8 +10,6 @@ class Utilities
     /**
      * Get the class name of the given parameter's type, if possible.
      *
-     * From Reflector::getParameterClassName() in Illuminate\Support.
-     *
      * @param ReflectionParameter $parameter
      * @return string|null
      */
