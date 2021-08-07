@@ -3,8 +3,8 @@
 namespace Curfle\Support\Facades;
 
 use Curfle\Essence\Application;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\RuntimeException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\RuntimeException;
 
 abstract class Facade
 {

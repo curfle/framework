@@ -3,10 +3,10 @@
 namespace Curfle\Agreements\Container;
 
 use Closure;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\CircularDependencyException;
-use Curfle\Support\Exceptions\ClassNotFoundException;
-use Curfle\Support\Exceptions\LogicException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Exceptions\Misc\ClassNotFoundException;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Utilities\Utilities;
 use ReflectionClass;
 use ReflectionException;

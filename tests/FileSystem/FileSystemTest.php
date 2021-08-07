@@ -2,7 +2,7 @@
 
 namespace Curfle\Tests\FileSystem;
 
-use Curfle\Support\Exceptions\FileNotFoundException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use PHPUnit\Framework\TestCase;
 use Curfle\FileSystem\FileSystem;
 

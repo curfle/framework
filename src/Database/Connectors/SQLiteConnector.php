@@ -4,8 +4,8 @@ namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
-use Curfle\Support\Exceptions\FileNotFoundException;
-use Curfle\Support\Exceptions\LogicException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use SQLite3;
 use SQLite3Result;
 use SQLite3Stmt;

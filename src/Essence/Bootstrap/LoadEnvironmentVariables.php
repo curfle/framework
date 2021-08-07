@@ -5,7 +5,7 @@ namespace Curfle\Essence\Bootstrap;
 use Curfle\Agreements\Essence\Bootstrap\BootstrapInterface;
 use Curfle\Essence\Application;
 use Curfle\Support\Env\Env;
-use Curfle\Support\Exceptions\FileNotFoundException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 
 class LoadEnvironmentVariables implements BootstrapInterface
 {

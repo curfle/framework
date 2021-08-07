@@ -3,8 +3,8 @@
 namespace Curfle\Container;
 
 use Closure;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\CircularDependencyException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use InvalidArgumentException;
 use ReflectionException;
 use ReflectionFunction;

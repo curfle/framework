@@ -5,7 +5,7 @@ namespace Curfle\Essence\Exceptions;
 use Curfle\Agreements\Essence\Exceptions\HandlerInterface;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
-use Curfle\Support\Exceptions\HttpException;
+use Curfle\Support\Exceptions\Http\HttpException;
 use Throwable;
 
 class ExceptionHandler implements HandlerInterface

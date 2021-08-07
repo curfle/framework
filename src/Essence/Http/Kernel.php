@@ -14,10 +14,10 @@ use Curfle\Essence\Exceptions\ExceptionHandler;
 use Curfle\Routing\Router;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\CircularDependencyException;
-use Curfle\Support\Exceptions\InvalidArgumentException;
-use Curfle\Support\Exceptions\NotFoundHttpException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Exceptions\Misc\InvalidArgumentException;
+use Curfle\Support\Exceptions\Http\NotFoundHttpException;
 use ReflectionException;
 use Throwable;
 

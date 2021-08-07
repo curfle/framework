@@ -5,8 +5,8 @@ namespace Curfle\Database;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Database\Connectors\SQLiteConnector;
-use Curfle\Support\Exceptions\DatabaseConnectionNotFoundException;
-use Curfle\Support\Exceptions\DatabaseDriverUnknownException;
+use Curfle\Support\Exceptions\Database\ConnectionNotFoundException;
+use Curfle\Support\Exceptions\Database\DriverUnknownException;
 
 class ConnectorFactory
 {
@@ -15,7 +15,7 @@ class ConnectorFactory
      *
      * @param array $config
      * @return SQLConnectorInterface
-     * @throws DatabaseDriverUnknownException
+     * @throws DriverUnknownException
      */
     public static function fromConfig(array $config) : SQLConnectorInterface
     {
@@ -35,7 +35,7 @@ class ConnectorFactory
                 $config["foreign_key_constraints"] ?? null,
             );
         }else{
-            throw new DatabaseDriverUnknownException("The driver [{$config["driver"]}] is not supported.");
+            throw new DriverUnknownException("The driver [{$config["driver"]}] is not supported.");
         }
     }
 }

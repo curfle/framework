@@ -4,8 +4,8 @@ namespace Curfle\Tests\Application;
 
 use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Essence\Application;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\CircularDependencyException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Tests\Resources\DummyClasses\ClassWithDependencies;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;

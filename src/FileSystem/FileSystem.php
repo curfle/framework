@@ -2,7 +2,7 @@
 
 namespace Curfle\FileSystem;
 
-use Curfle\Support\Exceptions\FileNotFoundException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Exception;
 use FilesystemIterator;
 

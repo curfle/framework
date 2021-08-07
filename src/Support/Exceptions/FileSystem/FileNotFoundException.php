@@ -1,6 +1,6 @@
 <?php
 
-namespace Curfle\Support\Exceptions;
+namespace Curfle\Support\Exceptions\FileSystem;
 
 use Exception;
 

@@ -2,8 +2,8 @@
 
 namespace Curfle\Tests\Database;
 
-use Curfle\Support\Exceptions\FileNotFoundException;
-use Curfle\Support\Exceptions\LogicException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use PHPUnit\Framework\TestCase;
 
 class SQLiteTest extends TestCase

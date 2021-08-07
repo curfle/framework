@@ -4,7 +4,7 @@ namespace Curfle\Support\Exceptions;
 
 use Exception;
 
-class NotFoundHttpException extends HttpException
+class CurfleException extends Exception
 {
 
 }

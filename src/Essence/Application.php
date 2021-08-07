@@ -7,9 +7,9 @@ use Curfle\Container\Container;
 use Curfle\Routing\RoutingServiceProvider;
 use Curfle\Support\Arr;
 use Curfle\Support\Env\Env;
-use Curfle\Support\Exceptions\BindingResolutionException;
-use Curfle\Support\Exceptions\CircularDependencyException;
-use Curfle\Support\Exceptions\LogicException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Support\ServiceProvider;
 use ReflectionException;
 use const PHP_SAPI;
@@ -355,10 +355,10 @@ class Application extends Container
      */
     protected function registerBaseBindings()
     {
-        // make $this available in Container
+        // make $this available in Misc
         static::$instance = $this;
 
-        // add app and Container instance
+        // add app and Misc instance
         $this->instance("app", $this);
         $this->instance(Container::class, $this);
     }

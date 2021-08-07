@@ -4,7 +4,9 @@ namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
-use Curfle\Support\Exceptions\LogicException;
+use Curfle\Support\Exceptions\Database\ConnectionFailedException;
+use Curfle\Support\Exceptions\Logic\LogicException;
+use Exception;
 use mysqli;
 use mysqli_stmt;
 use mysqli_result;
@@ -60,18 +62,26 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function connect(): mysqli
     {
         if ($this->connection === null) {
-            $this->connection = new mysqli(
-                $this->host,
-                $this->user,
-                $this->password,
-                $this->database,
-                $this->port,
-                $this->socket,
-            );
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+            try{
+                $this->connection = new mysqli(
+                    $this->host,
+                    $this->user,
+                    $this->password,
+                    $this->database,
+                    $this->port,
+                    $this->socket,
+                );
+            }catch(Exception $e){
+                throw new ConnectionFailedException($e->getMessage());
+            }
+
 
             if ($this->charset !== null)
                 $this->connection->set_charset($this->charset);
@@ -82,6 +92,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function disconnect(): void
     {
@@ -93,6 +104,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function query(string $query): mixed
     {
@@ -101,6 +113,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function exec(string $query): bool
     {
@@ -110,6 +123,7 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws LogicException
+     * @throws ConnectionFailedException
      */
     function rows(string $query = null): array
     {
@@ -131,7 +145,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
-     * @throws LogicException
+     * @throws LogicException|ConnectionFailedException
      */
     function row(string $query = null): ?array
     {
@@ -140,7 +154,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
-     * @throws LogicException
+     * @throws LogicException|ConnectionFailedException
      */
     function field(string $query = null): mixed
     {
@@ -197,6 +211,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function lastInsertedId(): int
     {
@@ -205,6 +220,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function escape(string $string): string
     {
@@ -213,6 +229,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function beginTransaction()
     {
@@ -221,6 +238,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws ConnectionFailedException
      */
     function rollbackTransaction()
     {

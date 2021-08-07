@@ -5,8 +5,8 @@ namespace Curfle\Database;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Essence\Application;
-use Curfle\Support\Exceptions\DatabaseConnectionNotFoundException;
-use Curfle\Support\Exceptions\DatabaseDriverUnknownException;
+use Curfle\Support\Exceptions\Database\ConnectionNotFoundException;
+use Curfle\Support\Exceptions\Database\DriverUnknownException;
 
 class DatabaseManager
 {
@@ -57,8 +57,8 @@ class DatabaseManager
      *
      * @param string|null $name
      * @return SQLConnectorInterface
-     * @throws DatabaseConnectionNotFoundException
-     * @throws DatabaseDriverUnknownException
+     * @throws ConnectionNotFoundException
+     * @throws DriverUnknownException
      */
     public function connector(string $name = null): SQLConnectorInterface
     {
@@ -76,14 +76,14 @@ class DatabaseManager
      *
      * @param string $name
      * @return SQLConnectorInterface
-     * @throws DatabaseConnectionNotFoundException
-     * @throws DatabaseDriverUnknownException
+     * @throws ConnectionNotFoundException
+     * @throws DriverUnknownException
      */
     private function createConnector(string $name): SQLConnectorInterface
     {
         $possibleConnections = $this->app["config"]["database.connections"];
         if (!isset($possibleConnections[$name]))
-            throw new DatabaseConnectionNotFoundException("The connection [$name] could not be found in the projects configuration.");
+            throw new ConnectionNotFoundException("The connection [$name] could not be found in the projects configuration.");
 
         return ConnectorFactory::fromConfig($possibleConnections[$name]);
     }
@@ -105,8 +105,8 @@ class DatabaseManager
      * @param string $method
      * @param array $parameters
      * @return mixed
-     * @throws DatabaseConnectionNotFoundException
-     * @throws DatabaseDriverUnknownException
+     * @throws ConnectionNotFoundException
+     * @throws DriverUnknownException
      */
     public function __call(string $method, array $parameters)
     {
