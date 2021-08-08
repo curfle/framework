@@ -9,7 +9,8 @@ use Curfle\Console\Output;
 use Curfle\Essence\Console\Kernel;
 
 /**
- * @method static Command command(string $command, \Closure $callback)
+ * @method static Command command(Command|string $command, \Closure $callback=null)
+ * @method static array getAllCommands()
  * @method static Output run(Input $input)
  *
  * @see Kernel

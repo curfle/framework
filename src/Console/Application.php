@@ -50,6 +50,7 @@ class Application
      */
     public function run(Input $input): Output
     {
+        // check if command is in registered commands
         foreach($this->commands as $command){
             if($command->matches($input)){
                 foreach ($command->getMatchedParameters() as $name => $value) {
@@ -60,5 +61,15 @@ class Application
         }
 
         throw new CommandNotFoundException("Command [{$input->input()}] could not be resolved, as no matching signature was found.");
+    }
+
+    /**
+     * Returns all commands.
+     *
+     * @return array
+     */
+    public function commands(): array
+    {
+        return $this->commands;
     }
 }

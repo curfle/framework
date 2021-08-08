@@ -364,7 +364,6 @@ class Container implements ArrayAccess, ContainerAgreement
         }
 
         try {
-            //var_dump($resolver, $this->buildStack);
             $reflector = new ReflectionClass($resolver);
         } catch (ReflectionException $e) {
             throw new BindingResolutionException("Target class [$resolver] does not exist.", 0, $e);

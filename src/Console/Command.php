@@ -3,9 +3,17 @@
 namespace Curfle\Console;
 
 use Closure;
+use Curfle\Essence\Application;
 
 class Command
 {
+
+    /**
+     * The commands' application instance.
+     *
+     * @var Application
+     */
+    private Application $app;
 
     /**
      * The commands' signature.
@@ -26,14 +34,14 @@ class Command
      *
      * @var Closure|null
      */
-    private Closure|null $resolver = null;
+    protected Closure|null $resolver = null;
 
     /**
      * The conditions for the parameter.
      *
      * @var array
      */
-    private array $where = [];
+    protected array $where = [];
 
     /**
      * The matched parameters from the last matches() call.
@@ -52,8 +60,9 @@ class Command
     /**
      * @param Closure|null $resolver
      */
-    public function __construct(string $signature, Closure $resolver = null)
+    public function __construct(Application $app, string $signature, Closure $resolver = null)
     {
+        $this->app = $app;
         $this->signature = $signature;
         $this->resolver = $resolver;
         $this->output = new Output();
@@ -171,9 +180,41 @@ class Command
 
         if ($this->resolver !== null) {
             $closure = Closure::bind($this->resolver, $this, static::class);
-            $closure($input);
+            $this->app->call($closure);
         }
         return $this->output;
+    }
+
+    /**
+     * Returns the commands' application instance.
+     *
+     * @return Application
+     */
+    public function getApplication(): Application
+    {
+        return $this->app;
+    }
+
+    /**
+     * Returns the commands'signature.
+     *
+     * @return string
+     */
+    public function getSignature(): string
+    {
+        return $this->signature;
+    }
+
+    /**
+     * Creates a prompt and returns the users' answer.
+     *
+     * @param string $message
+     * @param bool $addNewline
+     * @return string
+     */
+    protected function prompt(string $message, bool $addNewline = true): string
+    {
+        return readline($message);
     }
 
     /**
@@ -182,11 +223,12 @@ class Command
      * @param ?string $message
      * @param bool $addNewline
      * @param int $color
-     * @return void;
+     * @return Command
      */
-    private function write(?string $message, bool $addNewline = true, int $color = 0)
+    protected function write(?string $message, bool $addNewline = true, int $color = 0): static
     {
         $this->output->write($message, $addNewline, $color);
+        return $this;
     }
 
     /**
@@ -194,11 +236,12 @@ class Command
      *
      * @param ?string $message
      * @param bool $addNewline
-     * @return void;
+     * @return Command
      */
-    private function warning(?string $message, bool $addNewline = true)
+    protected function warning(?string $message, bool $addNewline = true): static
     {
         $this->output->warning($message, $addNewline);
+        return $this;
     }
 
     /**
@@ -206,11 +249,12 @@ class Command
      *
      * @param ?string $message
      * @param bool $addNewline
-     * @return void;
+     * @return Command
      */
-    private function error(?string $message, bool $addNewline = true)
+    protected function error(?string $message, bool $addNewline = true): static
     {
         $this->output->error($message, $addNewline);
+        return $this;
     }
 
     /**
@@ -218,10 +262,33 @@ class Command
      *
      * @param ?string $message
      * @param bool $addNewline
-     * @return void;
+     * @return Command
      */
-    private function success(?string $message, bool $addNewline = true)
+    protected function success(?string $message, bool $addNewline = true): static
     {
         $this->output->success($message, $addNewline);
+        return $this;
+    }
+
+    /**
+     * Flushes the output.
+     *
+     * @return Command
+     */
+    protected function flush(): static
+    {
+        $this->output->flush();
+        return $this;
+    }
+
+    /**
+     * Clears the output.
+     *
+     * @return Command
+     */
+    protected function clear(): static
+    {
+        $this->output->clear();
+        return $this;
     }
 }

@@ -19,8 +19,9 @@ use Curfle\Database\Query\SQLQueryBuilder;
  * @method static string escape(string $string)
  * @method static void beginTransaction()
  * @method static void rollbackTransaction()
+ * @method static SQLConnectorInterface connector(string $name = null)
  *
- * @see \Curfle\Config\Repository
+ * @see \Curfle\Database\DatabaseManager
  */
 class DB extends Facade
 {

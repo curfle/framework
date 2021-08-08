@@ -5,9 +5,11 @@ namespace Curfle\Database\Connectors;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
 use Curfle\Support\Exceptions\Database\ConnectionFailedException;
+use Curfle\Support\Exceptions\Database\SQLException;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Exception;
 use mysqli;
+use mysqli_sql_exception;
 use mysqli_stmt;
 use mysqli_result;
 use function React\Promise\map;
@@ -69,7 +71,7 @@ class MySQLConnector implements SQLConnectorInterface
         if ($this->connection === null) {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-            try{
+            try {
                 $this->connection = new mysqli(
                     $this->host,
                     $this->user,
@@ -78,7 +80,7 @@ class MySQLConnector implements SQLConnectorInterface
                     $this->port,
                     $this->socket,
                 );
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 throw new ConnectionFailedException($e->getMessage());
             }
 
@@ -96,7 +98,7 @@ class MySQLConnector implements SQLConnectorInterface
      */
     function disconnect(): void
     {
-        if($this->connection !== null) {
+        if ($this->connection !== null) {
             $this->connect()->kill($this->connect()->thread_id);
             $this->connect()->close();
         }
@@ -123,29 +125,34 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws LogicException
-     * @throws ConnectionFailedException
+     * @throws ConnectionFailedException|SQLException
      */
     function rows(string $query = null): array
     {
-        if ($query !== null) {
-            // use given query
-            return $this->connect()->query($query)->fetch_all(MYSQLI_ASSOC);
-        } else {
-            // use stmt
-            if ($this->result === null){
-                if($this->stmt !== null)
-                    $this->execute();
-                else
-                    throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
-            }
+        try {
+            if ($query !== null) {
+                // use given query
+                return $this->connect()->query($query)->fetch_all(MYSQLI_ASSOC);
+            } else {
+                // use stmt
+                if ($this->result === null) {
+                    if ($this->stmt !== null)
+                        $this->execute();
+                    else
+                        throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
+                }
 
-            return $this->result->fetch_all(MYSQLI_ASSOC);
+                return $this->result->fetch_all(MYSQLI_ASSOC);
+            }
+        } catch (mysqli_sql_exception $e) {
+            throw new SQLException($e->getMessage());
         }
     }
 
     /**
      * @inheritDoc
      * @throws LogicException|ConnectionFailedException
+     * @throws SQLException
      */
     function row(string $query = null): ?array
     {
@@ -154,7 +161,7 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
-     * @throws LogicException|ConnectionFailedException
+     * @throws LogicException|ConnectionFailedException|SQLException
      */
     function field(string $query = null): mixed
     {
@@ -181,10 +188,10 @@ class MySQLConnector implements SQLConnectorInterface
         if ($this->stmt === null)
             throw new LogicException("Cannot bind value to [null]. No prepared statement found.");
 
-        if($type === null){
-            if(is_int($value)) $type = static::INTEGER;
-            else if(is_float($value)) $type = static::FLOAT;
-            else if(is_string($value)) $type = static::STRING;
+        if ($type === null) {
+            if (is_int($value)) $type = static::INTEGER;
+            else if (is_float($value)) $type = static::FLOAT;
+            else if (is_string($value)) $type = static::STRING;
             else $type = static::BLOB;
         }
 

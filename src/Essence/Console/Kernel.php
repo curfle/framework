@@ -80,15 +80,23 @@ class Kernel implements KernelAgreement
     /**
      * Register a Closure based command with the application.
      *
-     * @param string $signature
-     * @param callable $resolver
+     * @param Command|string $signature
+     * @param callable|null $resolver
      * @return Command
      */
-    public function command(string $signature, callable $resolver): Command
+    public function command(Command|string $signature, callable $resolver=null): Command
     {
+        if($signature instanceof Command)
+            return $this->getBuddy()->add($signature);
+
         return $this->getBuddy()->add(
-            CommandFactory::fromCallable($signature, $resolver)
+            CommandFactory::fromCallable($this->app, $signature, $resolver)
         );
+    }
+
+    public function getAllCommands(): array
+    {
+        return $this->getBuddy()->commands();
     }
 
     /**

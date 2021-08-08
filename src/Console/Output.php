@@ -94,6 +94,29 @@ class Output
     }
 
     /**
+     * Sends response and clears buffer.
+     *
+     * @return $this
+     */
+    public function flush(): static
+    {
+        $this->send();
+        $this->clear();
+        return $this;
+    }
+
+    /**
+     * Clears the buffer.
+     *
+     * @return $this
+     */
+    public function clear(): static
+    {
+        $this->content = "";
+        return $this;
+    }
+
+    /**
      * Sends the response.
      *
      * @return $this
