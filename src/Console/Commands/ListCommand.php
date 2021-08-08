@@ -10,33 +10,25 @@ use Curfle\Support\Facades\Buddy;
 class ListCommand extends Command
 {
     /**
-     * @param Application $app
+     * @inheritdoc
      */
-    public function __construct(Application $app)
+    protected function install()
     {
-        // define command
-        $signature = "list";
-        $description = "Lists all commands";
-        $resolver = function () {
-            // write header
-            $this->write("All commands:");
+        $this->signature("list")
+            ->description("Lists all commands")
+            ->resolver(function () {
+                // write header
+                $this->write("All commands:");
 
-            // get all commands
-            $commands = Buddy::getAllCommands();
+                // get all commands
+                $commands = Buddy::getAllCommands();
 
-            // sort commands by signature
-            usort($commands, fn($a, $b) =>  strcmp($a->getSignature(), $b->getSignature()));
+                // sort commands by signature
+                usort($commands, fn($a, $b) =>  strcmp($a->getSignature(), $b->getSignature()));
 
-            // print command information
-            foreach ($commands as $command)
-                $this->write(" - ". $command->getSignature());
-        };
-
-        // call parent constructor
-        parent::__construct($app, $signature, $resolver);
-
-        // set description and where arguments
-        $this->description($description);
-        // e.g. $this->where("id", "[0-9]+");
+                // print command information
+                foreach ($commands as $command)
+                    $this->write(" - ". $command->getSignature());
+            });
     }
 }

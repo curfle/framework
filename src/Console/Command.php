@@ -13,7 +13,7 @@ class Command
      *
      * @var Application
      */
-    private Application $app;
+    protected Application $app;
 
     /**
      * The commands' signature.
@@ -48,24 +48,55 @@ class Command
      *
      * @var array|null
      */
-    private ?array $matchedParameters = null;
+    protected ?array $matchedParameters = null;
 
     /**
      * The commands' output.
      *
      * @var Output
      */
-    private Output $output;
+    protected Output $output;
 
     /**
-     * @param Closure|null $resolver
+     * @param Application $app
      */
-    public function __construct(Application $app, string $signature, Closure $resolver = null)
+    public function __construct(Application $app)
     {
-        $this->app = $app;
-        $this->signature = $signature;
-        $this->resolver = $resolver;
+        $this->setApplication($app)
+            ->newOutput()
+            ->install();
+    }
+
+    /**
+     * Is called after construction and to be used by specific commands to set up logic (e.g. where conditions).
+     *
+     * @return void
+     */
+    protected function install()
+    {
+    }
+
+    /**
+     * Creates a new output for the command.
+     *
+     * @return $this
+     */
+    public function newOutput(): static
+    {
         $this->output = new Output();
+        return $this;
+    }
+
+    /**
+     * Sets the signature.
+     *
+     * @param string $signature
+     * @return Command
+     */
+    public function signature(string $signature): static
+    {
+        $this->signature = $signature;
+        return $this;
     }
 
     /**
@@ -77,6 +108,18 @@ class Command
     public function description(string $description): static
     {
         $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Sets the resolver.
+     *
+     * @param callable|null $resolver
+     * @return Command
+     */
+    public function resolver(?callable $resolver): static
+    {
+        $this->resolver = $resolver;
         return $this;
     }
 
@@ -119,7 +162,7 @@ class Command
      * @param string $string
      * @return array|null
      */
-    private function getMatches(string $string): ?array
+    protected function getMatches(string $string): ?array
     {
         $parameters = [];
 
@@ -156,7 +199,7 @@ class Command
      *
      * @return string
      */
-    private function compileSignature(): string
+    protected function compileSignature(): string
     {
         $signature = $this->signature;
         foreach ($this->where as $parameter => $regex) {
@@ -193,6 +236,18 @@ class Command
     public function getApplication(): Application
     {
         return $this->app;
+    }
+
+    /**
+     * Sets the commands' application instance.
+     *
+     * @param Application $app
+     * @return Command
+     */
+    public function setApplication(Application $app): static
+    {
+        $this->app = $app;
+        return $this;
     }
 
     /**
