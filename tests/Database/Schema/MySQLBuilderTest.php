@@ -22,6 +22,7 @@ class MySQLBuilderTest extends TestCase
     {
         $this->builder->dropIfExists("job");
         $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("employe");
         $this->builder->dropIfExists("user");
     }
 
@@ -29,6 +30,7 @@ class MySQLBuilderTest extends TestCase
     {
         $this->builder->dropIfExists("job");
         $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("employe");
         $this->builder->dropIfExists("user");
     }
 
@@ -46,7 +48,7 @@ class MySQLBuilderTest extends TestCase
     {
         self::assertSame(
             $this->builder,
-            $this->builder->create("user", function(Blueprint $table){
+            $this->builder->create("user", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("firstname", 250);
                 $table->string("lastname", 250, true);
@@ -69,7 +71,7 @@ class MySQLBuilderTest extends TestCase
     {
         self::assertSame(
             $this->builder,
-            $this->builder->create("user", function(Blueprint $table){
+            $this->builder->create("user", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("firstname");
                 $table->string("lastname");
@@ -78,7 +80,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->create("job", function(Blueprint $table){
+            $this->builder->create("job", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("name");
                 $table->int("user_id")->unsigned();
@@ -97,7 +99,7 @@ class MySQLBuilderTest extends TestCase
     {
         self::assertSame(
             $this->builder,
-            $this->builder->create("user", function(Blueprint $table){
+            $this->builder->create("user", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("firstname");
                 $table->string("lastname");
@@ -106,7 +108,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->table("user", function(Blueprint $table){
+            $this->builder->table("user", function (Blueprint $table) {
                 $table->string("firstname", 250)->change();
                 $table->datetime("birthday");
             })
@@ -120,7 +122,7 @@ class MySQLBuilderTest extends TestCase
     {
         self::assertSame(
             $this->builder,
-            $this->builder->create("user", function(Blueprint $table){
+            $this->builder->create("user", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("firstname");
                 $table->string("lastname");
@@ -129,7 +131,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->create("job", function(Blueprint $table){
+            $this->builder->create("job", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("name");
                 $table->int("user_id")->unsigned();
@@ -142,7 +144,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->create("place", function(Blueprint $table){
+            $this->builder->create("place", function (Blueprint $table) {
                 $table->id("id");
                 $table->string("adress");
             })
@@ -150,7 +152,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->table("job", function(Blueprint $table){
+            $this->builder->table("job", function (Blueprint $table) {
                 $table->dropForeign("FK_user_job");
                 $table->dropColumn("user_id");
             })
@@ -158,7 +160,7 @@ class MySQLBuilderTest extends TestCase
 
         self::assertSame(
             $this->builder,
-            $this->builder->table("place", function(Blueprint $table){
+            $this->builder->table("place", function (Blueprint $table) {
                 $table->int("userId")->unsigned();
                 $table->foreign("userId")
                     ->references("id")
@@ -166,5 +168,127 @@ class MySQLBuilderTest extends TestCase
                     ->onUpdate(ForeignKeyConstraint::NO_ACTION);
             })
         );
+    }
+
+    /**
+     * test ->hasTable()
+     */
+    public function testHasTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+        self::assertFalse($this->builder->hasTable("unkownTable"));
+    }
+
+    /**
+     * test ->drop()
+     */
+    public function testDropTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->drop("user");
+
+        self::assertFalse($this->builder->hasTable("user"));
+    }
+
+    /**
+     * test ->rename()
+     */
+    public function testRenameTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->rename("user", "employe");
+
+        self::assertFalse($this->builder->hasTable("user"));
+        self::assertTrue($this->builder->hasTable("employe"));
+    }
+
+    /**
+     * test ->dropIfExists()
+     */
+    public function testDropIfExistsTable()
+    {
+        $this->builder->dropIfExists("user");
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->dropIfExists("user");
+
+        self::assertFalse($this->builder->hasTable("user"));
+    }
+
+    /**
+     * test ->hasColumn()
+     */
+    public function testHasColumn()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasColumn("user", "firstname"));
+    }
+
+    /**
+     * test ->dropColumn()
+     */
+    public function testDropColumn()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasColumn("user", "firstname"));
+
+        $this->builder->dropColumn("user", "firstname");
+
+        self::assertFalse($this->builder->hasColumn("user", "firstname"));
     }
 }

@@ -24,6 +24,7 @@ class SQLiteBuilderTest extends TestCase
     {
         $this->builder->dropIfExists("job");
         $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("employe");
         $this->builder->dropIfExists("user");
     }
 
@@ -31,6 +32,7 @@ class SQLiteBuilderTest extends TestCase
     {
         $this->builder->dropIfExists("job");
         $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("employe");
         $this->builder->dropIfExists("user");
     }
 
@@ -148,5 +150,106 @@ class SQLiteBuilderTest extends TestCase
                 $table->string("adress");
             })
         );
+    }
+
+    /**
+     * test ->hasTable()
+     */
+    public function testHasTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+        self::assertFalse($this->builder->hasTable("unkownTable"));
+    }
+
+    /**
+     * test ->drop()
+     */
+    public function testDropTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->drop("user");
+
+        self::assertFalse($this->builder->hasTable("user"));
+    }
+
+    /**
+     * test ->rename()
+     */
+    public function testRenameTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->rename("user", "employe");
+
+        self::assertFalse($this->builder->hasTable("user"));
+        self::assertTrue($this->builder->hasTable("employe"));
+    }
+
+    /**
+     * test ->dropIfExists()
+     */
+    public function testDropIfExistsTable()
+    {
+        $this->builder->dropIfExists("user");
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasTable("user"));
+
+        $this->builder->dropIfExists("user");
+
+        self::assertFalse($this->builder->hasTable("user"));
+    }
+
+    /**
+     * test ->hasColumn()
+     */
+    public function testHasColumn()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertTrue($this->builder->hasColumn("user", "firstname"));
     }
 }
