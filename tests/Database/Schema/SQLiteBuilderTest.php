@@ -111,7 +111,7 @@ class SQLiteBuilderTest extends TestCase
         self::assertSame(
             $this->builder,
             $this->builder->table("user", function(Blueprint $table){
-                $table->datetime("birthday");
+                $table->datetime("birthday")->nullable();
             })
         );
     }
