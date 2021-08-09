@@ -1,0 +1,152 @@
+<?php
+
+namespace Curfle\Tests\Database\Schema;
+
+use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Database\Connectors\MySQLConnector;
+use Curfle\Database\Connectors\SQLiteConnector;
+use Curfle\Database\Schema\Blueprint;
+use Curfle\Database\Schema\ForeignKeyConstraint;
+use Curfle\Database\Schema\MySQLSchemaBuilder;
+use Curfle\Database\Schema\SQLiteSchemaBuilder;
+use Curfle\Support\Exceptions\Database\ConnectionFailedException;
+use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
+use Curfle\Support\Exceptions\Logic\LogicException;
+use Curfle\Support\Facades\DB;
+use PHPUnit\Framework\TestCase;
+
+class SQLiteBuilderTest extends TestCase
+{
+    private SQLConnectorInterface $connector;
+    private SQLiteSchemaBuilder $builder;
+
+    protected function setUp(): void
+    {
+        $this->builder->dropIfExists("job");
+        $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("user");
+    }
+
+    protected function tearDown(): void
+    {
+        $this->builder->dropIfExists("job");
+        $this->builder->dropIfExists("place");
+        $this->builder->dropIfExists("user");
+    }
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->connector = new SQLiteConnector(DB_SQLITE_FILENAME);
+        $this->builder = new SQLiteSchemaBuilder($this->connector);
+    }
+
+    /**
+     * test ->create()
+     */
+    public function testCreate()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function(Blueprint $table){
+                $table->id("id");
+                $table->string("firstname", 250);
+                $table->string("lastname", 250, true);
+                $table->tinyInt("registered");
+                $table->int("age");
+                $table->bigInt("numberOfLogins");
+                $table->float("secondsFor100m");
+                $table->date("birthday");
+                $table->datetime("lastLogin");
+                $table->timestamp("created");
+            })
+        );
+        $this->builder->dropIfExists("user");
+    }
+
+    /**
+     * test ->create()
+     */
+    public function testCreateWithForeignKey()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function(Blueprint $table){
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("job", function(Blueprint $table){
+                $table->id("id");
+                $table->string("name");
+                $table->int("user_id")->unsigned();
+                $table->foreign("user_id")
+                    ->references("id")
+                    ->on("user")
+                    ->onDelete("cascade");
+            })
+        );
+    }
+
+    /**
+     * test ->table()
+     */
+    public function testTable()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function(Blueprint $table){
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->table("user", function(Blueprint $table){
+                $table->datetime("birthday");
+            })
+        );
+    }
+
+    /**
+     * test ->table()
+     */
+    public function testTableWithForeignKey()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function(Blueprint $table){
+                $table->id("id");
+                $table->string("firstname");
+                $table->string("lastname");
+            })
+        );
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("job", function(Blueprint $table){
+                $table->id("id");
+                $table->string("name");
+                $table->int("user_id")->unsigned();
+                $table->foreign("user_id")
+                    ->references("id")
+                    ->on("user")
+                    ->onDelete(ForeignKeyConstraint::CASCADE);
+            })
+        );
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("place", function(Blueprint $table){
+                $table->id("id");
+                $table->string("adress");
+            })
+        );
+    }
+}

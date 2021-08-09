@@ -1,0 +1,30 @@
+<?php
+
+use Curfle\Database\Migrations\Migration;
+use Curfle\Database\Schema\Blueprint;
+use Curfle\Support\Facades\Schema;
+
+class DummyClass extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create("table", function (Blueprint $table) {
+            $table->id("id");
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists("table");
+    }
+}
