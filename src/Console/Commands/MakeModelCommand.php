@@ -26,7 +26,7 @@ class MakeModelCommand extends MakeCommand
             ->resolver(function (Input $input) {
                 // get name and create file
                 $name = "App\Models\\" . $input->namedArgument("name");
-                $filename = $this->app->basePath("app/models/") . $this->createFileName($name);
+                $filename = $this->app->basePath("app/Models/") . $this->createFileName($name);
                 $this->makeFile(
                     $name,
                     $filename
