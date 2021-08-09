@@ -4,18 +4,18 @@ namespace Curfle\Tests\Database;
 
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Curfle\Support\Exceptions\Logic\LogicException;
+use Curfle\Database\Connectors\SQLiteConnector;
+use Curfle\Support\Facades\DB;
 use PHPUnit\Framework\TestCase;
 
 class SQLiteTest extends TestCase
 {
-    public \Curfle\Database\Connectors\SQLiteConnector $connector;
+    public SQLiteConnector $connector;
 
     public function __construct()
     {
         parent::__construct();
-        $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(
-            __DIR__ . "/../Resources/Database/database.db"
-        );
+        $this->connector = new SQLiteConnector(DB_SQLITE_FILENAME);
     }
 
     protected function setUp(): void

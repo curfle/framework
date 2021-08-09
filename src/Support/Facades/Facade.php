@@ -22,9 +22,9 @@ abstract class Facade
 
     /**
      * Returns the id of the singleton that is being returned
-     * @return string
+     * @return mixed
      */
-    protected abstract static function getSingletonId(): string;
+    protected abstract static function getFacadeAccessor(): mixed;
 
     /**
      * Sets the facade's application reference
@@ -42,7 +42,10 @@ abstract class Facade
      */
     public static function getFacadeInstance(): object
     {
-        $name = static::getSingletonId();
+        $name = static::getFacadeAccessor();
+
+        if(is_object($name))
+            return $name;
 
         if (isset(static::$instance[$name]))
             return static::$instance[$name];

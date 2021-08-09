@@ -49,7 +49,7 @@ class File extends Facade
      *
      * @return string
      */
-    protected static function getSingletonId(): string
+    protected static function getFacadeAccessor(): string
     {
         return "files";
     }

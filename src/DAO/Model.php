@@ -151,7 +151,7 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public static function all(): array
     {
@@ -165,7 +165,7 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public static function get($id): ?static
     {
@@ -177,7 +177,7 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      * @throws Exception
      */
     public static function create(array $data): ?static
@@ -205,31 +205,31 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function update(): bool
     {
-        $_this = $this;
+        $this_ = $this;
         $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
         return call_user_func(self::$connector . "::table", $config["table"])
             ->where($config["primaryKey"], $this->$primaryKeyField)
-            ->update(array_map(function ($field) use ($_this) {
-                return $_this->$field;
+            ->update(array_map(function ($field) use ($this_) {
+                return $this_->$field;
             }, array_flip($config["fields"])));
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function store(): bool
     {
-        $_this = $this;
+        $this_ = $this;
         $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
         $success = call_user_func(self::$connector . "::table", $config["table"])
-            ->insert(array_map(function ($field) use ($_this) {
-                return $_this->$field;
+            ->insert(array_map(function ($field) use ($this_) {
+                return $this_->$field;
             }, array_flip($config["fields"])));
 
         if ($success)
@@ -239,7 +239,7 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function delete(): bool
     {

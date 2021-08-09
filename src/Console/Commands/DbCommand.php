@@ -12,7 +12,7 @@ use Curfle\Support\Facades\DB;
 class DbCommand extends Command
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     protected function install()
     {

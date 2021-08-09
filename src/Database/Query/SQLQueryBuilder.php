@@ -395,7 +395,7 @@ class SQLQueryBuilder
      */
     public function build(): string
     {
-        $_this = $this;
+        $this_ = $this;
         $sql = "$this->_operation ";
 
         if ($this->_operation === "SELECT") {
@@ -433,8 +433,8 @@ class SQLQueryBuilder
             $sql .= "(" . implode(", ", array_keys($this->_insert[0])) . ") ";
             // values
             $sql .= "VALUES ";
-            $sql .= implode(", ", array_map(function ($insert) use ($_this) {
-                    return "(" . implode(", ", array_map(function ($value) use ($_this) {
+            $sql .= implode(", ", array_map(function ($insert) use ($this_) {
+                    return "(" . implode(", ", array_map(function ($value) use ($this_) {
                             if ($value === null)
                                 return "NULL";
                             $value = $this->connector->escape($value);
@@ -485,12 +485,12 @@ class SQLQueryBuilder
      */
     private function buildWhereCondition(array $arr, string $prefix, string $logicalConcatenator = "AND"): string
     {
-        $_this = $this;
+        $this_ = $this;
         if (empty($arr))
             return "";
 
         $counter = 0;
-        return "$prefix " . implode(" ", array_map(function ($condition) use ($_this, &$counter, &$logicalConcatenator) {
+        return "$prefix " . implode(" ", array_map(function ($condition) use ($this_, &$counter, &$logicalConcatenator) {
                     // check if simple where statement or OR-Clause
                     if (!is_array($condition[0])) {
                         // simple where statement
@@ -514,7 +514,7 @@ class SQLQueryBuilder
                         if ($counter > 0)
                             $str .= $condition[0][3];
                         $counter++;
-                        return "$str (" . $_this->buildWhereCondition($condition, "", "OR") . ")";
+                        return "$str (" . $this_->buildWhereCondition($condition, "", "OR") . ")";
                     }
 
                 }, $arr) ?? []) . " ";

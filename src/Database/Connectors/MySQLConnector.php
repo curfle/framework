@@ -3,7 +3,9 @@
 namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Database\Schema\MySQLSchemaBuilder;
 use Curfle\Support\Exceptions\Database\ConnectionFailedException;
 use Curfle\Support\Exceptions\Database\SQLException;
 use Curfle\Support\Exceptions\Logic\LogicException;
@@ -37,9 +39,9 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * MySQLi statement result.
      *
-     * @var mysqli_result|null
+     * @var mysqli_result|bool|null
      */
-    private mysqli_result|null $result = null;
+    private mysqli_result|bool|null $result = null;
 
     /**
      * @param string $host
@@ -107,10 +109,15 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws ConnectionFailedException
+     * @throws SQLException
      */
     function query(string $query): mixed
     {
-        return $this->connect()->query($query);
+        try {
+            return $this->connect()->query($query);
+        } catch (mysqli_sql_exception $e) {
+            throw new SQLException($e->getMessage());
+        }
     }
 
     /**
@@ -142,6 +149,8 @@ class MySQLConnector implements SQLConnectorInterface
                         throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
                 }
 
+                if(is_bool($this->result))
+                    return [];
                 return $this->result->fetch_all(MYSQLI_ASSOC);
             }
         } catch (mysqli_sql_exception $e) {
@@ -171,12 +180,17 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws SQLException
      */
     function prepare(string $query): static
     {
-        $this->stmt = $this->connect()->prepare($query);
-        $this->result = null;
-        return $this;
+        try {
+            $this->stmt = $this->connect()->prepare($query);
+            $this->result = null;
+            return $this;
+        } catch (mysqli_sql_exception $e) {
+            throw new SQLException($e->getMessage());
+        }
     }
 
     /**
@@ -207,13 +221,18 @@ class MySQLConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws SQLException
      */
     function execute(): bool
     {
-        $success = $this->stmt->execute();
-        $this->result = $this->stmt->get_result();
-        $this->stmt = null;
-        return $success;
+        try {
+            $success = $this->stmt->execute();
+            $this->result = $this->stmt->get_result();
+            $this->stmt = null;
+            return $success;
+        } catch (mysqli_sql_exception $e) {
+            throw new SQLException($e->getMessage());
+        }
     }
 
     /**
@@ -258,5 +277,13 @@ class MySQLConnector implements SQLConnectorInterface
     function table(string $table): SQLQueryBuilder
     {
         return new SQLQueryBuilder($this, $table);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSchemaBuilder(): BuilderInterface
+    {
+        return new MySQLSchemaBuilder($this);
     }
 }

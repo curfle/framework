@@ -29,7 +29,7 @@ class DB extends Facade
     /**
      * @inheritDoc
      */
-    protected static function getSingletonId(): string
+    protected static function getFacadeAccessor(): string
     {
         return "db";
     }

@@ -3,7 +3,9 @@
 namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Database\Schema\SQLiteSchemaBuilder;
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use SQLite3;
@@ -259,5 +261,13 @@ class SQLiteConnector implements SQLConnectorInterface
     function table(string $table): SQLQueryBuilder
     {
         return new SQLQueryBuilder($this, $table);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSchemaBuilder(): BuilderInterface
+    {
+        return new SQLiteSchemaBuilder($this);
     }
 }

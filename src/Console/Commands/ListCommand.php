@@ -10,7 +10,7 @@ use Curfle\Support\Facades\Buddy;
 class ListCommand extends Command
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     protected function install()
     {

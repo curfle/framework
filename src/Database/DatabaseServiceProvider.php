@@ -10,14 +10,14 @@ use Curfle\Support\ServiceProvider;
 class DatabaseServiceProvider extends ServiceProvider
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function boot(){
         Model::setConnector(get_class($this->app->resolve("db.connection")));
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function register()
     {

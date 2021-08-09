@@ -2,6 +2,7 @@
 
 namespace Curfle\Agreements\Database\Connectors;
 
+use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
 
 /**
@@ -21,14 +22,14 @@ interface SQLConnectorInterface {
      *
      * @return mixed
      */
-    function connect(): mixed;
+    public function connect(): mixed;
 
     /**
      * Disconnects from a sql database.
      *
      * @return mixed
      */
-    function disconnect(): void;
+    public function disconnect(): void;
 
     /**
      * Entry point for executing a sql query via the SQLQueryBuilder.
@@ -36,7 +37,7 @@ interface SQLConnectorInterface {
      * @param string $table
      * @return SQLQueryBuilder
      */
-    function table(string $table) : SQLQueryBuilder;
+    public function table(string $table) : SQLQueryBuilder;
 
     /**
      * Executes a query and returns a result.
@@ -44,7 +45,7 @@ interface SQLConnectorInterface {
      * @param string $query
      * @return mixed
      */
-    function query(string $query): mixed;
+    public function query(string $query): mixed;
 
     /**
      * Executes a query and returns a success indicating bool.
@@ -52,7 +53,7 @@ interface SQLConnectorInterface {
      * @param string $query
      * @return bool
      */
-    function exec(string $query): bool;
+    public function exec(string $query): bool;
 
     /**
      * Fetches multiple rows. If no query provided, the last executed statements' result will be used.
@@ -60,7 +61,7 @@ interface SQLConnectorInterface {
      * @param string|null $query
      * @return array
      */
-    function rows(string $query = null): array;
+    public function rows(string $query = null): array;
 
     /**
      * Fetches a single row. If no query provided, the last executed statements' result will be used.
@@ -68,7 +69,7 @@ interface SQLConnectorInterface {
      * @param string|null $query
      * @return array|null
      */
-    function row(string $query = null): ?array;
+    public function row(string $query = null): ?array;
 
     /**
      * Returns a field value. If no query provided, the last executed statements' result will be used.
@@ -76,7 +77,7 @@ interface SQLConnectorInterface {
      * @param string|null $query
      * @return mixed
      */
-    function field(string $query = null): mixed;
+    public function field(string $query = null): mixed;
 
     /**
      * Prepares a statement.
@@ -84,7 +85,7 @@ interface SQLConnectorInterface {
      * @param string $query
      * @return mixed
      */
-    function prepare(string $query) : static;
+    public function prepare(string $query) : static;
 
     /**
      * Binds a value to a prepared statement.
@@ -93,21 +94,21 @@ interface SQLConnectorInterface {
      * @param int|null $type
      * @return mixed
      */
-    function bind(mixed $value, int $type = null) : static;
+    public function bind(mixed $value, int $type = null) : static;
 
     /**
      * Executes a prepared statement.
      *
      * @return mixed
      */
-    function execute() : bool;
+    public function execute() : bool;
 
     /**
      * Returns the last inserted row id.
      *
      * @return mixed
      */
-    function lastInsertedId(): mixed;
+    public function lastInsertedId(): mixed;
 
     /**
      * Escapes a string.
@@ -115,17 +116,24 @@ interface SQLConnectorInterface {
      * @param string $string
      * @return string
      */
-    function escape(string $string): string;
+    public function escape(string $string): string;
 
     /**
      * Begins a transaction.
      *
      */
-    function beginTransaction();
+    public function beginTransaction();
 
     /**
      * Rolls back a transaction.
      *
      */
-    function rollbackTransaction();
+    public function rollbackTransaction();
+
+    /**
+     * Returns a new schema builder instance for the according connector.
+     *
+     * @return BuilderInterface
+     */
+    public function getSchemaBuilder() : BuilderInterface;
 }

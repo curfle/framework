@@ -12,6 +12,7 @@ use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Support\ServiceProvider;
 use ReflectionException;
+use RuntimeException;
 use const PHP_SAPI;
 
 class Application extends Container
@@ -102,6 +103,13 @@ class Application extends Container
      * @var bool|null
      */
     protected ?bool $isRunningInConsole = null;
+
+    /**
+     * The application namespace.
+     *
+     * @var string|null
+     */
+    protected ?string $namespace = null;
 
     /**
      * Application constructor.
@@ -544,17 +552,41 @@ class Application extends Container
      *
      * @return void
      */
-    public
-    function registerConfiguredProviders()
+    public function registerConfiguredProviders()
     {
         $providers = $this->make("config")->get("app.providers");
-        usort($providers, function($provider){
+        usort($providers, function ($provider) {
             return !str_starts_with($provider, "Curfle\\") ? 1 : -1;
         });
 
-        foreach($providers as $provider)
-        {
+        foreach ($providers as $provider) {
             $this->register($provider);
         }
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     *
+     * @throws RuntimeException
+     */
+    public function namespace(): string
+    {
+        if (! is_null($this->namespace)) {
+            return $this->namespace;
+        }
+
+        $composer = json_decode(file_get_contents($this->basePath('composer.json')), true);
+
+        foreach ($composer["autoload"]["psr-4"] as $namespace => $path) {
+            foreach ((array) $path as $pathChoice) {
+                if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
+                    return $this->namespace = $namespace;
+                }
+            }
+        }
+
+        throw new RuntimeException('Unable to detect application namespace.');
     }
 }
