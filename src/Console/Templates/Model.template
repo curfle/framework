@@ -1,0 +1,27 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\DAO\Model;
+
+class DummyClass extends Model
+{
+
+    public int $id;
+    public string $property;
+
+    public function __construct(string $property = null)
+    {
+        $this->property = $property;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    static function config(): array
+    {
+        return [
+            "table" => "myTable",
+        ];
+    }
+}
