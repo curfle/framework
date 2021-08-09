@@ -20,8 +20,7 @@ jobs:
         mysql root password: 'root'
 
     - name: Wait for MySQL
-        run: |
-          while ! mysqladmin ping --host=127.0.0.1 --password=root --silent; do
+      run: while ! mysqladmin ping --host=127.0.0.1 --password=root --silent; do
             sleep 1
           done
 
