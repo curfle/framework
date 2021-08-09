@@ -7,6 +7,7 @@ use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Database\Schema\Grammar\MySQLGrammar;
 use Curfle\Database\Schema\Grammar\SQLiteGrammar;
+use Curfle\Support\Exceptions\Database\NoSuchStatement;
 
 class SQLiteSchemaBuilder extends Builder
 {
@@ -37,8 +38,7 @@ class SQLiteSchemaBuilder extends Builder
     public function hasColumn(string $table, string $column): bool
     {
         $columns = $this->connector
-            ->prepare("PRAGMA table_info(?);")
-            ->bind($table)
+            ->prepare("PRAGMA table_info(`$table`);")
             ->rows();
 
         foreach ($columns as $c)
@@ -58,5 +58,13 @@ class SQLiteSchemaBuilder extends Builder
             ->bind("table")
             ->bind($table)
             ->rows());
+    }
+
+    /**
+     * @throws NoSuchStatement
+     */
+    public function dropColumn(string $table, string $column): bool
+    {
+        throw new NoSuchStatement("SQLite does not support dropping columns from existing tables");
     }
 }
