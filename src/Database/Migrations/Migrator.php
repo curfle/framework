@@ -139,6 +139,17 @@ class Migrator{
     }
 
     /**
+     * Resets all migrations that were run.
+     *
+     * @return $this
+     */
+    private function resetAllMigrationsRun(): static
+    {
+        $this->migrationsRun = null;
+        return $this;
+    }
+
+    /**
      * Returns wether a migration has already been run.
      *
      * @param string $identifier
@@ -173,7 +184,6 @@ class Migrator{
         // get all migrations
         $migrations = $this->getAllMigrations();
 
-        // filter migrations that have been run already
         $migrations = array_filter($migrations, function($class, $filename) use($this_){
             return !$this_->migrationAlreadyRun($filename);
         }, ARRAY_FILTER_USE_BOTH);
@@ -184,6 +194,9 @@ class Migrator{
             $migration = $this->app->build($migration);
             $this->runMigration($filename, $migration);
         }
+
+        // reset cache of migrations run
+        $this->resetAllMigrationsRun();
 
         return $migrationsRun;
     }
@@ -235,6 +248,9 @@ class Migrator{
             $migration = $this->app->build($migration);
             $this->rollbackMigration($filename, $migration);
         }
+
+        // reset cache of migrations run
+        $this->resetAllMigrationsRun();
 
         return $migrationsRolledBack;
     }

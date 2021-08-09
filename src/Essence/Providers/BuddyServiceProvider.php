@@ -7,6 +7,7 @@ use Curfle\Console\Commands\MakeExceptionCommand;
 use Curfle\Console\Commands\MakeMigrationCommand;
 use Curfle\Console\Commands\MakeModelCommand;
 use Curfle\Console\Commands\MigrateCommand;
+use Curfle\Console\Commands\MigrateFreshCommand;
 use Curfle\Console\Commands\MigrateRollbackCommand;
 use Curfle\Console\Commands\MigrateStatusCommand;
 use Curfle\Essence\Application;
@@ -48,6 +49,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // migrate
         Buddy::command(new MigrateCommand($this->app));
+
+        // migrate:fresh
+        Buddy::command(new MigrateFreshCommand($this->app));
 
         // migrate:rollback
         Buddy::command(new MigrateRollbackCommand($this->app));
