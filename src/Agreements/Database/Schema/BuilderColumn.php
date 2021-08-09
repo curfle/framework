@@ -38,6 +38,20 @@ interface BuilderColumn
     public function default(mixed $value): static;
 
     /**
+     * Marks the column to use CURRENT_TIMESTAMP as default value.
+     *
+     * @return BuilderColumn
+     */
+    public function useCurrent(): static;
+
+    /**
+     * Marks the column to use CURRENT_TIMESTAMP as default value on update.
+     *
+     * @return BuilderColumn
+     */
+    public function useCurrentOnUpdate(): static;
+
+    /**
      * Marks the column as nullable.
      *
      * @return BuilderColumn
@@ -86,6 +100,16 @@ interface BuilderColumn
     /**
      * @return bool
      */
+    public function shouldUseCurrent(): bool;
+
+    /**
+     * @return bool
+     */
+    public function shouldUseCurrentOnUpdate(): bool;
+
+    /**
+     * @return bool
+     */
     public function isNullable(): bool;
 
     /**
@@ -107,5 +131,15 @@ interface BuilderColumn
      * @return bool
      */
     public function isChanged(): bool;
+
+    /**
+     * @return int
+     */
+    public function getType(): int;
+
+    /**
+     * @return string
+     */
+    public function getName(): string;
 
 }

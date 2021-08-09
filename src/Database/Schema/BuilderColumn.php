@@ -78,6 +78,20 @@ class BuilderColumn implements BuilderColumnAgreement
     private mixed $default = null;
 
     /**
+     * Indicates that the column should use CURRENT_TIMESTAMP as default value.
+     *
+     * @var bool
+     */
+    private bool $useCurrent = false;
+
+    /**
+     * Indicates that the column should use CURRENT_TIMESTAMP as default value on update.
+     *
+     * @var bool
+     */
+    private bool $useCurrentOnUpdate = false;
+
+    /**
      * Marks the column as nullable.
      *
      * @var bool
@@ -157,6 +171,28 @@ class BuilderColumn implements BuilderColumnAgreement
     {
         $this->hasDefault = true;
         $this->default = $value;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function useCurrent(): static
+    {
+        $this->hasDefault = true;
+        if($this->type === BuilderColumn::TYPE_TIMESTAMP)
+            $this->useCurrent = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function useCurrentOnUpdate(): static
+    {
+        $this->hasDefault = true;
+        if($this->type === BuilderColumn::TYPE_TIMESTAMP)
+            $this->useCurrentOnUpdate = true;
         return $this;
     }
 
@@ -307,5 +343,21 @@ class BuilderColumn implements BuilderColumnAgreement
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldUseCurrent(): bool
+    {
+        return $this->useCurrent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldUseCurrentOnUpdate(): bool
+    {
+        return $this->useCurrentOnUpdate;
     }
 }

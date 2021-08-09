@@ -127,7 +127,13 @@ class MySQLGrammar extends SQLGrammar
             . ($column->getLength() !== null ? "({$column->getLength()}) " : " ")
             . ($column->isUnsignable() && $column->isUnsigned() ? "UNSIGNED " : "")
             . (!$column->isNullable() ? "NOT NULL " : "")
-            . ($column->hasDefault() ? "DEFAULT " . ($column->getDefault() !== null ? "'{$connector->escape($column->getDefault())}'" : "NULL") . " " : "")
+            . ($column->hasDefault() ? "DEFAULT " . (
+                $column->shouldUseCurrent()
+                    ? "CURRENT_TIMESTAMP "
+                    : ($column->getDefault() !== null
+                        ? "'{$connector->escape($column->getDefault())}'"
+                        : "NULL") . " "
+                ) : "") . ($column->shouldUseCurrentOnUpdate() ? "ON UPDATE CURRENT_TIMESTAMP " : "")
             . ($column->isAutoincrement() ? "AUTO_INCREMENT " : "")
             . ($column->isUnique() ? "UNIQUE " : "")
             . ($column->isPrimary() ? "PRIMARY KEY " : "");
@@ -148,8 +154,8 @@ class MySQLGrammar extends SQLGrammar
         //    [ON DELETE reference_option]
         //    [ON UPDATE reference_option]
         return "CONSTRAINT {$foreignKey->getName()} FOREIGN KEY {$foreignKey->getName()} ({$foreignKey->getColumn()}) "
-            . "REFERENCES `". $foreignKey->getOn() . "`({$foreignKey->getReferences()}) "
-            . ($foreignKey->getOnDelete() !== null ? "ON DELETE ".$foreignKey->getOnDelete(). "" : "")
-            . ($foreignKey->getOnUpdate() !== null ? "ON UPDATE ".$foreignKey->getOnUpdate(). "" : "");
+            . "REFERENCES `" . $foreignKey->getOn() . "`({$foreignKey->getReferences()}) "
+            . ($foreignKey->getOnDelete() !== null ? "ON DELETE " . $foreignKey->getOnDelete() . "" : "")
+            . ($foreignKey->getOnUpdate() !== null ? "ON UPDATE " . $foreignKey->getOnUpdate() . "" : "");
     }
 }

@@ -40,6 +40,7 @@ abstract class Builder implements BuilderInterface
         // pass blueprint to the closure
         $callback($blueprint);
 
+
         // compile blueprint to string
         $sql = $this->grammar->compileCreateBlueprint($table, $blueprint, $this->connector);
 

@@ -16,9 +16,9 @@ abstract class Model implements DAOInterface
     /**
      * The SQL connector class.
      *
-     * @var string|null
+     * @var string|SQLConnectorInterface|null
      */
-    static string|null $connector = null;
+    static string|SQLConnectorInterface|null $connector = null;
 
     /**
      * returns the dao's config.
@@ -36,7 +36,7 @@ abstract class Model implements DAOInterface
      * ]
      * @return array
      */
-    abstract static function SQLConfig(): array;
+    abstract static function config(): array;
 
     /**
      * Sets the connector class.
@@ -54,9 +54,9 @@ abstract class Model implements DAOInterface
      * @return array
      * @throws Exception
      */
-    private static function __getCleanedSQLConfig(): array
+    private static function __getCleanedConfig(): array
     {
-        $config = call_user_func(get_called_class() . "::SQLConfig") ?? [];
+        $config = call_user_func(get_called_class() . "::config") ?? [];
 
         // ensure all necesarry config keys exist
         if (!isset($config["table"]))
@@ -68,10 +68,11 @@ abstract class Model implements DAOInterface
 
         // ensure fields are array
         $fields = $config["fields"] ?? [];
+        $ignoreFields = array_merge($config["fields"] ?? [], ["connector"]);
         if (empty($fields)) {
             // autofill keys by properties with public class variables
-            $fields = array_filter(array_keys(get_class_vars(get_called_class())), function ($field) {
-                return strlen($field) >= 2 && $field[0] != "_" && $field[1] != "_";
+            $fields = array_filter(array_keys(get_class_vars(get_called_class())), function ($field) use ($ignoreFields) {
+                return !in_array($field, $ignoreFields);
             });
         }
 
@@ -122,7 +123,7 @@ abstract class Model implements DAOInterface
 
         $className = get_called_class();
         $arguments = self::__getConstructorArguments();
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
 
         // re-map keys from result according to config
         foreach ($config["fields"] as $classVar => $dbVar) {
@@ -151,12 +152,57 @@ abstract class Model implements DAOInterface
     }
 
     /**
+     * Calls the ::table function on the connector.
+     *
+     * @param string $table
+     * @return SQLQueryBuilder|void
+     */
+    private static function __callTableOnConnector(string $table)
+    {
+        if (self::$connector instanceof SQLConnectorInterface)
+            return self::$connector->table($table);
+        else
+            call_user_func(self::$connector . "::table", $table);
+    }
+
+    /**
+     * Returns an array for the database with all available column-value associaions.
+     *
+     * @param array $fields
+     * @return array
+     */
+    private function getColumnPropertyValueMapping(array $fields): array
+    {
+        $this_ = $this;
+        $flippedFields = array_flip($fields);
+        $filteredFields = array_filter($flippedFields, function($field) use($this_){
+            return isset($this_->$field);
+        });
+        return array_map(function ($field) use ($this_) {
+            return $this_->$field ?? null;
+        }, $filteredFields);
+    }
+
+    /**
+     * Calls the ::lastInsertedId function on the connector.
+     *
+     * @return SQLQueryBuilder|void
+     */
+    private static function __callLastInsertedIdOnConnector()
+    {
+        if (self::$connector instanceof SQLConnectorInterface)
+            return self::$connector->lastInsertedId();
+        else
+            call_user_func(self::$connector . "::lastInsertedId");
+    }
+
+    /**
      * @inheritDoc
      */
     public static function all(): array
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
-        $entries = call_user_func(self::$connector . "::table", $config["table"])
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $entries = static::__callTableOnConnector($config["table"])
             ->get();
 
         return array_map(function ($entry) {
@@ -169,8 +215,8 @@ abstract class Model implements DAOInterface
      */
     public static function get($id): ?static
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
-        $entry = call_user_func(self::$connector . "::table", $config["table"])
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $entry = static::__callTableOnConnector($config["table"])
             ->where($config["primaryKey"], $id)
             ->first();
         return self::__createInstanceFromArray($entry);
@@ -178,18 +224,17 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
-     * @throws Exception
      */
     public static function create(array $data): ?static
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
-        $success = call_user_func(self::$connector . "::table", $config["table"])
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $success = static::__callTableOnConnector($config["table"])
             ->insert($data);
 
         if (!$success)
             return null;
 
-        $id = call_user_func(self::$connector . "::lastInsertedId");
+        $id = static::__callLastInsertedIdOnConnector();
         return self::get($id);
     }
 
@@ -200,8 +245,8 @@ abstract class Model implements DAOInterface
      */
     public static function sql(): SQLQueryBuilder
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
-        return call_user_func(self::$connector . "::table", $config["table"]);
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        return static::__callTableOnConnector($config["table"]);
     }
 
     /**
@@ -210,13 +255,11 @@ abstract class Model implements DAOInterface
     public function update(): bool
     {
         $this_ = $this;
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
-        return call_user_func(self::$connector . "::table", $config["table"])
+        return static::__callTableOnConnector($config["table"])
             ->where($config["primaryKey"], $this->$primaryKeyField)
-            ->update(array_map(function ($field) use ($this_) {
-                return $this_->$field;
-            }, array_flip($config["fields"])));
+            ->update($this->getColumnPropertyValueMapping($config["fields"]));
     }
 
     /**
@@ -225,15 +268,13 @@ abstract class Model implements DAOInterface
     public function store(): bool
     {
         $this_ = $this;
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
-        $success = call_user_func(self::$connector . "::table", $config["table"])
-            ->insert(array_map(function ($field) use ($this_) {
-                return $this_->$field;
-            }, array_flip($config["fields"])));
+        $success = static::__callTableOnConnector($config["table"])
+            ->insert($this->getColumnPropertyValueMapping($config["fields"]));
 
         if ($success)
-            $this->$primaryKeyField = call_user_func(self::$connector . "::lastInsertedId");
+            $this->$primaryKeyField = static::__callLastInsertedIdOnConnector();
 
         return $success;
     }
@@ -243,9 +284,9 @@ abstract class Model implements DAOInterface
      */
     public function delete(): bool
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedSQLConfig");
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
-        return call_user_func(self::$connector . "::table", $config["table"])
+        return static::__callTableOnConnector($config["table"])
             ->where($config["primaryKey"], $this->$primaryKeyField)
             ->delete();
     }

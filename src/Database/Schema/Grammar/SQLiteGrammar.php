@@ -32,6 +32,7 @@ class SQLiteGrammar extends SQLGrammar
     /**
      * @param SQLConnectorInterface $connector
      * @inheritDoc
+     * @throws NoSuchStatement
      */
     public function compileCreateBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {
@@ -82,15 +83,15 @@ class SQLiteGrammar extends SQLGrammar
         }
 
         // add foreign keys
-        if(!empty($blueprint->getForeignKeys()))
+        if (!empty($blueprint->getForeignKeys()))
             throw new NoSuchStatement("SQLite does not support adding foreign keys to existing tables");
 
         // drop foreign keys
-        if(!empty($blueprint->getDropForeignKeys()))
+        if (!empty($blueprint->getDropForeignKeys()))
             throw new NoSuchStatement("SQLite does not support dropping foreign keys from existing tables");
 
         // drop columns
-        if(!empty($blueprint->getDropColumns()))
+        if (!empty($blueprint->getDropColumns()))
             throw new NoSuchStatement("SQLite does not support dropping columns from existing tables");
 
 
@@ -105,15 +106,25 @@ class SQLiteGrammar extends SQLGrammar
      * @param BuilderColumn $column
      * @param SQLConnectorInterface $connector
      * @return string
+     * @throws NoSuchStatement
      */
     private function buildColumnDefinition(BuilderColumn $column, SQLConnectorInterface $connector): string
     {
+        if($column->shouldUseCurrentOnUpdate())
+            throw new NoSuchStatement("SQLite does not support updating timestamps ON UPDATE");
+
         // see https://www.sqlite.org/lang_createtable.html
         return $column->getName() . " "
             . $this->typeMapping[$column->getType()]
-            . (($column->getLength() !== null && !$column->isPrimary())? "({$column->getLength()}) " : " ")
+            . (($column->getLength() !== null && !$column->isPrimary()) ? "({$column->getLength()}) " : " ")
             . (!$column->isNullable() ? "NOT NULL " : "")
-            . ($column->hasDefault() ? "DEFAULT " . ($column->getDefault() !== null ? "'{$connector->escape($column->getDefault())}'" : "NULL") . " " : "")
+            . ($column->hasDefault() ? "DEFAULT " . (
+                $column->shouldUseCurrent()
+                    ? "CURRENT_TIMESTAMP "
+                    : ($column->getDefault() !== null
+                        ? "'{$connector->escape($column->getDefault())}'"
+                        : "NULL") . " "
+                ) : "")
             . ($column->isUnique() ? "UNIQUE " : "")
             . ($column->isPrimary() ? "PRIMARY KEY " . ($column->isAutoincrement() ? "AUTOINCREMENT " : "") : "");
     }
