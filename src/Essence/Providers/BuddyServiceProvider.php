@@ -3,6 +3,7 @@
 namespace Curfle\Essence\Providers;
 
 use Curfle\Console\Commands\DbCommand;
+use Curfle\Console\Commands\MakeExceptionCommand;
 use Curfle\Console\Commands\MakeMigrationCommand;
 use Curfle\Console\Commands\MakeModelCommand;
 use Curfle\Console\Commands\MigrateCommand;
@@ -35,6 +36,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // list
         Buddy::command(new ListCommand($this->app));
+
+        // make:esception
+        Buddy::command(new MakeExceptionCommand($this->app));
 
         // make:migration
         Buddy::command(new MakeMigrationCommand($this->app));
