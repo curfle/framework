@@ -17,7 +17,7 @@ jobs:
     - uses: mirromutth/mysql-action@v1.1
       with:
         mysql database: 'curfle'
-        mysql root password: ''
+        mysql root password: 'root'
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
