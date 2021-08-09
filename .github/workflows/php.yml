@@ -19,6 +19,12 @@ jobs:
         mysql database: 'curfle'
         mysql root password: 'root'
 
+    - name: Wait for MySQL
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --password=root --silent; do
+            sleep 1
+          done
+
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
