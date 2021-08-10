@@ -177,7 +177,7 @@ class BuilderColumn implements BuilderColumnAgreement
     /**
      * @inheritDoc
      */
-    public function useCurrent(): static
+    public function defaultCurrent(): static
     {
         $this->hasDefault = true;
         if($this->type === BuilderColumn::TYPE_TIMESTAMP)
@@ -188,7 +188,7 @@ class BuilderColumn implements BuilderColumnAgreement
     /**
      * @inheritDoc
      */
-    public function useCurrentOnUpdate(): static
+    public function defaultCurrentOnUpdate(): static
     {
         $this->hasDefault = true;
         if($this->type === BuilderColumn::TYPE_TIMESTAMP)

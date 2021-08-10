@@ -42,14 +42,14 @@ interface BuilderColumn
      *
      * @return BuilderColumn
      */
-    public function useCurrent(): static;
+    public function defaultCurrent(): static;
 
     /**
      * Marks the column to use CURRENT_TIMESTAMP as default value on update.
      *
      * @return BuilderColumn
      */
-    public function useCurrentOnUpdate(): static;
+    public function defaultCurrentOnUpdate(): static;
 
     /**
      * Marks the column as nullable.

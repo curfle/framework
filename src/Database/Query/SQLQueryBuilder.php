@@ -57,6 +57,16 @@ class SQLQueryBuilder
     }
 
     /**
+     * selects only specific columns
+     * @return $this
+     */
+    public function valueAs(string $value, string $as): SQLQueryBuilder
+    {
+        $this->_fields = ["$value AS $as"];
+        return $this;
+    }
+
+    /**
      * adds an inner join to the query
      * @param string $table
      * @param string $columnA

@@ -6,11 +6,43 @@ use Curfle\Agreements\DAO\DAOInterface;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Support\Exceptions\DAO\UndefinedPropertyException;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
 
+/**
+ * @method static SQLQueryBuilder distinct()
+ * @method static SQLQueryBuilder value()
+ * @method static SQLQueryBuilder join(string $table, string $columnA, string $operator, string $columnB)
+ * @method static SQLQueryBuilder leftJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static SQLQueryBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static SQLQueryBuilder rightJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static SQLQueryBuilder rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static SQLQueryBuilder crossJoin(string $table)
+ * @method static SQLQueryBuilder where()
+ * @method static SQLQueryBuilder orWhere()
+ * @method static SQLQueryBuilder whereBetween(string $column, $min, $max)
+ * @method static SQLQueryBuilder orWhereBetween(string $column, $min, $max)
+ * @method static SQLQueryBuilder whereNotBetween(string $column, $min, $max)
+ * @method static SQLQueryBuilder orWhereNotBetween(string $column, $min, $max)
+ * @method static SQLQueryBuilder having()
+ * @method static SQLQueryBuilder groupBy()
+ * @method static SQLQueryBuilder orderBy()
+ * @method static SQLQueryBuilder limit(int $n)
+ * @method static SQLQueryBuilder offset(int $n)
+ * @method static string build()
+ * @method static ?array first()
+ * @method static ?array find($id)
+ * @method static mixed max()
+ * @method static mixed min()
+ * @method static mixed avg()
+ * @method static bool exists()
+ * @method static bool doesntExist()
+ *
+ * @see SQLQueryBuilder
+ */
 abstract class Model implements DAOInterface
 {
     /**
@@ -54,7 +86,7 @@ abstract class Model implements DAOInterface
      * @return array
      * @throws Exception
      */
-    private static function __getCleanedConfig(): array
+    public static function __getCleanedConfig(): array
     {
         $config = call_user_func(get_called_class() . "::config") ?? [];
 
@@ -175,7 +207,7 @@ abstract class Model implements DAOInterface
     {
         $this_ = $this;
         $flippedFields = array_flip($fields);
-        $filteredFields = array_filter($flippedFields, function($field) use($this_){
+        $filteredFields = array_filter($flippedFields, function ($field) use ($this_) {
             return isset($this_->$field);
         });
         return array_map(function ($field) use ($this_) {
@@ -239,17 +271,6 @@ abstract class Model implements DAOInterface
     }
 
     /**
-     * Entry point for building a query.
-     *
-     * @return SQLQueryBuilder
-     */
-    public static function sql(): SQLQueryBuilder
-    {
-        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
-        return static::__callTableOnConnector($config["table"]);
-    }
-
-    /**
      * @inheritDoc
      */
     public function update(): bool
@@ -290,4 +311,105 @@ abstract class Model implements DAOInterface
             ->where($config["primaryKey"], $this->$primaryKeyField)
             ->delete();
     }
+
+    /**
+     * Returns one instance of the referenced class or null.
+     *
+     * @param string $class
+     * @param string|null $fkColumn
+     * @return mixed
+     */
+    protected function hasOne(string $class, string $fkColumn = null): mixed
+    {
+        if ($fkColumn === null) {
+            $targetConfig = call_user_func("$class::__getCleanedConfig");
+            $fkColumn = $targetConfig["table"] . "_id";
+        }
+        return call_user_func($class . "::get", $this->$fkColumn);
+    }
+
+    /**
+     * Returns one instance of the referenced class or null.
+     *
+     * @param string $class
+     * @param string|null $fkColumn
+     * @return mixed
+     */
+    protected function belongsTo(string $class, string $fkColumn = null): mixed
+    {
+        return $this->hasOne($class, $fkColumn);
+    }
+
+    /**
+     * Returns an array of .
+     *
+     * @param string $class
+     * @param string|null $fkColumnInClass
+     * @return mixed
+     */
+    protected function hasMany(string $class, string $fkColumnInClass = null): mixed
+    {
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
+
+        if ($fkColumnInClass === null) {
+            $fkColumnInClass = $config["table"] . "_id";
+        }
+        return call_user_func($class . "::where", $fkColumnInClass, $this->$primaryKeyField)->get();
+    }
+
+    /**
+     * Returns one instance of the referenced class or null.
+     *
+     * @param string $class
+     * @param string|null $pivotTableName
+     * @param string|null $fkColumnOfCurrentModelInPivotTable
+     * @param string|null $fkColumnOfOtherModelInPivotTable
+     * @return array
+     */
+    protected function belongsToMany(string $class, string $pivotTableName, string $fkColumnOfCurrentModelInPivotTable = null, string $fkColumnOfOtherModelInPivotTable = null): array
+    {
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $targetConfig = call_user_func("$class::__getCleanedConfig");
+
+        if($fkColumnOfCurrentModelInPivotTable === null)
+            $fkColumnOfCurrentModelInPivotTable = $config["table"]."_id";
+
+        if($fkColumnOfOtherModelInPivotTable === null)
+            $fkColumnOfOtherModelInPivotTable = $targetConfig["table"]."_id";
+
+        $entries = self::__callTableOnConnector($pivotTableName)
+            ->valueAs($fkColumnOfOtherModelInPivotTable, "id")
+            ->where($fkColumnOfCurrentModelInPivotTable, $this->id)
+            ->get();
+        return array_map(function($entry) use($class) {
+            return call_user_func($class . "::get", $entry["id"]);
+        }, $entries);
+    }
+
+    /**
+     * Returns a method as a property if exists.
+     *
+     * @throws UndefinedPropertyException
+     */
+    public function __get(string $name)
+    {
+        if (method_exists($this, $name))
+            return $this->{$name}();
+        throw new UndefinedPropertyException("Undefined property [" . get_class($this) . "::${$name}]");
+    }
+
+    /**
+     * Passes the function to the query builder (e.g. ::where(...) becomes ::table(...)->where(...)).
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public static function __callStatic(string $name, array $arguments)
+    {
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        return static::__callTableOnConnector($config["table"])->{$name}(...$arguments);
+    }
+
 }
