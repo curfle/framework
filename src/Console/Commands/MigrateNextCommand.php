@@ -8,28 +8,28 @@ use Curfle\Essence\Application;
 use Curfle\Console\Command;
 use Curfle\FileSystem\FileSystem;
 
-class MigrateRollbackCommand extends Command
+class MigrateNextCommand extends Command
 {
     /**
      * @inheritDoc
      */
     protected function install()
     {
-        $this->signature("migrate:rollback")
-            ->description("Rolls back the last migration that has been run")
+        $this->signature("migrate:next")
+            ->description("Runs the next migration that has not been run yet")
             ->resolver(function (Application $app, FileSystem $files) {
                 $migrator = new Migrator($app, $files);
-                $migrationsRun = $migrator->rollback(1);
+                $migrationsRun = $migrator->run(1);
 
                 // send feedback to the user
                 if(empty($migrationsRun)){
-                    $this->warning("no migration was rolled back");
+                    $this->warning("no migration was run");
                 }else{
-                    $this->write("migration rolled back:");
+                    $this->write("migration run:");
                     foreach ($migrationsRun as $migration) {
                         $this->write("- $migration");
                     }
-                    $this->success("successfully rolled back the migration");
+                    $this->success("successfully run the migration");
                 }
             });
     }

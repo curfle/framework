@@ -6,12 +6,16 @@ use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\FileSystem\FileSystem;
 use Curfle\Support\Exceptions\FileSystem\DirectoryNotFoundException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Facades\DB;
 use Curfle\Support\Facades\Schema;
 use Curfle\Utilities\Utilities;
 use Exception;
+use ReflectionException;
 
-class Migrator{
+class Migrator
+{
 
     /**
      * The Migrators' application instance.
@@ -60,7 +64,7 @@ class Migrator{
      * @return array
      * @throws DirectoryNotFoundException
      */
-    public function allMigrationsRun() : array
+    public function allMigrationsRun(): array
     {
         $this_ = $this;
 
@@ -68,11 +72,11 @@ class Migrator{
         $migrations = $this->getAllMigrations();
 
         // filter migrations that have been run already
-        $migrations = array_filter($migrations, function($class, $filename) use($this_){
+        $migrations = array_filter($migrations, function ($class, $filename) use ($this_) {
             return $this_->migrationAlreadyRun($filename);
         }, ARRAY_FILTER_USE_BOTH);
 
-        return array_map(function(string $migration, string $filename){
+        return array_map(function (string $migration, string $filename) {
             return [
                 "name" => $migration,
                 "filename" => $filename,
@@ -84,22 +88,48 @@ class Migrator{
     }
 
     /**
+     * Returns all migrations that were not run yet.
+     *
+     * @return array
+     * @throws DirectoryNotFoundException
+     */
+    public function allMigrationsToRun(): array
+    {
+        $this_ = $this;
+
+        // get all migrations
+        $migrations = $this->getAllMigrations();
+
+        // filter migrations that have been run already
+        $migrations = array_filter($migrations, function ($class, $filename) use ($this_) {
+            return !$this_->migrationAlreadyRun($filename);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        return array_map(function (string $migration, string $filename) {
+            return [
+                "name" => $migration,
+                "filename" => $filename,
+            ];
+        }, $migrations, array_keys($migrations));
+    }
+
+    /**
      * Returns all migrations.
      *
      * @return array
      * @throws DirectoryNotFoundException
      */
-    private function getAllMigrations() : array
+    private function getAllMigrations(): array
     {
         $migrations = [];
 
         $directory = $this->app->basePath("database/migrations/");
 
-        if(!$this->files->isDirectory($directory))
+        if (!$this->files->isDirectory($directory))
             throw new DirectoryNotFoundException("The directory [$directory] does not exist and thus cannot contain any migrations.");
 
-        foreach($this->files->files($directory) as $file){
-            $path = $directory.$file;
+        foreach ($this->files->files($directory) as $file) {
+            $path = $directory . $file;
             require_once $path;
             $migrations[$file] = Utilities::getClassNameFromFile($path);
         }
@@ -115,8 +145,8 @@ class Migrator{
     private function ensureMigrationTableExists()
     {
         $migrationTable = $this->getMigrationTable();
-        if(!Schema::hasTable($migrationTable))
-            Schema::create($migrationTable, function(Blueprint $table){
+        if (!Schema::hasTable($migrationTable))
+            Schema::create($migrationTable, function (Blueprint $table) {
                 $table->id("id");
                 $table->string("migration");
                 $table->timestamp("timestamp");
@@ -130,7 +160,7 @@ class Migrator{
      */
     private function getAllMigrationsRun(): array
     {
-        if($this->migrationsRun !== null)
+        if ($this->migrationsRun !== null)
             return $this->migrationsRun;
 
         $migrationTable = $this->getMigrationTable();
@@ -161,8 +191,8 @@ class Migrator{
 
         $allRunMigrations = $this->getAllMigrationsRun();
 
-        foreach($allRunMigrations as $record){
-            if($record["migration"] === $identifier)
+        foreach ($allRunMigrations as $record) {
+            if ($record["migration"] === $identifier)
                 return true;
         }
         return false;
@@ -171,11 +201,14 @@ class Migrator{
     /**
      * Runs all migrations that have not been run yet.
      *
+     * @param int $amount
      * @return array
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
      * @throws DirectoryNotFoundException
-     * @throws Exception
+     * @throws ReflectionException
      */
-    public function run(): array
+    public function run(int $amount): array
     {
         $this_ = $this;
 
@@ -184,12 +217,18 @@ class Migrator{
         // get all migrations
         $migrations = $this->getAllMigrations();
 
-        $migrations = array_filter($migrations, function($class, $filename) use($this_){
+        $migrations = array_filter($migrations, function ($class, $filename) use ($this_) {
             return !$this_->migrationAlreadyRun($filename);
         }, ARRAY_FILTER_USE_BOTH);
 
-        // run all the migrations
-        foreach($migrations as $filename=>$migration){
+        // run all migrations
+        foreach ($migrations as $filename => $migration) {
+            // check for amount condition
+            if($amount !== null && $amount <= 0)
+                break;
+            $amount--;
+
+            // rollback the migration
             $migrationsRun[] = $migration;
             $migration = $this->app->build($migration);
             $this->runMigration($filename, $migration);
@@ -221,11 +260,14 @@ class Migrator{
     /**
      * Rolls back all migrations that have been run.
      *
+     * @param int|null $amount
      * @return array
      * @throws DirectoryNotFoundException
-     * @throws Exception
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
-    public function rollback()
+    public function rollback(int $amount = null): array
     {
         $this_ = $this;
 
@@ -235,15 +277,21 @@ class Migrator{
         $migrations = $this->getAllMigrations();
 
         // filter migrations that have been run already
-        $migrations = array_filter($migrations, function($class, $filename) use($this_){
+        $migrations = array_filter($migrations, function ($class, $filename) use ($this_) {
             return $this_->migrationAlreadyRun($filename);
         }, ARRAY_FILTER_USE_BOTH);
 
         // turn around order
         $migrations = array_reverse($migrations);
 
-        // run all the migrations
-        foreach($migrations as $filename=>$migration){
+        // roll back all migrations
+        foreach ($migrations as $filename => $migration) {
+            // check for amount condition
+            if($amount !== null && $amount <= 0)
+                break;
+            $amount--;
+
+            // rollback the migration
             $migrationsRolledBack[] = $migration;
             $migration = $this->app->build($migration);
             $this->rollbackMigration($filename, $migration);

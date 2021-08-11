@@ -8,6 +8,8 @@ use Curfle\Console\Commands\MakeMigrationCommand;
 use Curfle\Console\Commands\MakeModelCommand;
 use Curfle\Console\Commands\MigrateCommand;
 use Curfle\Console\Commands\MigrateFreshCommand;
+use Curfle\Console\Commands\MigrateNextCommand;
+use Curfle\Console\Commands\MigrateResetCommand;
 use Curfle\Console\Commands\MigrateRollbackCommand;
 use Curfle\Console\Commands\MigrateStatusCommand;
 use Curfle\Essence\Application;
@@ -52,6 +54,12 @@ class BuddyServiceProvider extends ServiceProvider
 
         // migrate:fresh
         Buddy::command(new MigrateFreshCommand($this->app));
+
+        // migrate:next
+        Buddy::command(new MigrateNextCommand($this->app));
+
+        // migrate:reset
+        Buddy::command(new MigrateResetCommand($this->app));
 
         // migrate:rollback
         Buddy::command(new MigrateRollbackCommand($this->app));

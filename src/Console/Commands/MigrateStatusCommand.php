@@ -20,6 +20,7 @@ class MigrateStatusCommand extends Command
             ->resolver(function (Application $app, FileSystem $files) {
                 $migrator = new Migrator($app, $files);
                 $migrationsRun = $migrator->allMigrationsRun();
+                $migrationsToRun = $migrator->allMigrationsToRun();
 
                 // send feedback to the user
                 if(empty($migrationsRun)){
@@ -27,7 +28,20 @@ class MigrateStatusCommand extends Command
                 }else{
                     $this->write("migrations run:");
                     foreach ($migrationsRun as $migration) {
-                        $this->write("- {$migration["name"]} at {$migration["timestamp"]} ({$migration["filename"]})}");
+                        $this->write("- ", false)
+                            ->success($migration["name"], false)
+                            ->write(" at {$migration["timestamp"]} ({$migration["filename"]})}");
+                    }
+                }
+
+                if(empty($migrationsToRun)){
+                    $this->success("all available migrations were run");
+                }else{
+                    $this->write("migrations to be run:");
+                    foreach ($migrationsToRun as $migration) {
+                        $this->write("- ", false)
+                            ->warning($migration["name"], false)
+                            ->write(" ({$migration["filename"]})}");
                     }
                 }
             });
