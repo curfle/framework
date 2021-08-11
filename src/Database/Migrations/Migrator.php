@@ -201,14 +201,14 @@ class Migrator
     /**
      * Runs all migrations that have not been run yet.
      *
-     * @param int $amount
+     * @param int|null $amount
      * @return array
      * @throws BindingResolutionException
      * @throws CircularDependencyException
      * @throws DirectoryNotFoundException
      * @throws ReflectionException
      */
-    public function run(int $amount): array
+    public function run(int $amount = null): array
     {
         $this_ = $this;
 
@@ -224,7 +224,7 @@ class Migrator
         // run all migrations
         foreach ($migrations as $filename => $migration) {
             // check for amount condition
-            if($amount !== null && $amount <= 0)
+            if ($amount !== null && $amount <= 0)
                 break;
             $amount--;
 
@@ -287,7 +287,7 @@ class Migrator
         // roll back all migrations
         foreach ($migrations as $filename => $migration) {
             // check for amount condition
-            if($amount !== null && $amount <= 0)
+            if ($amount !== null && $amount <= 0)
                 break;
             $amount--;
 
