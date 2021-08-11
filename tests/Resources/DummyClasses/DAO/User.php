@@ -2,6 +2,10 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Relationships\ManyToManyRelationship;
+use Curfle\DAO\Relationships\OneToManyRelationship;
+use Curfle\DAO\Relationships\OneToOneRelationship;
+
 /**
  * @property-read ?Job $job
  * @property-read Login[] $logins
@@ -11,20 +15,19 @@ class User extends \Curfle\DAO\Model
 {
 
     public int $id;
+    public ?string $created;
 
     /**
      * @param string|null $firstname
      * @param string|null $lastname
      * @param string|null $email
      * @param int|null $job_id
-     * @param string|null $created
      */
     public function __construct(
         public ?string $firstname = null,
         public ?string $lastname = null,
         public ?string $email = null,
-        public ?int    $job_id = null,
-        public ?string $created = null
+        public ?int    $job_id = null
     )
     {
     }
@@ -42,9 +45,9 @@ class User extends \Curfle\DAO\Model
     /**
      * Returns the associated job.
      *
-     * @return Job|null
+     * @return OneToOneRelationship
      */
-    public function job() : ?Job
+    public function job() : OneToOneRelationship
     {
         return $this->hasOne(Job::class);
     }
@@ -52,9 +55,9 @@ class User extends \Curfle\DAO\Model
     /**
      * Returns the associated logins.
      *
-     * @return Login[]
+     * @return OneToManyRelationship
      */
-    public function logins() : array
+    public function logins() : OneToManyRelationship
     {
         return $this->hasMany(Login::class);
     }
@@ -62,9 +65,9 @@ class User extends \Curfle\DAO\Model
     /**
      * Returns the associated roles.
      *
-     * @return Role[]
+     * @return ManyToManyRelationship
      */
-    public function roles() : array
+    public function roles() : ManyToManyRelationship
     {
         return $this->belongsToMany(Role::class, "user_role");
     }

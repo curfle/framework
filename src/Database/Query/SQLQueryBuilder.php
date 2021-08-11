@@ -3,6 +3,7 @@
 namespace Curfle\Database\Query;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Utilities\Constants\IgnoreValue;
 use Exception;
 
@@ -634,7 +635,7 @@ class SQLQueryBuilder
 
     /**
      * inserts entries into the database
-     * @throws Exception
+     * @throws LogicException
      */
     public function insert(array $data): bool
     {
@@ -648,7 +649,7 @@ class SQLQueryBuilder
                 // multiple rows
                 // assert all entries have the same key
                 if (count($data[0]) !== count(call_user_func_array("array_intersect_key", $data))) {
-                    throw new Exception("All arrays must share the same key, when inserting multiple entries at once");
+                    throw new LogicException("All arrays must share the same key, when inserting multiple entries at once");
                 }
                 $this->_insert = $data;
             }

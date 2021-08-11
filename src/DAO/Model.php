@@ -3,6 +3,10 @@
 namespace Curfle\DAO;
 
 use Curfle\Agreements\DAO\DAOInterface;
+use Curfle\DAO\Relationships\ManyToManyRelationship;
+use Curfle\DAO\Relationships\ManyToOneRelationship;
+use Curfle\DAO\Relationships\OneToManyRelationship;
+use Curfle\DAO\Relationships\OneToOneRelationship;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
@@ -11,6 +15,7 @@ use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
+use ReflectionProperty;
 
 /**
  * @method static SQLQueryBuilder distinct()
@@ -148,7 +153,7 @@ abstract class Model implements DAOInterface
      * @return static|null
      * @throws ReflectionException
      */
-    private static function __createInstanceFromArray(?array $arr): static|null
+    public static function __createInstanceFromArray(?array $arr): static|null
     {
         if ($arr === null)
             return null;
@@ -189,7 +194,7 @@ abstract class Model implements DAOInterface
      * @param string $table
      * @return SQLQueryBuilder|void
      */
-    private static function __callTableOnConnector(string $table)
+    public static function __callTableOnConnector(string $table)
     {
         if (self::$connector instanceof SQLConnectorInterface)
             return self::$connector->table($table);
@@ -202,13 +207,14 @@ abstract class Model implements DAOInterface
      *
      * @param array $fields
      * @return array
+     * @throws ReflectionException
      */
     private function getColumnPropertyValueMapping(array $fields): array
     {
         $this_ = $this;
         $flippedFields = array_flip($fields);
         $filteredFields = array_filter($flippedFields, function ($field) use ($this_) {
-            return isset($this_->$field);
+            return (new ReflectionProperty($this_, $field))->isInitialized($this_);
         });
         return array_map(function ($field) use ($this_) {
             return $this_->$field ?? null;
@@ -226,6 +232,15 @@ abstract class Model implements DAOInterface
             return self::$connector->lastInsertedId();
         else
             call_user_func(self::$connector . "::lastInsertedId");
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function primaryKey(): mixed
+    {
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        return $this->{$config["primaryKey"]};
     }
 
     /**
@@ -319,13 +334,13 @@ abstract class Model implements DAOInterface
      * @param string|null $fkColumn
      * @return mixed
      */
-    protected function hasOne(string $class, string $fkColumn = null): mixed
+    protected function hasOne(string $class, string $fkColumn = null): OneToOneRelationship
     {
         if ($fkColumn === null) {
             $targetConfig = call_user_func("$class::__getCleanedConfig");
             $fkColumn = $targetConfig["table"] . "_id";
         }
-        return call_user_func($class . "::get", $this->$fkColumn);
+        return new OneToOneRelationship($this, $class, $fkColumn);
     }
 
     /**
@@ -335,9 +350,13 @@ abstract class Model implements DAOInterface
      * @param string|null $fkColumn
      * @return mixed
      */
-    protected function belongsTo(string $class, string $fkColumn = null): mixed
+    protected function belongsTo(string $class, string $fkColumn = null): ManyToOneRelationship
     {
-        return $this->hasOne($class, $fkColumn);
+        if ($fkColumn === null) {
+            $targetConfig = call_user_func("$class::__getCleanedConfig");
+            $fkColumn = $targetConfig["table"] . "_id";
+        }
+        return new ManyToOneRelationship($this, $class, $fkColumn);
     }
 
     /**
@@ -347,27 +366,31 @@ abstract class Model implements DAOInterface
      * @param string|null $fkColumnInClass
      * @return mixed
      */
-    protected function hasMany(string $class, string $fkColumnInClass = null): mixed
+    protected function hasMany(string $class, string $fkColumnInClass = null): OneToManyRelationship
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
-        $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
 
-        if ($fkColumnInClass === null) {
+        if ($fkColumnInClass === null)
             $fkColumnInClass = $config["table"] . "_id";
-        }
-        return call_user_func($class . "::where", $fkColumnInClass, $this->$primaryKeyField)->get();
+
+        return new OneToManyRelationship($this, $class, $fkColumnInClass);
     }
 
     /**
      * Returns one instance of the referenced class or null.
      *
      * @param string $class
-     * @param string|null $pivotTableName
+     * @param string $pivotTableName
      * @param string|null $fkColumnOfCurrentModelInPivotTable
      * @param string|null $fkColumnOfOtherModelInPivotTable
      * @return array
      */
-    protected function belongsToMany(string $class, string $pivotTableName, string $fkColumnOfCurrentModelInPivotTable = null, string $fkColumnOfOtherModelInPivotTable = null): array
+    protected function belongsToMany(
+        string $class,
+        string $pivotTableName,
+        string $fkColumnOfCurrentModelInPivotTable = null,
+        string $fkColumnOfOtherModelInPivotTable = null
+    ): ManyToManyRelationship
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $targetConfig = call_user_func("$class::__getCleanedConfig");
@@ -378,13 +401,13 @@ abstract class Model implements DAOInterface
         if($fkColumnOfOtherModelInPivotTable === null)
             $fkColumnOfOtherModelInPivotTable = $targetConfig["table"]."_id";
 
-        $entries = self::__callTableOnConnector($pivotTableName)
-            ->valueAs($fkColumnOfOtherModelInPivotTable, "id")
-            ->where($fkColumnOfCurrentModelInPivotTable, $this->id)
-            ->get();
-        return array_map(function($entry) use($class) {
-            return call_user_func($class . "::get", $entry["id"]);
-        }, $entries);
+        return new ManyToManyRelationship(
+            $this,
+            $class,
+            $pivotTableName,
+            $fkColumnOfCurrentModelInPivotTable,
+            $fkColumnOfOtherModelInPivotTable
+        );
     }
 
     /**
@@ -395,7 +418,7 @@ abstract class Model implements DAOInterface
     public function __get(string $name)
     {
         if (method_exists($this, $name))
-            return $this->{$name}();
+            return $this->{$name}()->get();
         throw new UndefinedPropertyException("Undefined property [" . get_class($this) . "::${$name}]");
     }
 

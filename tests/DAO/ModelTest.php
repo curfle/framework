@@ -57,7 +57,7 @@ class ModelTest extends TestCase
 
         $this->builder->create("login", function (Blueprint $table) {
             $table->id("id");
-            $table->int("user_id")->unsigned();
+            $table->int("user_id")->unsigned()->nullable();
             $table->timestamp("timestamp")->defaultCurrent();
             $table->foreign("user_id")
                 ->references("id")
@@ -202,6 +202,37 @@ class ModelTest extends TestCase
         $this->assertEquals($job, User::get(1)->job);
     }
 
+    /**
+     * Tests one-to-one relationship edits
+     */
+    public function testOneToOneEditing()
+    {
+
+        $job = Job::create([
+            "name" => "PHP developer"
+        ]);
+
+        $secondJob = Job::create([
+            "name" => "PHP / JS full stack developer"
+        ]);
+
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd",
+            "job_id" => $job->id
+        ]);
+        $this->assertEquals($job, $user->job);
+        
+        // set second job
+        $user->job()->set($secondJob);
+        $this->assertEquals($secondJob, $user->job);
+
+        // detach job
+        $user->job()->detach();
+        $this->assertNull( User::get(1)->job);
+    }
+
 
     /**
      * Tests one-to-many relationships
@@ -227,6 +258,37 @@ class ModelTest extends TestCase
 
 
     /**
+     * Tests one-to-many relationship edits
+     */
+    public function testOneToManyEdit()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $loginOne = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $loginTwo = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $this->assertCount(2, $user->logins);
+
+        $user->logins()->dissociate($loginOne);
+        $this->assertCount(1, $user->logins);
+        $this->assertEquals(null, Login::get(1)->user_id);
+
+        $user->logins()->associate($loginOne);
+        $this->assertCount(2, $user->logins);
+        $this->assertEquals($user->id, Login::get(1)->user_id);
+    }
+
+
+    /**
      * Tests many-to-one relationships
      */
     public function testManyToOne()
@@ -242,6 +304,32 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertEquals($user, $login->user);
+    }
+
+
+    /**
+     * Tests many-to-one relationship edits
+     */
+    public function testManyToOneEdit()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $login = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $this->assertEquals($user, $login->user);
+
+        $login->user()->dissociate();
+        $this->assertNull($login->user);
+
+        $login->user()->associate($user);
+        $this->assertEquals($user, $login->user);
+
     }
 
 
@@ -263,12 +351,55 @@ class ModelTest extends TestCase
         $userRole = Role::create(["name" => "user"]);
         $adminRole = Role::create(["name" => "admin"]);
 
-        $this->connector->table("user_role")->insert(["user_id" => $jane->id, "role_id" => $adminRole->id]);
-        $this->connector->table("user_role")->insert(["user_id" => $jane->id, "role_id" => $userRole->id]);
-        $this->connector->table("user_role")->insert(["user_id" => $john->id, "role_id" => $userRole->id]);
+        $jane->roles()->attach($adminRole);
+        $jane->roles()->attach($userRole);
+        $john->roles()->attach($userRole);
 
         self::assertEquals($adminRole, $jane->roles[0]);
         self::assertEquals($userRole, $jane->roles[1]);
         self::assertEquals($userRole, $john->roles[0]);
+    }
+
+
+    /**
+     * Tests many-to-many relationship edits
+     */
+    public function testManyToManyEdit()
+    {
+        $jane = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe"
+        ]);
+
+        $john = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe"
+        ]);
+
+        $userRole = Role::create(["name" => "user"]);
+        $adminRole = Role::create(["name" => "admin"]);
+
+        $jane->roles()->attach($adminRole);
+        $jane->roles()->attach($userRole);
+        $john->roles()->attach($userRole);
+
+        self::assertCount(2, $jane->roles);
+        self::assertCount(1, $john->roles);
+
+        self::assertEquals($adminRole, $jane->roles[0]);
+        self::assertEquals($userRole, $jane->roles[1]);
+        self::assertEquals($userRole, $john->roles[0]);
+
+        $john->roles()->detach($userRole);
+        self::assertCount(0, $john->roles);
+        self::assertCount(2, $jane->roles);
+
+        $john->roles()->attach($userRole);
+        self::assertEquals($userRole, $john->roles[0]);
+
+        $jane->roles()->detach();
+        self::assertCount(0, $jane->roles);
+        self::assertEquals($userRole, $john->roles[0]);
+
     }
 }

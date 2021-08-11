@@ -5,6 +5,7 @@ namespace Curfle\Agreements\DAO;
 use Curfle\Database\Query\SQLQueryBuilder;
 
 interface DAOInterface {
+
     /**
      * Returns all available instances.
      *
@@ -27,6 +28,13 @@ interface DAOInterface {
      * @return ?static
      */
     public static function create(array $data) : ?static;
+
+    /**
+     * Returns the primary key value.
+     *
+     * @return array
+     */
+    public function primaryKey() : mixed;
 
     /**
      * Updates the current instance in the underlying persistent data layer.

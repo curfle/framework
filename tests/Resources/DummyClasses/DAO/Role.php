@@ -2,6 +2,8 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Relationships\ManyToManyRelationship;
+
 /**
  * @property-read User[] $users
  */
@@ -30,9 +32,9 @@ class Role extends \Curfle\DAO\Model
     /**
      * Returns the associated users.
      *
-     * @return Login[]
+     * @return ManyToManyRelationship
      */
-    public function users() : array
+    public function users() : ManyToManyRelationship
     {
         return $this->belongsToMany(User::class, "user_role");
     }

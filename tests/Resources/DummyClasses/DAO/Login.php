@@ -2,6 +2,9 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Relationships\ManyToOneRelationship;
+use Curfle\DAO\Relationships\OneToOneRelationship;
+
 /**
  * @property-read User $user
  */
@@ -34,9 +37,9 @@ class Login extends \Curfle\DAO\Model
     /**
      * Returns the associated user.
      *
-     * @return User|null
+     * @return ManyToOneRelationship
      */
-    public function user() : ?User
+    public function user() : ManyToOneRelationship
     {
         return $this->belongsTo(User::class);
     }
