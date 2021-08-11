@@ -13,7 +13,7 @@ class DatabaseServiceProvider extends ServiceProvider
      * @inheritDoc
      */
     public function boot(){
-        Model::setConnector(get_class($this->app->resolve("db.connection")));
+        Model::setConnector($this->app->resolve("db.connection"));
     }
 
     /**

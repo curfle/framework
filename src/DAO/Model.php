@@ -53,9 +53,9 @@ abstract class Model implements DAOInterface
     /**
      * The SQL connector class.
      *
-     * @var string|SQLConnectorInterface|null
+     * @var SQLConnectorInterface|null
      */
-    static string|SQLConnectorInterface|null $connector = null;
+    static SQLConnectorInterface|null $connector = null;
 
     /**
      * returns the dao's config.
@@ -78,9 +78,9 @@ abstract class Model implements DAOInterface
     /**
      * Sets the connector class.
      *
-     * @param string $connector
+     * @param SQLConnectorInterface $connector
      */
-    public static function setConnector(string $connector)
+    public static function setConnector(SQLConnectorInterface $connector)
     {
         self::$connector = $connector;
     }
@@ -196,9 +196,13 @@ abstract class Model implements DAOInterface
      */
     public static function __callTableOnConnector(string $table)
     {
-        if (self::$connector instanceof SQLConnectorInterface)
+        if (self::$connector instanceof SQLConnectorInterface
+            || self::$connector instanceof MySQLConnector)
             return self::$connector->table($table);
-        else
+        else{
+            var_dump(self::$connector);
+            exit();
+        }
             call_user_func(self::$connector . "::table", $table);
     }
 
