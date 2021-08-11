@@ -10,7 +10,6 @@ use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
-use Curfle\Support\Facades\DB;
 use Curfle\Tests\Resources\DummyClasses\DAO\Job;
 use Curfle\Tests\Resources\DummyClasses\DAO\Login;
 use Curfle\Tests\Resources\DummyClasses\DAO\Role;
@@ -53,6 +52,7 @@ class ModelTest extends TestCase
                 ->references("id")
                 ->on("job")
                 ->onDelete(ForeignKeyConstraint::CASCADE);
+            $table->softDeletes();
         });
 
         $this->builder->create("login", function (Blueprint $table) {
@@ -162,6 +162,32 @@ class ModelTest extends TestCase
         User::get(1)->delete();
 
         $this->assertEmpty(User::all());
+    }
+
+    /**
+     * Tests the ->delete() function but assert that it is only soft deleted.
+     */
+    public function testDeleteButAssertSoftDelete()
+    {
+        User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        User::create([
+            "firstname" => "John",
+            "lastname" => "Doe",
+            "email" => "john.doe@example.dd"
+        ]);
+
+        $this->assertCount(2, User::all());
+
+        User::get(1)->delete();
+
+        $this->assertCount(1, User::all());
+
+        $this->assertCount(2, User::$connector->table("user")->get());
     }
 
     /**

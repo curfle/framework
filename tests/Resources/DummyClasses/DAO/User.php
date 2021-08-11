@@ -38,7 +38,8 @@ class User extends \Curfle\DAO\Model
     static function config(): array
     {
         return [
-            "table" => "user"
+            "table" => "user",
+            "softDelete" => true
         ];
     }
 

@@ -197,6 +197,16 @@ class Blueprint
     }
 
     /**
+     * Creates a deleted column.
+     *
+     * @return BuilderColumn
+     */
+    public function softDeletes(): BuilderColumn
+    {
+        return $this->columns[] = (new BuilderColumn("deleted", BuilderColumn::TYPE_TIMESTAMP))->nullable();
+    }
+
+    /**
      * Creates a foreign key constraint.
      *
      * @param string $column

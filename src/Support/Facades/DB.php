@@ -6,7 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
 
 /**
- * @method static SQLQueryBuilder table()
+ * @method static SQLQueryBuilder table(string $table)
  * @method static mixed query(string $query)
  * @method static bool exec(string $query)
  * @method static array rows(string $query = null)

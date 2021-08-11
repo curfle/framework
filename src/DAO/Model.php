@@ -63,6 +63,7 @@ abstract class Model implements DAOInterface
      * [
      *  "table" => "users",
      *  "primaryKey" => "id",
+     *  "softDelete" => false,
      *  "fields" => [
      *      "id",           // or "myId" => "id", which means that the variable $this->myId gets the value of the database's id column
      *      "firstname",
@@ -97,11 +98,15 @@ abstract class Model implements DAOInterface
 
         // ensure all necesarry config keys exist
         if (!isset($config["table"]))
-            throw new Exception("One of the following properties is missing in the DAO's SQL configurazion: table");
+            throw new Exception("One of the following properties is missing in the DAO's SQL configuration: table");
 
         // default primaryKey to "id"
         if (!isset($config["primaryKey"]))
             $config["primaryKey"] = "id";
+
+        // default softDelete to false
+        if (!isset($config["softDelete"]))
+            $config["softDelete"] = false;
 
         // ensure fields are array
         $fields = $config["fields"] ?? [];
@@ -196,14 +201,11 @@ abstract class Model implements DAOInterface
      */
     public static function __callTableOnConnector(string $table)
     {
-        if (self::$connector instanceof SQLConnectorInterface
-            || self::$connector instanceof MySQLConnector)
-            return self::$connector->table($table);
-        else{
-            var_dump(self::$connector);
-            exit();
-        }
-            call_user_func(self::$connector . "::table", $table);
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $statement = self::$connector->table($table);
+        if($config["softDelete"] && $table === $config["table"])
+            $statement = $statement->where("deleted", null);
+        return $statement;
     }
 
     /**
@@ -326,9 +328,13 @@ abstract class Model implements DAOInterface
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
-        return static::__callTableOnConnector($config["table"])
-            ->where($config["primaryKey"], $this->$primaryKeyField)
-            ->delete();
+        $statement = static::__callTableOnConnector($config["table"])
+            ->where($config["primaryKey"], $this->$primaryKeyField);
+
+        if ($config["softDelete"])
+            return $statement->update(["deleted" => date("Y-m-d H:i:s")]);
+        else
+            return $statement->delete();
     }
 
     /**
@@ -399,11 +405,11 @@ abstract class Model implements DAOInterface
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $targetConfig = call_user_func("$class::__getCleanedConfig");
 
-        if($fkColumnOfCurrentModelInPivotTable === null)
-            $fkColumnOfCurrentModelInPivotTable = $config["table"]."_id";
+        if ($fkColumnOfCurrentModelInPivotTable === null)
+            $fkColumnOfCurrentModelInPivotTable = $config["table"] . "_id";
 
-        if($fkColumnOfOtherModelInPivotTable === null)
-            $fkColumnOfOtherModelInPivotTable = $targetConfig["table"]."_id";
+        if ($fkColumnOfOtherModelInPivotTable === null)
+            $fkColumnOfOtherModelInPivotTable = $targetConfig["table"] . "_id";
 
         return new ManyToManyRelationship(
             $this,
