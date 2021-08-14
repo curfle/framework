@@ -10,6 +10,7 @@ namespace Curfle\Support\Facades;
  * @method static \Curfle\Routing\Route patch(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route post(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route put(string $uri, array|string|callable|null $action = null)
+ * @method static \Curfle\Routing\Route redirect(string $uri, string $target, int $code = 302)
  * @method static \Curfle\Routing\Router registerRouteFile(string $filename)
  *
  * @see \Curfle\Routing\Router

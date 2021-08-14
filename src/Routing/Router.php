@@ -142,6 +142,21 @@ class Router
     }
 
     /**
+     * Create a redirect from one url to another.
+     *
+     * @param string $uri
+     * @param string $target
+     * @param int $code
+     * @return Route
+     */
+    public function redirect(string $uri, string $target, int $code = 302): Route
+    {
+        return $this->addRoute(self::$verbs, $uri, function() use($code, $target){
+            return new Response("", $code, ["Location" => $target]);
+        });
+    }
+
+    /**
      * Add a route to the route collection.
      *
      * @param array|string $methods

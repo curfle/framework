@@ -2,6 +2,8 @@
 
 namespace Curfle\Http;
 
+use Curfle\Support\Exceptions\Http\StatusNotFoundException;
+
 class Response{
     public const HTTP_CONTINUE = 100;
     public const HTTP_SWITCHING_PROTOCOLS = 101;
@@ -274,13 +276,17 @@ class Response{
      * Sends headers for the current response.
      *
      * @return $this
+     * @throws StatusNotFoundException
      */
     private function sendHeaders() : static
     {
+        // check if http code is valid
+        if(!array_key_exists($this->status, self::$statusTexts))
+            throw new StatusNotFoundException("Status [{$this->status}] is unkown and may cause unpredicted server behaviour");
+
         // cancel if headers have already beeen sent
-        if (headers_sent()) {
+        if (headers_sent())
             return $this;
-        }
 
         // send all headers
         foreach ($this->headers as $name => $value) {
