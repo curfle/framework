@@ -5,6 +5,7 @@ namespace Curfle\Essence\Exceptions;
 use Curfle\Agreements\Essence\Exceptions\HandlerInterface;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Curfle\Support\Exceptions\Http\HttpException;
 use Throwable;
 
@@ -36,15 +37,18 @@ class ExceptionHandler implements HandlerInterface
      */
     private function prepareResponse(Request $request, Throwable $e): Response
     {
-        if (!$this->isHttpException($e) && config('app.debug')) {
+        // if debug mode is enabled and exception is not HTTP-dispatchable, convert it into a rich response
+        if (config('app.debug') && !$this->isDispatchableHttpException($e)) {
             return $this->convertExceptionToResponse($e);
         }
 
-        if (!$this->isHttpException($e)) {
-            $e = new HttpException($e->getMessage(), 500);
+        // if the exception is not dispatchable but debug mode not enabled, throw an internal server error
+        if (!$this->isDispatchableHttpException($e)) {
+            $e = new HttpDispatchableException("Internal Server Error", 500);
         }
 
-        return $this->convertHttpExceptionToResponse($e);
+        // display the dispatchable HTTP exception
+        return $this->convertHttpDispatchableExceptionToResponse($e);
     }
 
     /**
@@ -53,9 +57,9 @@ class ExceptionHandler implements HandlerInterface
      * @param Throwable $e
      * @return bool
      */
-    private function isHttpException(Throwable $e): bool
+    private function isDispatchableHttpException(Throwable $e): bool
     {
-        return $e instanceof HttpException;
+        return $e instanceof HttpDispatchableException;
     }
 
     /**
@@ -74,7 +78,7 @@ class ExceptionHandler implements HandlerInterface
 
         return new Response(
             $errorStringified,
-            $e->getCode(),
+            500,
             [
                 $_SERVER["SERVER_PROTOCOL"] . " " . Response::HTTP_INTERNAL_SERVER_ERROR . " Internal Server Error",
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -83,21 +87,20 @@ class ExceptionHandler implements HandlerInterface
     }
 
     /**
-     * Converst a HTTP exception into a response.
+     * Converst an HttpDispatchableException into a response.
      *
-     * @param Throwable $e
+     * @param HttpDispatchableException $e
      * @return Response
      */
-    private function convertHttpExceptionToResponse(Throwable $e): Response
+    private function convertHttpDispatchableExceptionToResponse(HttpDispatchableException $e): Response
     {
-        $status = $e->getCode();
-        $statusText = "<h1>$status | " . Response::$statusTexts[$status] . "</h1>";
+        $statusText = "<h1>{$e->getCode()} | {$e->getMessage()}</h1>";
         return new Response(
             $statusText,
-            $status,
+            $e->getCode(),
             [
-                $_SERVER["SERVER_PROTOCOL"] . " $status $statusText",
-                $status
+                $_SERVER["SERVER_PROTOCOL"] . "{$e->getCode()} " . Response::$statusTexts[$e->getCode()],
+                $e->getCode()
             ]
         );
     }

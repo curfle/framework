@@ -4,7 +4,7 @@ namespace Curfle\Support\Exceptions\Database;
 
 use Curfle\Support\Exceptions\CurfleException;
 
-class DatabaseException extends CurfleException
+abstract class DatabaseException extends CurfleException
 {
 
 }
