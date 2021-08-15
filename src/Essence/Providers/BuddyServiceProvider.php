@@ -7,6 +7,7 @@ use Curfle\Console\Commands\MakeExceptionCommand;
 use Curfle\Console\Commands\MakeMiddlewareCommand;
 use Curfle\Console\Commands\MakeMigrationCommand;
 use Curfle\Console\Commands\MakeModelCommand;
+use Curfle\Console\Commands\MakeSecretCommand;
 use Curfle\Console\Commands\MigrateCommand;
 use Curfle\Console\Commands\MigrateFreshCommand;
 use Curfle\Console\Commands\MigrateNextCommand;
@@ -52,6 +53,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // make:model
         Buddy::command(new MakeModelCommand($this->app));
+
+        // make:secret
+        Buddy::command(new MakeSecretCommand($this->app));
 
         // migrate
         Buddy::command(new MigrateCommand($this->app));
