@@ -6,6 +6,7 @@ use Curfle\Agreements\Container\Container;
 use Curfle\Essence\Application;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
 use Curfle\Support\Exceptions\Http\NotFoundHttpException;
 
 class Router
@@ -30,7 +31,40 @@ class Router
      *
      * @var string[]
      */
-    public static array $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+    public static array $verbs = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+
+    /**
+     * The group options when calling the ->group(...) function.
+     *
+     * @var array
+     */
+    public array $groupOptions = [
+        "prefix" => "",
+        "middleware" => []
+    ];
+
+    /**
+     * The application's global HTTP middleware stack.
+     * These middlewares are run during every request.
+     *
+     * @var array
+     */
+    protected array $middleware = [];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected array $middlewareGroups = [];
+
+    /**
+     * The application's route middleware.
+     * These middlewares may be assigned to middleware groups or used individually.
+     *
+     * @var array
+     */
+    protected array $routeMiddleware = [];
 
 
     /**
@@ -151,9 +185,62 @@ class Router
      */
     public function redirect(string $uri, string $target, int $code = 302): Route
     {
-        return $this->addRoute(self::$verbs, $uri, function() use($code, $target){
-            return new Response("", $code, ["Location" => $target]);
+        return $this->addRoute(self::$verbs, $uri, function (Response $response) use ($code, $target) {
+            $response
+                ->setStatusCode($code)
+                ->setHeader("Location", $target)
+                ->setContent("");
         });
+    }
+
+    /**
+     * Sets the group prefix option.
+     *
+     * @param string $prefix
+     * @return $this
+     */
+    public function prefix(string $prefix): static
+    {
+        $this->groupOptions["prefix"] = $prefix;
+        return $this;
+    }
+
+    /**
+     * Sets the group middleware option and assigns the routes a group of middlewares.
+     *
+     * @param string $middleware
+     * @return $this
+     */
+    public function middleware(string $middleware): static
+    {
+        $this->groupOptions["middleware"] = $this->middlewareGroups[$middleware] ?? [];
+        return $this;
+    }
+
+    /**
+     * Resets the group options.
+     *
+     * @return $this
+     */
+    private function clearGroupOptions(): static
+    {
+        $this->groupOptions["prefix"] = "";
+        $this->groupOptions["middleware"] = [];
+        return $this;
+    }
+
+    /**
+     * Sets the group middleware option.
+     *
+     * @param mixed $routes
+     * @return $this
+     */
+    public function group(mixed $routes): static
+    {
+        if (is_callable($routes))
+            $routes();
+
+        return $this->clearGroupOptions();
     }
 
     /**
@@ -166,7 +253,21 @@ class Router
      */
     private function addRoute(array|string $methods, string $uri, callable|array|string|null $action): Route
     {
-        return $this->routeCollector->add($this->createRoute($methods, $uri, $action));
+        // create route and add to route collector
+        $route = $this->routeCollector->add(
+            $this->createRoute(
+                $methods,
+                $this->groupOptions["prefix"] . $uri,
+                $action
+            )
+        );
+
+        // assign middleware if wanted
+        foreach($this->groupOptions["middleware"] as $middleware){
+            $route->middleware($middleware);
+        }
+
+        return $route;
     }
 
     /**
@@ -202,18 +303,84 @@ class Router
      * @param Request $request
      * @return Response
      * @throws NotFoundHttpException
+     * @throws MiddlewareNotFoundException
      */
     public function resolve(Request $request): Response
     {
+        // try to find route
         foreach ($this->routeCollector->all() as $route) {
             if ($route->matches($request->method(), $request->uri())) {
+                // add inputs to request
                 foreach ($route->getMatchedParameters() as $name => $value) {
                     $request->addInput($name, $value);
                 }
+
+                // call middlewares
+                foreach ($this->middleware as $middleware) {
+                    $this->container->call("$middleware@handle");
+                }
+
+                // resolve route
                 return $route->resolve($request);
             }
         }
 
         throw new NotFoundHttpException("Not found", 404);
+    }
+
+    /**
+     * Registeres a new middleware.
+     *
+     * @param string $middleware
+     * @return $this
+     */
+    public function addGlobalMiddleware(string $middleware): static
+    {
+        $this->middleware[] = $middleware;
+        return $this;
+    }
+
+    /**
+     * Registeres a new middleware group.
+     *
+     * @param string $group
+     * @param array $middlewareGroup
+     * @return $this
+     */
+    public function groupMiddleware(string $group, array $middlewareGroup): static
+    {
+        $this->middlewareGroups[$group] = $middlewareGroup;
+        return $this;
+    }
+
+    /**
+     * Registeres a new middleware group.
+     *
+     * @param string $alias
+     * @param string $middleware
+     * @return $this
+     */
+    public function aliasMiddleware(string $alias, string $middleware): static
+    {
+        $this->routeMiddleware[$alias] = $middleware;
+        return $this;
+    }
+
+    /**
+     * Returns the middleware by its alias or classname.
+     *
+     * @param string $alias
+     * @return string
+     * @throws MiddlewareNotFoundException
+     */
+    public function getMiddleware(string $alias): string
+    {
+        if (array_key_exists($alias, $this->routeMiddleware))
+            return $this->routeMiddleware[$alias];
+
+        if (class_exists($alias))
+            return $alias;
+
+        throw new MiddlewareNotFoundException("The middleware [$alias] could not be found.");
     }
 }

@@ -3,8 +3,10 @@
 namespace Curfle\Routing;
 
 use Curfle\Agreements\Container\Container;
+use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
 
 class Route
 {
@@ -56,6 +58,13 @@ class Route
      * @var array|null
      */
     private ?array $matchedParameters = null;
+
+    /**
+     * The middlewares assigned to the route
+     *
+     * @var string[]
+     */
+    private array $middleware = [];
 
     /**
      * @param array|string $methods
@@ -156,19 +165,38 @@ class Route
     }
 
     /**
+     * Adds a middleware by name or classname to the route.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function middleware(string $name): static
+    {
+        $this->middleware[] = $name;
+        return $this;
+    }
+
+    /**
      * Resolves a request with a response based on its action.
      * @param Request $request
      * @return Response
+     * @throws MiddlewareNotFoundException
      */
     public function resolve(Request $request): Response
     {
+        // pass request through the middleware stack
+        foreach ($this->middleware as $middleware) {
+            $this->container->call("{$this->router->getMiddleware($middleware)}@handle");
+        }
+
+        // resolve the request
         $response = $this->action;
 
-        if(is_callable($this->action))
+        if (is_callable($this->action))
             $response = $this->container->call($this->action);
 
-        if(!$response instanceof Response)
-            $response = new Response($response);
+        if (!$response instanceof Response)
+            $response = $this->container["response"]->setContent($response);
 
         return $response;
     }

@@ -3,6 +3,7 @@
 namespace Curfle\Http;
 
 use Curfle\Support\Exceptions\Http\StatusNotFoundException;
+use Curfle\Support\Facades\App;
 
 class Response{
     public const HTTP_CONTINUE = 100;

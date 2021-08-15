@@ -79,7 +79,7 @@ class Request
      */
     public static function getUri(): string
     {
-        return $_SERVER["REQUEST_URI"];
+        return urldecode($_SERVER["REQUEST_URI"]);
     }
 
     /**
@@ -240,7 +240,7 @@ class Request
     }
 
     /**
-     * Returns if an input value exists or not.
+     * Returns if an input value exists.
      *
      * @param string $name
      * @return bool
@@ -248,6 +248,16 @@ class Request
     public function hasInput(string $name): bool
     {
         return array_key_exists($name, $this->inputs);
+    }
+
+    /**
+     * Returns all input values.
+     *
+     * @return mixed
+     */
+    public function inputs(): array
+    {
+        return $this->inputs;
     }
 
     /**
@@ -259,6 +269,28 @@ class Request
     public function input(string $name): mixed
     {
         return $this->inputs[$name];
+    }
+
+    /**
+     * Returns if a header value exists.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function hasHeader(string $name): bool
+    {
+        return array_key_exists($name, $this->headers);
+    }
+
+    /**
+     * Returns a header value.
+     *
+     * @param string $name
+     * @return string|null
+     */
+    public function header(string $name): ?string
+    {
+        return $this->headers[$name];
     }
 
     /**

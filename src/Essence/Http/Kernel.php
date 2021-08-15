@@ -51,6 +51,29 @@ class Kernel implements KernelAgreement
     ];
 
     /**
+     * The application's global HTTP middleware stack.
+     * These middlewares are run during every request.
+     *
+     * @var array
+     */
+    protected array $middleware = [];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected array $middlewareGroups = [];
+
+    /**
+     * The application's route middleware.
+     * These middlewares may be assigned to middleware groups or used individually.
+     *
+     * @var array
+     */
+    protected array $routeMiddleware = [];
+
+    /**
      * Create a new HTTP kernel instance.
      *
      * @param Application $app
@@ -61,6 +84,8 @@ class Kernel implements KernelAgreement
     {
         $this->app = $app;
         $this->router = $router;
+
+        $this->syncMiddlewareToRouter();
     }
 
     /**
@@ -90,10 +115,31 @@ class Kernel implements KernelAgreement
     protected function sendRequestThroughRouter(Request $request): Response
     {
         $this->app->instance('request', $request);
+        $this->app->instance('response', new Response());
 
         $this->bootstrap();
 
         return $this->router->resolve($request);
+    }
+
+    /**
+     * Informs the router about the middlewares bound to the kernel.
+     *
+     * @return void
+     */
+    private function syncMiddlewareToRouter()
+    {
+        foreach ($this->middleware as $middleware) {
+            $this->router->addGlobalMiddleware($middleware);
+        }
+
+        foreach ($this->middlewareGroups as $groupName => $middlewareGroup) {
+            $this->router->groupMiddleware($groupName, $middlewareGroup);
+        }
+
+        foreach ($this->routeMiddleware as $alias => $middleware) {
+            $this->router->aliasMiddleware($alias, $middleware);
+        }
     }
 
     /**

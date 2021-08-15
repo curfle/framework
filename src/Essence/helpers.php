@@ -3,6 +3,21 @@
 use Curfle\Config\Repository;
 use Curfle\Container\Container;
 use Curfle\Support\Env\Env;
+use Curfle\Support\Exceptions\Http\HttpDispatchableException;
+
+if (!function_exists('abort')) {
+    /**
+     * Throws a new HttpDispatchableException
+     *
+     * @param int $code
+     * @param string $message
+     * @throws HttpDispatchableException
+     */
+    function abort(int $code, string $message)
+    {
+        throw new HttpDispatchableException($message, $code);
+    }
+}
 
 if (!function_exists('app')) {
     /**
