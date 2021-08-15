@@ -1,0 +1,22 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Http\Middleware;
+use Curfle\Http\Request;
+
+class DummyClass extends Middleware
+{
+    /**
+     * Handles the current request before dispatching it to the actual route.
+     *
+     * Hint: Arguments are resolved via dependency injection.
+     *
+     * @param Request $request
+     * @return void
+     */
+    public static function handle(Request $request)
+    {
+        // TODO: Implement handle() method.
+    }
+}

@@ -4,7 +4,7 @@ namespace Curfle\Console\Commands;
 
 use Curfle\Console\Input;
 
-class MakeModelCommand extends MakeCommand
+class MakeMiddlewareCommand extends MakeCommand
 {
 
     /**
@@ -12,7 +12,7 @@ class MakeModelCommand extends MakeCommand
      */
     protected function getTemplate(): string
     {
-        return __DIR__ . "/../Templates/Model.template";
+        return __DIR__ . "/../Templates/Middleware.template";
     }
 
     /**
@@ -20,13 +20,13 @@ class MakeModelCommand extends MakeCommand
      */
     protected function install()
     {
-        $this->signature("make:model {name}")
+        $this->signature("make:middleware {name}")
             ->where("name", "([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*")
-            ->description("Creates a new model file")
+            ->description("Creates a new middleware file")
             ->resolver(function (Input $input) {
                 // get name and create file
-                $name = "App\\Models\\" . $input->namedArgument("name");
-                $filename = $this->app->basePath("app/Models/") . $this->createFileName($name);
+                $name = "App\\Http\\Middleware\\" . $input->namedArgument("name");
+                $filename = $this->app->basePath("app/Http/Middleware/") . $this->createFileName($name);
                 $this->makeFile(
                     $name,
                     $filename
