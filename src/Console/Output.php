@@ -148,4 +148,58 @@ class Output
     {
         return trim($this->content, "\n");
     }
+
+    /**
+     * Returns the content.
+     *
+     * @return string
+     */
+    public function getContentHTMLFormatted(): string
+    {
+        // ge content
+        $content = $this->getContent();
+        $content = nl2br($content);
+
+        $needClosingTag = false;
+
+        // replace all color codes with styled span-HTML-elements
+        while (str_contains($content, "\033[")) {
+            $position = strpos($content, "\033[");
+            $color = substr($content, $position, 5);
+            $colorHTML = match ($color) {
+                "\033[30m" => "#000000", // BLACK
+                "\033[97m" => "#ffffff", // WHITE
+                "\033[32m" => "#58922c", // GREEN
+                "\033[33m" => "#e68910", // ORANGE
+                "\033[31m" => "#c91212", // RED
+                default => "#000",
+            };
+            $content = substr($content, 0, $position)
+                . ($needClosingTag ? "</span>" : "")
+                . "<span style='color: $colorHTML'>"
+                . substr($content, $position + 5);
+            $needClosingTag = true;
+        }
+
+        // close last color if needed
+        if ($needClosingTag)
+            $content .= "</span>";
+
+        return $content;
+    }
+
+    /**
+     * Returns the content.
+     *
+     * @return string
+     */
+    public function getContentPlainFormatted(): string
+    {
+        $content = str_replace(
+            "<br>",
+            "\n",
+            $this->getContentHTMLFormatted()
+        );
+        return strip_tags($content);
+    }
 }
