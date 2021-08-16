@@ -75,6 +75,8 @@ class SMTPMailer implements Mailer
         $this->PHPMailer->Password = $this->password;
         $this->PHPMailer->SMTPSecure = $this->encryption;
         $this->PHPMailer->Port = $this->port;
+        $this->PHPMailer->From = "";
+        $this->PHPMailer->FromName = "";
     }
 
     /**
