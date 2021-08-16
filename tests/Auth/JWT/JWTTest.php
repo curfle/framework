@@ -106,4 +106,34 @@ class JWTTest extends TestCase
             JWT::valid($token)
         );
     }
+
+    /**
+     * Tests the ::verify() function.
+     * @throws SecretNotPresentException
+     */
+    public function testNonValidWithPrefilledValues()
+    {
+        $token = JWT::generate([
+            "sub" => 42,
+        ], -1);
+
+        $this->assertFalse(
+            JWT::valid($token)
+        );
+    }
+
+    /**
+     * Tests the ::verify() function.
+     * @throws SecretNotPresentException
+     */
+    public function testValidWithPrefilledValues()
+    {
+        $token = JWT::generate([
+            "sub" => 42,
+        ]);
+
+        $this->assertTrue(
+            JWT::valid($token)
+        );
+    }
 }
