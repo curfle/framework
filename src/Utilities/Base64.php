@@ -51,8 +51,8 @@ class Base64
     {
         return self::decode(
             str_replace(
-                ["+", "/", "="],
                 ["-", "_", ""],
+                ["+", "/", "="],
                 $string
             )
         );

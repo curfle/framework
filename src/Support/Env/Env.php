@@ -52,4 +52,16 @@ class Env
             default => $value,
         };
     }
+
+    /**
+     * Sets the value of an environment variable.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     */
+    public static function set(string $key, mixed $value = null): bool
+    {
+        return static::getRepository()->set($key, $value);
+    }
 }
