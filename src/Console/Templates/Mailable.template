@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Mail\Mailable;
+
+class DummyClass extends Mailable
+{
+
+    /**
+     * @inheritDoc
+     */
+    public function subject(): string
+    {
+        return "Subject Of Mail";
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function content(): string
+    {
+        return "<h1>Hello World!</h1>";
+    }
+}
