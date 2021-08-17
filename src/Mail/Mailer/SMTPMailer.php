@@ -4,6 +4,7 @@ namespace Curfle\Mail\Mailer;
 
 use Curfle\Agreements\Mail\Mailable;
 use Curfle\Agreements\Mail\Mailer;
+use Curfle\Support\Facades\Config;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -75,8 +76,8 @@ class SMTPMailer implements Mailer
         $this->PHPMailer->Password = $this->password;
         $this->PHPMailer->SMTPSecure = $this->encryption;
         $this->PHPMailer->Port = $this->port;
-        $this->PHPMailer->From = "";
-        $this->PHPMailer->FromName = "";
+        $this->PHPMailer->From = Config::get("mail.from.address", "");
+        $this->PHPMailer->FromName = Config::get("mail.from.name", "");
     }
 
     /**
