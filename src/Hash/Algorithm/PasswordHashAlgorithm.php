@@ -2,9 +2,9 @@
 
 namespace Curfle\Hash\Algorithm;
 
-use Curfle\Agreements\Hash\Algorithm as HashAlgorithm;
+use Curfle\Agreements\Hash\HashAlgorithm as HashAlgorithm;
 
-abstract class PasswordAlgorithm implements HashAlgorithm
+abstract class PasswordHashAlgorithm implements HashAlgorithm
 {
     /**
      * Returns the name of the internal php hashing algorithm.

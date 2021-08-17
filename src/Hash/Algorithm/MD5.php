@@ -2,7 +2,7 @@
 
 namespace Curfle\Hash\Algorithm;
 
-use Curfle\Agreements\Hash\Algorithm as HashAlgorithm;
+use Curfle\Agreements\Hash\HashAlgorithm as HashAlgorithm;
 
 class MD5 implements HashAlgorithm
 {

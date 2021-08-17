@@ -2,9 +2,9 @@
 
 namespace Curfle\Hash\Algorithm;
 
-use Curfle\Agreements\Hash\Algorithm as HashAlgorithm;
+use Curfle\Agreements\Hash\HashAlgorithm as HashAlgorithm;
 
-class BCrypt extends PasswordAlgorithm implements HashAlgorithm
+class BCrypt extends PasswordHashAlgorithm implements HashAlgorithm
 {
 
     /**
@@ -21,7 +21,7 @@ class BCrypt extends PasswordAlgorithm implements HashAlgorithm
     protected static function getHashOptions(): array
     {
         return [
-            "cost" => 12
+            "cost" => config("hashing.bcyrpt.rounds", 12)
         ];
     }
 }

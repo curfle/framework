@@ -2,6 +2,6 @@
 
 namespace Curfle\Agreements\Hash;
 
-interface Algorithm
+interface HashAlgorithm
 {
 }

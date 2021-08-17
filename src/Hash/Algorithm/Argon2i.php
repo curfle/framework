@@ -2,9 +2,9 @@
 
 namespace Curfle\Hash\Algorithm;
 
-use Curfle\Agreements\Hash\Algorithm as HashAlgorithm;
+use Curfle\Agreements\Hash\HashAlgorithm as HashAlgorithm;
 
-class Argon2i extends PasswordAlgorithm implements HashAlgorithm
+class Argon2i extends PasswordHashAlgorithm implements HashAlgorithm
 {
 
     /**
@@ -21,9 +21,9 @@ class Argon2i extends PasswordAlgorithm implements HashAlgorithm
     protected static function getHashOptions(): array
     {
         return [
-            "memory_cost" => PASSWORD_ARGON2_DEFAULT_MEMORY_COST,
-            "time_cost" => PASSWORD_ARGON2_DEFAULT_TIME_COST,
-            "threads" => PASSWORD_ARGON2_DEFAULT_THREADS
+            "memory_cost" => config("hashing.argon.memory", 1024),
+            "time_cost" => config("hashing.argon.time", 2),
+            "threads" => config("hashing.argon.threads", 2)
         ];
     }
 }

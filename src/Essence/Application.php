@@ -489,6 +489,7 @@ class Application extends Container
                      "app" => [self::class, Container::class, Application::class],
                      "config" => [\Curfle\Config\Repository::class, \Curfle\Agreements\Config\Repository::class],
                      "files" => [\Curfle\Filesystem\Filesystem::class],
+                     "hash" => [\Curfle\Hash\HashManager::class],
                      "input" => [\Curfle\Console\Input::class],
                      "mail" => [\Curfle\Mail\MailManager::class],
                      "request" => [\Curfle\Http\Request::class],

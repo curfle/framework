@@ -11,10 +11,8 @@ use PHPUnit\Framework\TestCase;
 class SQLQueryBuilderTest extends TestCase
 {
 
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
-
         // fake application
         $app = new Application();
         $app->singleton("db", function() {
