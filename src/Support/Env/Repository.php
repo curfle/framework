@@ -41,7 +41,7 @@ class Repository implements RepositoryAgreement
             return $this;
 
         if (!file_exists($this->path))
-            throw new FileNotFoundException("The .env file [{$this->path}] could not be found");
+            die("The .env file [{$this->path}] could not be found");
 
         // obtain all lines and parse them
         $lines = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

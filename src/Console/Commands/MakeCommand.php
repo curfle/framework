@@ -270,7 +270,6 @@ abstract class MakeCommand extends Command
      */
     protected function rootNamespace(): string
     {
-        var_dump($this->app->namespace());
         return $this->app->namespace();
     }
 
