@@ -192,10 +192,15 @@ class Route
         // resolve the request
         $response = $this->action;
 
+        // call the resolver
         if (is_callable($this->action))
             $response = $this->container->call($this->action);
 
-        if (!$response instanceof Response)
+        // if response is null, default it to the apps' singleton response instance,
+        // else set the return value as content
+        if($response === null)
+            $response = $this->container["response"];
+        else if (!$response instanceof Response)
             $response = $this->container["response"]->setContent($response);
 
         return $response;

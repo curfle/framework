@@ -102,13 +102,24 @@ class FileSystemTest extends TestCase
     }
 
     /**
-     * test ::isDirectory()
+     * test ::mimeType()
      */
     public function testMimeType()
     {
         $this->assertSame(
             "text/x-php",
             $this->fileSystem->mimeType(__DIR__ . "/FileSystemTest.php")
+        );
+    }
+
+    /**
+     * test ::contentType()
+     */
+    public function testContentType()
+    {
+        $this->assertSame(
+            "application/x-httpd-php",
+            $this->fileSystem->contentType(__DIR__ . "/FileSystemTest.php")
         );
     }
 }

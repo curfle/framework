@@ -15,5 +15,7 @@ class RegisterFacade implements BootstrapInterface
     function bootstrap(Application $app)
     {
         Facade::setFacadeApplication($app);
+
+        // TODO: AliasLoader for config: app.aliases
     }
 }
