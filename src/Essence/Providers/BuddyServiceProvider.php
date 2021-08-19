@@ -15,6 +15,7 @@ use Curfle\Console\Commands\MigrateNextCommand;
 use Curfle\Console\Commands\MigrateResetCommand;
 use Curfle\Console\Commands\MigrateRollbackCommand;
 use Curfle\Console\Commands\MigrateStatusCommand;
+use Curfle\Console\Commands\ServeCommand;
 use Curfle\Essence\Application;
 use Curfle\Console\Commands\ListCommand;
 use Curfle\Http\Request;
@@ -78,6 +79,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // migrate:status
         Buddy::command(new MigrateStatusCommand($this->app));
+
+        // serve
+        Buddy::command(new ServeCommand($this->app));
 
     }
 }

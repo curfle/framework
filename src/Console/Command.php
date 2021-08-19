@@ -207,6 +207,7 @@ class Command
             $signature = str_replace(" {{$parameter}?}", "( $regex)?", $signature);
         }
 
+        $signature = str_replace("\/", "/", $signature);
         $signature = str_replace("/", "\/", $signature);
 
         return "/^$signature$/m";
