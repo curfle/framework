@@ -155,7 +155,7 @@ class MySQLGrammar extends SQLGrammar
         //    [ON UPDATE reference_option]
         return "CONSTRAINT {$foreignKey->getName()} FOREIGN KEY {$foreignKey->getName()} ({$foreignKey->getColumn()}) "
             . "REFERENCES `" . $foreignKey->getOn() . "`({$foreignKey->getReferences()}) "
-            . ($foreignKey->getOnDelete() !== null ? "ON DELETE " . $foreignKey->getOnDelete() . "" : "")
-            . ($foreignKey->getOnUpdate() !== null ? "ON UPDATE " . $foreignKey->getOnUpdate() . "" : "");
+            . ($foreignKey->getOnDelete() !== null ? "ON DELETE " . $foreignKey->getOnDelete() . " " : "")
+            . ($foreignKey->getOnUpdate() !== null ? "ON UPDATE " . $foreignKey->getOnUpdate() . " " : "");
     }
 }
