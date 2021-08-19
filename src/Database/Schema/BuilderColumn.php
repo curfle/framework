@@ -170,6 +170,11 @@ class BuilderColumn implements BuilderColumnAgreement
     public function default(mixed $value): static
     {
         $this->hasDefault = true;
+
+        // cast bool to integer
+        if (is_bool($value))
+            $value = $value ? 1 : 0;
+
         $this->default = $value;
         return $this;
     }

@@ -120,6 +120,17 @@ class Blueprint
     }
 
     /**
+     * Creates a new boolean (alias for tinyint) column.
+     *
+     * @param string $name
+     * @return BuilderColumn
+     */
+    public function bool(string $name): BuilderColumn
+    {
+        return $this->columns[] = new BuilderColumn($name, BuilderColumn::TYPE_TINYINT);
+    }
+
+    /**
      * Creates a new tinyint column.
      *
      * @param string $name
