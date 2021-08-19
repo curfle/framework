@@ -164,7 +164,7 @@ class Response{
     /**
      * @var float|int
      */
-    private float|int $version = 2;
+    private float|int $version = 1.1;
 
     /**
      * @var array
@@ -188,7 +188,7 @@ class Response{
         $this->cookies = $cookies;
         $this->setContent($content)
             ->setStatusCode($status)
-            ->setProtocolVersion(2);
+            ->setProtocolVersion(1.1);
     }
 
     /**
