@@ -316,4 +316,28 @@ class Response{
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getContent(): array|string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCookies(): array
+    {
+        return $this->cookies;
+    }
 }

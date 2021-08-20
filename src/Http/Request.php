@@ -290,7 +290,7 @@ class Request
      */
     public function header(string $name): ?string
     {
-        return $this->headers[$name];
+        return $this->headers[$name] ?? null;
     }
 
     /**

@@ -9,7 +9,7 @@ use Curfle\Http\Response;
 
 class TrimStrings extends Middleware
 {
-    public static function handle(Request $request)
+    public function handle(Request $request)
     {
         foreach($request->inputs() as $name => $input){
             $request->addInput($name, trim($input));

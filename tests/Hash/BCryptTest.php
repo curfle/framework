@@ -66,7 +66,7 @@ class BCryptTest extends TestCase
         $string = "MY_PASSWORD";
         $hash = BCrypt::hash($string);
         $this->assertTrue(
-            BCrypt::needsRehash($hash, ["cost" => 10])
+            BCrypt::needsRehash($hash, ["cost" => 12])
         );
     }
 }

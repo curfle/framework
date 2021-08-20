@@ -186,7 +186,7 @@ class Route
     {
         // pass request through the middleware stack
         foreach ($this->middleware as $middleware) {
-            $this->container->call("{$this->router->getMiddleware($middleware)}@handle");
+            $this->router->getMiddleware($middleware)->handle($request);
         }
 
         // resolve the request

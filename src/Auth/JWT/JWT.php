@@ -80,8 +80,8 @@ class JWT
         $payloadParsed = JSON::parse(Base64::urlDecode($payload));
 
         // check for expiration timestamp if wanted and possible
-        if($checkExpIfAvailable && array_key_exists("exp", $payloadParsed))
-            if($payloadParsed["exp"] < time())
+        if ($checkExpIfAvailable && array_key_exists("exp", $payloadParsed))
+            if ($payloadParsed["exp"] < time())
                 return false;
 
         // build new header and payload signatures
@@ -94,5 +94,45 @@ class JWT
 
         // validate signature against correct signature
         return $signature === $correctSignature;
+    }
+
+    /**
+     * Returns the tokens' content.
+     *
+     * @param string $token
+     * @return array
+     * @throws SecretNotPresentException
+     */
+    public static function decode(string $token): array
+    {
+        $secret = env("SECRET", null);
+
+        if ($secret === null)
+            throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
+
+        // split the token
+        [$header, $payload, $signature] = explode(".", $token);
+
+        return JSON::parse(Base64::urlDecode($payload));
+    }
+
+    /**
+     * Returns the tokens' content.
+     *
+     * @param string $token
+     * @return array
+     * @throws SecretNotPresentException
+     */
+    public static function decodeHeader(string $token): array
+    {
+        $secret = env("SECRET", null);
+
+        if ($secret === null)
+            throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
+
+        // split the token
+        [$header, $payload, $signature] = explode(".", $token);
+
+        return JSON::parse(Base64::urlDecode($header));
     }
 }

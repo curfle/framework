@@ -4,6 +4,7 @@ namespace Curfle\Routing;
 
 use Curfle\Agreements\Container\Container;
 use Curfle\Essence\Application;
+use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
@@ -370,16 +371,22 @@ class Router
      * Returns the middleware by its alias or classname.
      *
      * @param string $alias
-     * @return string
+     * @return Middleware
      * @throws MiddlewareNotFoundException
      */
-    public function getMiddleware(string $alias): string
+    public function getMiddleware(string $alias): Middleware
     {
+        $parts = explode(":", $alias);
+        $alias = $parts[0];
+        $parameters = array_slice($parts, 1);
+
         if (array_key_exists($alias, $this->routeMiddleware))
-            return $this->routeMiddleware[$alias];
+            return $this->container->resolve($this->routeMiddleware[$alias])
+                ->setParameters($parameters);
 
         if (class_exists($alias))
-            return $alias;
+            return $this->container->resolve($alias)
+                ->setParameters($parameters);
 
         throw new MiddlewareNotFoundException("The middleware [$alias] could not be found.");
     }

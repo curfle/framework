@@ -21,7 +21,7 @@ class BCrypt extends PasswordHashAlgorithm implements HashAlgorithm
     protected static function getHashOptions(): array
     {
         return [
-            "cost" => config("hashing.bcyrpt.rounds", 12)
+            "cost" => config("hashing.bcyrpt.rounds", 10)
         ];
     }
 }
