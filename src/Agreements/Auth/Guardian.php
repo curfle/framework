@@ -38,6 +38,15 @@ interface Guardian
     public function setAuthenticatable(?string $authenticatableClass): static;
 
     /**
+     * Attempts a login within the authenticatable class via the ::attempt()
+     * method and returns true on success and false on failure.
+     *
+     * @param array $credentials
+     * @return bool
+     */
+    public function attempt(array $credentials): bool;
+
+    /**
      * Validates a request. Returns true if the request successfully passed all checks.
      * If an authenticatable was provided, it gets instanciated and made available under
      * the Auth facade. If the validation fails, false will be returned.

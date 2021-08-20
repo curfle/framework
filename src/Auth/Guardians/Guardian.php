@@ -6,6 +6,7 @@ use Curfle\Agreements\Auth\Guardian as GuardianAgreement;
 use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
+use Curfle\Support\Exceptions\Auth\MissingAuthenticatableException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 
 abstract class Guardian implements GuardianAgreement
@@ -79,6 +80,28 @@ abstract class Guardian implements GuardianAgreement
     public function authenticatableClass(): ?string
     {
         return $this->authenticatableClass;
+    }
+
+    /**
+     * Returns wether an authenticatable is available.
+     *
+     * @return bool
+     */
+    public function hasAuthenticatable(): bool
+    {
+        return $this->authenticatableClass !== null;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws MissingAuthenticatableException
+     */
+    public function attempt(array $credentials): bool
+    {
+        if(!$this->hasAuthenticatable())
+            throw new MissingAuthenticatableException("No authenticatable class was provided.");
+
+        return call_user_func("{$this->authenticatableClass()}::attempt", $credentials);
     }
 
     /**

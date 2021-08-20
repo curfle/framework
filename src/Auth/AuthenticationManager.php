@@ -105,7 +105,7 @@ class AuthenticationManager
      * @param string $name
      * @return $this
      */
-    public function setAuthenticatedUser(Authenticatable $user, string $name = "default") : static
+    public function login(Authenticatable $user, string $name = "default") : static
     {
         $this->authenticatedUsers[$name] = $user;
         return $this;

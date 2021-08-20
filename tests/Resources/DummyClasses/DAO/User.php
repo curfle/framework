@@ -2,7 +2,7 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
-use Curfle\Auth\Authenticatable;
+use Curfle\DAO\AuthenticatableModel;
 use Curfle\DAO\Relationships\ManyToManyRelationship;
 use Curfle\DAO\Relationships\OneToManyRelationship;
 use Curfle\DAO\Relationships\OneToOneRelationship;
@@ -12,7 +12,7 @@ use Curfle\DAO\Relationships\OneToOneRelationship;
  * @property-read Login[] $logins
  * @property-read Role[] $roles
  */
-class User extends \Curfle\DAO\Model implements Authenticatable
+class User extends AuthenticatableModel
 {
 
     public int $id;
@@ -72,13 +72,5 @@ class User extends \Curfle\DAO\Model implements Authenticatable
     public function roles(): ManyToManyRelationship
     {
         return $this->belongsToMany(Role::class, "user_role");
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function fromIdentifier(mixed $identifier): ?static
-    {
-        return self::get($identifier);
     }
 }

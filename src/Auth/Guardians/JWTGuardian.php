@@ -32,8 +32,8 @@ class JWTGuardian extends Guardian
                 $success = JWT::valid($token);
 
                 // add authenticated user if JWT is valid
-                if($success){
-                    Auth::setAuthenticatedUser(
+                if($success && $this->hasAuthenticatable()){
+                    Auth::login(
                         call_user_func(
                             "{$this->authenticatableClass()}::fromIdentifier",
                             JWT::decode($token)["sub"] ?? null
