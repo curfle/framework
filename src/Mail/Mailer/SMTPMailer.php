@@ -70,6 +70,7 @@ class SMTPMailer implements Mailer
         $this->PHPMailer = new PHPMailer();
 
         $this->PHPMailer->isSMTP();
+        $this->PHPMailer->CharSet = "UTF-8";
         $this->PHPMailer->Host = $this->host;
         $this->PHPMailer->SMTPAuth = true;
         $this->PHPMailer->Username = $this->username;
