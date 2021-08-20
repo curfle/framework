@@ -148,4 +148,16 @@ class AuthenticatableModelTest extends TestCase
             "password" => "other_password"
         ]));
     }
+
+    /**
+     * Tests the ::attempt() function.
+     */
+    public function testAttemptFailureNoAccount()
+    {
+        $this->assertCount(0, User::all());
+        $this->assertFalse(User::attempt([
+            "email" => "jane.doe@example.dd",
+            "password" => "other_password"
+        ]));
+    }
 }
