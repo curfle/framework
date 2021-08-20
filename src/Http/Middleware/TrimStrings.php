@@ -12,7 +12,8 @@ class TrimStrings extends Middleware
     public function handle(Request $request)
     {
         foreach($request->inputs() as $name => $input){
-            $request->addInput($name, trim($input));
+            if(is_string($input))
+                $request->addInput($name, trim($input));
         }
     }
 }
