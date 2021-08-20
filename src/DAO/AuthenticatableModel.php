@@ -41,12 +41,12 @@ abstract class AuthenticatableModel extends Model implements Authenticatable
     public static function attempt(mixed $credentials): bool
     {
         // get username
-        $username = $credentials[self::getUsernameColumnForAuth()] ?? null;
-        $password = $credentials[self::getPasswordColumnForAuth()] ?? null;
+        $username = $credentials[static::getUsernameColumnForAuth()] ?? null;
+        $password = $credentials[static::getPasswordColumnForAuth()] ?? null;
 
         // obtain hash from model
-        $hash = self::where(self::getUsernameColumnForAuth(), $username)
-            ->valueAs(self::getPasswordColumnForAuth(), "hash")
+        $hash = static::where(static::getUsernameColumnForAuth(), $username)
+            ->valueAs(static::getPasswordColumnForAuth(), "hash")
             ->first()["hash"] ?? null;
 
         // exit if no matching user was found
