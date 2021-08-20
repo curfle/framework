@@ -680,7 +680,10 @@ class SQLQueryBuilder
         $this->_update = $data;
 
         foreach ($this->_update as &$value) {
-            if ($value === null) $value = "NULL";
+            if (is_bool($value))
+                $value = $value ? 1 : 0;
+            if ($value === null)
+                $value = "NULL";
             else {
                 $value = $this->connector->escape($value);
                 if (!is_numeric($value))
