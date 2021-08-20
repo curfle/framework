@@ -77,6 +77,9 @@ class SQLiteConnector implements SQLConnectorInterface
                 $this->encryptionKey,
             );
 
+            // enable errors to be reported
+            $this->connection->enableExceptions(true);
+
             if ($this->foreign_keys === true)
                 $this->connection->query("PRAGMA foreign_keys=ON");
         }
