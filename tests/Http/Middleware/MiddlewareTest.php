@@ -119,7 +119,7 @@ class MiddlewareTest extends TestCase
 
         // check if header has been set
         $this->assertEquals(
-            ["Access-Control-Allow-Origin" => "*"],
+            ["Access-Control-Allow-Origin" => "*", "Access-Control-Allow-Headers" => "*"],
             $response->getHeaders()
         );
     }
