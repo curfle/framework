@@ -7,6 +7,7 @@ use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
+use Curfle\View\View;
 
 class Route
 {
@@ -200,8 +201,13 @@ class Route
         // else set the return value as content
         if($response === null)
             $response = $this->container["response"];
-        else if (!$response instanceof Response)
-            $response = $this->container["response"]->setContent($response);
+        else if (!$response instanceof Response){
+            if($response instanceof View)
+                $response = $this->container["response"]->setContent($response->render());
+            else
+                $response = $this->container["response"]->setContent($response);
+        }
+
 
         return $response;
     }

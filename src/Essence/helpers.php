@@ -4,6 +4,8 @@ use Curfle\Config\Repository;
 use Curfle\Container\Container;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
+use Curfle\View\View;
+use Curfle\View\ViewFactory;
 
 if (!function_exists('abort')) {
     /**
@@ -47,6 +49,23 @@ if (!function_exists('app_path')) {
     function app_path(string $path = ""): string
     {
         return app()->path($path);
+    }
+}
+
+if (!function_exists('asset')) {
+    /**
+     * Get the path to an asset file.
+     *
+     * @param string $path
+     * @return string
+     */
+    function asset(string $path): string
+    {
+        $url = env(
+            "ASSET_URL",
+            env("ASSET_FOLDER", "assets")
+        );
+        return "/" . trim($url, "/") . "/" . ltrim($path, "/");
     }
 }
 
@@ -121,7 +140,7 @@ if (!function_exists('resource_path')) {
     }
 }
 
-if (! function_exists('storage_path')) {
+if (!function_exists('storage_path')) {
     /**
      * Get the path to the storage folder.
      *
@@ -130,6 +149,42 @@ if (! function_exists('storage_path')) {
      */
     function storage_path(string $path = ""): string
     {
-        return app('path.storage').($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return app('path.storage') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+}
+
+if (!function_exists('url')) {
+    /**
+     * Get the path to an asset file.
+     *
+     * @param string $path
+     * @return string
+     */
+    function url(string $path): string
+    {
+        $url = env("APP_URL", null);
+        $path = implode(
+            "/",
+            array_map(
+                "urlencode",
+                explode("/", $path)
+            )
+        );
+        return trim($url, "/") . "/" . ltrim($path, "/");
+    }
+}
+
+
+if (!function_exists('view')) {
+    /**
+     * Get the path to an asset file.
+     *
+     * @param string $view
+     * @param array $data
+     * @return View
+     */
+    function view(string $view, array $data = []): View
+    {
+        return app(ViewFactory::class)->make($view, $data);
     }
 }
