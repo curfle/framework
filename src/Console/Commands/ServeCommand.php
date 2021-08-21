@@ -36,7 +36,8 @@ class ServeCommand extends Command
                 $this->flush();
 
                 // start server
-                exec("php -S $address $serverFile &>/dev/null");
+                $publicPath = $this->app->publicPath();
+                exec("php -S $address -t $publicPath $serverFile &>/dev/null");
             })->where("address", '([a-z]|[A-Z]|[0-9])+\/?(\:([0-9])+)?\/?');
     }
 }
