@@ -150,6 +150,19 @@ class Router
     }
 
     /**
+     * Register a new route within the given methods with the router.
+     *
+     * @param array $methods
+     * @param string $uri
+     * @param callable|array|string|null $action
+     * @return Route
+     */
+    public function methods(array $methods, string $uri, callable|array|string $action = null): Route
+    {
+        return $this->addRoute($methods, $uri, $action);
+    }
+
+    /**
      * Register a new route responding to all verbs.
      *
      * @param string $uri

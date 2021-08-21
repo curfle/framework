@@ -10,6 +10,7 @@ namespace Curfle\Support\Facades;
  * @method static \Curfle\Routing\Route patch(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route post(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route put(string $uri, array|string|callable|null $action = null)
+ * @method static \Curfle\Routing\Route methods(array $methods, string $uri, callable|array|string $action = null)
  * @method static \Curfle\Routing\Route redirect(string $uri, string $target, int $code = 302)
  * @method static \Curfle\Routing\Router prefix(string $prefix)
  * @method static \Curfle\Routing\Router middleware(string $middleware)
@@ -20,6 +21,17 @@ namespace Curfle\Support\Facades;
  */
 class Route extends Facade
 {
+    /**
+     * Basic HTTP methods.
+     */
+    const GET = "GET";
+    const HEAD = "HEAD";
+    const POST = "POST";
+    const PUT = "PUT";
+    const PATCH = "PATCH";
+    const DELETE = "DELETE";
+    const OPTIONS = "OPTIONS";
+
     /**
      * Get the registered name of the component.
      *
