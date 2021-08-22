@@ -4,7 +4,7 @@ namespace Curfle\FileSystem;
 
 use Curfle\Support\ServiceProvider;
 
-class FilesystemServiceProvider extends ServiceProvider
+class FileSystemServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
@@ -24,7 +24,7 @@ class FilesystemServiceProvider extends ServiceProvider
     protected function registerNativeFilesystem()
     {
         $this->app->singleton('files', function () {
-            return new Filesystem;
+            return new FileSystem();
         });
     }
 }

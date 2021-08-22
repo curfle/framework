@@ -74,9 +74,9 @@ class Route
      */
     public function __construct(array|string $methods, string $uri, mixed $action)
     {
-        $this->uri = $uri;
-        $this->methods = is_array($methods) ? $methods : [$methods];
-        $this->action = $action;
+        $this->setUri($uri)
+            ->setMethods(is_array($methods) ? $methods : [$methods])
+            ->setAction($action);
     }
 
     /**
@@ -229,6 +229,45 @@ class Route
     public function setRouter(Router $router): static
     {
         $this->router = $router;
+        return $this;
+    }
+
+    /**
+     * Sets the routes' uri.
+     *
+     * @param string $uri
+     * @return Route
+     */
+    public function setUri(string $uri): static
+    {
+        // remove the trailing slash from url if it is not the web root.
+        // trailing slashs should only be used to inditace a presence of
+        // a directory, which is not the case with routes.
+        $this->uri = $uri === "/" ? "/" : rtrim($uri, "/");
+        return $this;
+    }
+
+    /**
+     * Sets the routes' methods.
+     *
+     * @param array $methods
+     * @return Route
+     */
+    public function setMethods(array $methods): static
+    {
+        $this->methods = $methods;
+        return $this;
+    }
+
+    /**
+     * Sets the routes' actions.
+     *
+     * @param mixed $action
+     * @return Route
+     */
+    public function setAction(mixed $action): static
+    {
+        $this->action = $action;
         return $this;
     }
 }
