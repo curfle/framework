@@ -21,21 +21,21 @@ class DbCommand extends Command
             ->description("Starts a new database CLI session")
             ->resolver(function (Input $input) {
                 // load connection from parameter and connect
-                $connector = DB::connector($input->namedArgument("connector"));
                 $connectorName = $input->namedArgument("connector") ?? "database";
+                $connector = DB::connector($input->namedArgument("connector"));
                 $connector->connect();
 
-                while(true){
+                while (true) {
                     $query = $this->prompt("$connectorName> ");
 
                     // exit comdition
-                    if(in_array($query, ["exit", "exit;", "quit", "quit;"]))
+                    if (in_array($query, ["exit", "exit;", "quit", "quit;"]))
                         break;
 
-                    try{
+                    try {
                         $result = $connector->rows($query);
                         var_dump($result);
-                    }catch (\Exception $e){
+                    } catch (\Exception $e) {
                         $this->error($e->getMessage())->flush();
                     }
                 }

@@ -185,7 +185,9 @@ class Command
                 "",
                 substr($match[0], 1, -1)
             );
-            $parameters[$name] = trim($matches[$i + 1][0][0]);
+            $value = trim($matches[$i + 1][0][0]);
+            if ($value !== "")
+                $parameters[$name] = $value;
         }
 
         // cache params
