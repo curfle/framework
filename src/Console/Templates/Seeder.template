@@ -1,0 +1,17 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Database\Seeding\Seeder;
+
+class DummyClass extends Seeder
+{
+
+    /**
+     * Runs the seeder.
+     */
+    public function run(): void
+    {
+        // TODO: Implement run() method.
+    }
+}
