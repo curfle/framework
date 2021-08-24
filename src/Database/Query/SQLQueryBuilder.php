@@ -446,6 +446,8 @@ class SQLQueryBuilder
             $sql .= "VALUES ";
             $sql .= implode(", ", array_map(function ($insert) use ($this_) {
                     return "(" . implode(", ", array_map(function ($value) use ($this_) {
+                            if (is_bool($value))
+                                $value = $value ? 1 : 0;
                             if ($value === null)
                                 return "NULL";
                             $value = $this->connector->escape($value);
@@ -461,6 +463,11 @@ class SQLQueryBuilder
             $sql .= "$this->_table ";
             // set
             $sql .= "SET " . implode(", ", array_map(function ($value, $key) {
+                    if (is_bool($value))
+                        $value = $value ? 1 : 0;
+                    if ($value === null)
+                        return "NULL";
+                    $value = $this->connector->escape($value);
                     return "$key=$value";
                 }, $this->_update, array_keys($this->_update))) . " ";
             // where
