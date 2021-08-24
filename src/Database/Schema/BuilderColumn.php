@@ -184,9 +184,11 @@ class BuilderColumn implements BuilderColumnAgreement
      */
     public function defaultCurrent(): static
     {
-        $this->hasDefault = true;
-        if($this->type === BuilderColumn::TYPE_TIMESTAMP)
+        if($this->type === BuilderColumn::TYPE_TIMESTAMP
+            || $this->type === BuilderColumn::TYPE_DATETIME){
+            $this->hasDefault = true;
             $this->useCurrent = true;
+        }
         return $this;
     }
 
@@ -195,9 +197,11 @@ class BuilderColumn implements BuilderColumnAgreement
      */
     public function defaultCurrentOnUpdate(): static
     {
-        $this->hasDefault = true;
-        if($this->type === BuilderColumn::TYPE_TIMESTAMP)
+        if($this->type === BuilderColumn::TYPE_TIMESTAMP
+            || $this->type === BuilderColumn::TYPE_DATETIME){
+            $this->hasDefault = true;
             $this->useCurrentOnUpdate = true;
+        }
         return $this;
     }
 
