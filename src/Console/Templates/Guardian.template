@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Auth\Guardians\Guardian;
+use Curfle\Http\Request;
+
+class DummyClass extends Guardian
+{
+    /**
+     * @inheritDoc
+     */
+    protected array $supported = [
+        Guardian::DRIVER_BEARER,
+        Guardian::DRIVER_SESSION
+    ];
+
+    /**
+     * @inheritDoc
+     */
+    public function validate(Request $request): bool
+    {
+        // TODO: Implement validate() method.
+    }
+}
