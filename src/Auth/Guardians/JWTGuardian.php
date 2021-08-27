@@ -27,19 +27,13 @@ class JWTGuardian extends Guardian
         // validate against bearer authentication
         if ($success === null && $this->supports(self::DRIVER_BEARER)) {
             $token = $request->header("Authorization");
-            if($token !== null) {
+            if ($token !== null) {
                 $token = str_replace("Bearer ", "", $token);
                 $success = JWT::valid($token);
 
                 // add authenticated user if JWT is valid
-                if($success && $this->hasAuthenticatable()){
-                    Auth::login(
-                        call_user_func(
-                            "{$this->authenticatableClass()}::fromIdentifier",
-                            JWT::decode($token)["sub"] ?? null
-                        )
-                    );
-                }
+                if ($success)
+                    $this->login(JWT::decode($token)["sub"] ?? null);
             }
         }
 

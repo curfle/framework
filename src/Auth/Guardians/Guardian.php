@@ -8,6 +8,7 @@ use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
 use Curfle\Support\Exceptions\Auth\MissingAuthenticatableException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
+use Curfle\Support\Facades\Auth;
 
 abstract class Guardian implements GuardianAgreement
 {
@@ -49,7 +50,7 @@ abstract class Guardian implements GuardianAgreement
      */
     public function addDriver(string $name): static
     {
-        if(!in_array($name, $this->supported))
+        if (!in_array($name, $this->supported))
             throw new DriverNotSupportedException("The driver [$name] is not supported by this guard.");
         $this->drivers[] = $name;
         return $this;
@@ -98,10 +99,27 @@ abstract class Guardian implements GuardianAgreement
      */
     public function attempt(array $credentials): bool
     {
-        if(!$this->hasAuthenticatable())
+        if (!$this->hasAuthenticatable())
             throw new MissingAuthenticatableException("No authenticatable class was provided.");
 
         return call_user_func("{$this->authenticatableClass()}::attempt", $credentials);
+    }
+
+    /**
+     * Logs the authenticatable in.
+     *
+     * @param mixed $id
+     */
+    protected function login(mixed $id)
+    {
+        if ($this->hasAuthenticatable()) {
+            Auth::login(
+                call_user_func(
+                    "{$this->authenticatableClass()}::fromIdentifier",
+                    $id
+                )
+            );
+        }
     }
 
     /**
