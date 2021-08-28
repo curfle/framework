@@ -81,7 +81,7 @@ class JWT
         $payloadParsed = JSON::parse(Base64::urlDecode($payload));
 
         // check for expiration timestamp if wanted and possible
-        if ($checkExpIfAvailable && array_key_exists("exp", $payloadParsed))
+        if ($checkExpIfAvailable && $payloadParsed !== null && array_key_exists("exp", $payloadParsed))
             if ($payloadParsed["exp"] < time())
                 return false;
 
@@ -101,11 +101,11 @@ class JWT
      * Returns the tokens' content.
      *
      * @param string $token
-     * @return array
-     * @throws SecretNotPresentException
+     * @return array|null
      * @throws IncorrectJWTFormatException
+     * @throws SecretNotPresentException
      */
-    public static function decode(string $token): array
+    public static function decode(string $token): array|null
     {
         $secret = env("SECRET", null);
 
@@ -126,10 +126,11 @@ class JWT
      * Returns the tokens' content.
      *
      * @param string $token
-     * @return array
+     * @return array|null
+     * @throws IncorrectJWTFormatException
      * @throws SecretNotPresentException
      */
-    public static function decodeHeader(string $token): array
+    public static function decodeHeader(string $token): array|null
     {
         $secret = env("SECRET", null);
 
@@ -137,7 +138,11 @@ class JWT
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
 
         // split the token
-        [$header, $payload, $signature] = explode(".", $token);
+        $parts = explode(".", $token);
+        if (count($parts) !== 3)
+            throw new IncorrectJWTFormatException("The JWT provided is not formatted correctly.");
+
+        [$header, $payload, $signature] = $parts;
 
         return JSON::parse(Base64::urlDecode($header));
     }

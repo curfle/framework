@@ -9,9 +9,9 @@ class JSON
      *
      * @param string $json
      * @param bool $toArray
-     * @return array|object
+     * @return array|object|null
      */
-    public static function parse(string $json, bool $toArray = true): array|object
+    public static function parse(string $json, bool $toArray = true): array|object|null
     {
         return json_decode($json, $toArray);
     }

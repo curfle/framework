@@ -4,6 +4,7 @@ namespace Curfle\Auth\Guardians;
 
 use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
+use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Curfle\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class JWTGuardian extends Guardian
 
     /**
      * @inheritDoc
-     * @throws SecretNotPresentException
+     * @throws SecretNotPresentException|IncorrectJWTFormatException
      */
     public function validate(Request $request): bool
     {
