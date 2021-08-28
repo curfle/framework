@@ -2,7 +2,8 @@
 
 namespace Curfle\Support\Env;
 
-class Parser{
+class Parser
+{
 
     /**
      * Parses a .env formatted string[] and returns the according config array.
@@ -27,7 +28,14 @@ class Parser{
             $name = trim($name);
             $value = trim($value);
 
-            if(!array_key_exists($name, $result)){
+            // removes quotes like ""
+            if (str_starts_with($value, '"'))
+                $value = substr($value, 1, (strpos($value, '"', 1) ?: strlen($value) + 1) - 1);
+            // else use until first space or #
+            else
+                $value = explode(" ", explode("#", $value)[0])[0];
+
+            if (!array_key_exists($name, $result)) {
                 $result[$name] = $value;
             }
         }
