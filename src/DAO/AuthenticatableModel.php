@@ -30,6 +30,14 @@ abstract class AuthenticatableModel extends Model implements Authenticatable
     /**
      * @inheritDoc
      */
+    public function getIdentifier(): mixed
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public static function fromIdentifier(mixed $identifier): ?static
     {
         return self::get($identifier);
@@ -49,7 +57,7 @@ abstract class AuthenticatableModel extends Model implements Authenticatable
             ->valueAs(static::getPasswordColumnForAuth(), "hash")
             ->first()["hash"] ?? null;
 
-        // exit if no matching user was found
+        // return false if no matching user was found
         if($hash === null)
             return false;
 

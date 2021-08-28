@@ -4,6 +4,14 @@ namespace Curfle\Auth;
 
 interface Authenticatable
 {
+
+    /**
+     * Returns the identifier of the object.
+     *
+     * @return mixed
+     */
+    public function getIdentifier(): mixed;
+
     /**
      * Returns an instance by an identifier.
      *

@@ -3,6 +3,7 @@
 namespace Curfle\Auth\Guardians;
 
 use Curfle\Agreements\Auth\Guardian as GuardianAgreement;
+use Curfle\Auth\Authenticatable;
 use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
@@ -35,6 +36,13 @@ abstract class Guardian implements GuardianAgreement
      * @var ?string
      */
     protected ?string $authenticatableClass = null;
+
+    /**
+     * The authenticated user that was authenticated by the guardian.
+     *
+     * @var Authenticatable|null
+     */
+    protected ?Authenticatable $authenticatedUser = null;
 
     /**
      * @inheritDoc
@@ -78,7 +86,7 @@ abstract class Guardian implements GuardianAgreement
      *
      * @return string|null
      */
-    public function authenticatableClass(): ?string
+    protected function authenticatableClass(): ?string
     {
         return $this->authenticatableClass;
     }
@@ -88,7 +96,7 @@ abstract class Guardian implements GuardianAgreement
      *
      * @return bool
      */
-    public function hasAuthenticatable(): bool
+    protected function hasAuthenticatable(): bool
     {
         return $this->authenticatableClass !== null;
     }
@@ -106,20 +114,32 @@ abstract class Guardian implements GuardianAgreement
     }
 
     /**
-     * Logs the authenticatable in.
-     *
-     * @param mixed $id
+     * @inheritDoc
      */
-    protected function login(mixed $id)
+    public function login(mixed $id)
     {
         if ($this->hasAuthenticatable()) {
-            Auth::login(
-                call_user_func(
-                    "{$this->authenticatableClass()}::fromIdentifier",
-                    $id
-                )
+            $this->authenticatedUser = call_user_func(
+                "{$this->authenticatableClass()}::fromIdentifier",
+                $id
             );
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function check(): bool
+    {
+        return $this->authenticatedUser !== null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function user(): ?Authenticatable
+    {
+        return $this->authenticatedUser;
     }
 
     /**

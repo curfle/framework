@@ -25,13 +25,6 @@ class AuthenticationManager
     private ?array $guardians = null;
 
     /**
-     * All authenticated users.
-     *
-     * @var Authenticatable[]
-     */
-    private array $authenticatedUsers = [];
-
-    /**
      * @param Application $app
      */
     public function __construct(Application $app)
@@ -96,30 +89,6 @@ class AuthenticationManager
     private function registerGuardian(string $name, Guardian $guardian)
     {
         $this->guardians[$name] = $guardian;
-    }
-
-    /**
-     * Adds an authenticated user.
-     *
-     * @param Authenticatable $user
-     * @param string $name
-     * @return $this
-     */
-    public function login(Authenticatable $user, string $name = "default") : static
-    {
-        $this->authenticatedUsers[$name] = $user;
-        return $this;
-    }
-
-    /**
-     * Returns an authenticated user.
-     *
-     * @param string $name
-     * @return ?Authenticatable
-     */
-    public function user(string $name = "default") : ?Authenticatable
-    {
-        return $this->authenticatedUsers[$name] ?? null;
     }
 
     /**
