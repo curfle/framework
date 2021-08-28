@@ -70,7 +70,7 @@ class Env
             $var = substr($match[0], 1);
             $index = $match[1];
             // check if vraible is not an escaped dollar sign
-            if ($index > 0 && $value[$index - 1] !== "\\") {
+            if ($index == 0 || ($index > 0 && $value[$index - 1] !== "\\")) {
                 // get variable value
                 $varValue = static::get($var, "");
                 // replace in string
