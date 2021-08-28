@@ -7,7 +7,7 @@ use Curfle\Auth\Authenticatable;
 use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
-use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
+use Curfle\Support\Exceptions\Auth\MissingAuthenticatableException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Curfle\Support\Facades\Auth;
 
@@ -103,12 +103,12 @@ abstract class Guardian implements GuardianAgreement
 
     /**
      * @inheritDoc
-     * @throws IncorrectJWTFormatException
+     * @throws MissingAuthenticatableException
      */
     public function attempt(array $credentials): bool
     {
         if (!$this->hasAuthenticatable())
-            throw new IncorrectJWTFormatException("No authenticatable class was provided.");
+            throw new MissingAuthenticatableException("No authenticatable class was provided.");
 
         return call_user_func("{$this->authenticatableClass()}::attempt", $credentials);
     }
