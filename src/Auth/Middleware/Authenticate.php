@@ -8,7 +8,7 @@ use Curfle\Container\Container;
 use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\GuardianNotFoundException;
-use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstance;
+use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstanceException;
 use Curfle\Support\Exceptions\Http\Dispatchable\HttpAccessDeniedException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;

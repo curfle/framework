@@ -3,6 +3,7 @@
 namespace Curfle\Auth\JWT;
 
 use Curfle\Hash\Algorithm\HMAC;
+use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Curfle\Utilities\Base64;
 use Curfle\Utilities\JSON;
@@ -102,16 +103,21 @@ class JWT
      * @param string $token
      * @return array
      * @throws SecretNotPresentException
+     * @throws IncorrectJWTFormatException
      */
     public static function decode(string $token): array
     {
         $secret = env("SECRET", null);
 
         if ($secret === null)
-            throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
+            throw new SecretNotPresentException("The SECRET property is not defined in your .env file.");
 
         // split the token
-        [$header, $payload, $signature] = explode(".", $token);
+        $parts = explode(".", $token);
+        if (count($parts) !== 3)
+            throw new IncorrectJWTFormatException("The JWT provided is not formatted correctly.");
+
+        [$header, $payload, $signature] = $parts;
 
         return JSON::parse(Base64::urlDecode($payload));
     }

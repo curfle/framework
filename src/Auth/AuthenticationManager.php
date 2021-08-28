@@ -5,7 +5,7 @@ namespace Curfle\Auth;
 use Curfle\Agreements\Auth\Guardian;
 use Curfle\Essence\Application;
 use Curfle\Support\Exceptions\Auth\GuardianNotFoundException;
-use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstance;
+use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstanceException;
 
 class AuthenticationManager
 {
@@ -37,7 +37,7 @@ class AuthenticationManager
      *
      * @param string|null $name
      * @return Guardian
-     * @throws ProvidedGuardianNotGuardianInstance
+     * @throws ProvidedGuardianNotGuardianInstanceException
      * @throws GuardianNotFoundException
      */
     public function guardian(string $name = null): Guardian
@@ -54,7 +54,7 @@ class AuthenticationManager
     }
 
     /**
-     * @throws ProvidedGuardianNotGuardianInstance
+     * @throws ProvidedGuardianNotGuardianInstanceException
      */
     private function loadGuardians()
     {
@@ -66,7 +66,7 @@ class AuthenticationManager
             $instance = $this->app->resolve($classname);
 
             if (!$instance instanceof Guardian)
-                throw new ProvidedGuardianNotGuardianInstance("The created instance of the provided guardian classname [$classname] is not an instance of Curfle\Agreements\Auth\Guardian.");
+                throw new ProvidedGuardianNotGuardianInstanceException("The created instance of the provided guardian classname [$classname] is not an instance of Curfle\Agreements\Auth\Guardian.");
 
             // add drivers to guardian
             foreach ($guardian["drivers"] as $driver)
@@ -98,7 +98,7 @@ class AuthenticationManager
      * @param array $parameters
      * @return mixed
      * @throws GuardianNotFoundException
-     * @throws ProvidedGuardianNotGuardianInstance
+     * @throws ProvidedGuardianNotGuardianInstanceException
      */
     public function __call(string $method, array $parameters)
     {
