@@ -34,7 +34,9 @@ class DbCommand extends Command
 
                     try {
                         $result = $connector->rows($query);
-                        var_dump($result);
+                        $content = str_replace("\n        ", "\n    ", print_r($result, true));
+                        $this->write($content, false);
+                        $this->flush();
                     } catch (\Exception $e) {
                         $this->error($e->getMessage())->flush();
                     }
