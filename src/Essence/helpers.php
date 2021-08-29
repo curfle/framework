@@ -2,6 +2,7 @@
 
 use Curfle\Config\Repository;
 use Curfle\Container\Container;
+use Curfle\Http\Response;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Curfle\View\View;
@@ -124,6 +125,24 @@ if (!function_exists('env')) {
     function env(string $key, mixed $default = null): mixed
     {
         return Env::get($key, $default);
+    }
+}
+
+if (!function_exists('redirect')) {
+    /**
+     * Sets the redirect header. If no protocol is given, the url gets prefixed with the
+     * applications' url.
+     *
+     * @param string $path
+     * @param int $code
+     * @return Response
+     */
+    function redirect(string $path, int $code = 302): Response
+    {
+        return app("response")
+            ->setStatusCode($code)
+            ->setHeader("Location", str_contains($path, "://") ? $path : url($path))
+            ->setContent("");
     }
 }
 
