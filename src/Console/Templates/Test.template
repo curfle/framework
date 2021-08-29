@@ -1,0 +1,19 @@
+<?php
+
+namespace DummyNamespace;
+
+use Tests\TestCase;
+
+class DummyClass extends TestCase
+{
+    /**
+     * A basic test example.
+     *
+     * @return void
+     */
+    public function test_example()
+    {
+        $app = $this->createApplication();
+        $this->assertTrue($app->isBooted());
+    }
+}

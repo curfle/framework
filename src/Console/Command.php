@@ -177,15 +177,16 @@ class Command
 
         // sort where conditions in order of string
         $whereMatches = [];
-        $parameterRegex = '/{([a-z]|[A-Z]|[0-9])*\??}/m';
+        $parameterRegex = '/{(-|[a-z]|[A-Z]|[0-9])*\??}/m';
         preg_match_all($parameterRegex, $this->signature, $whereMatches, PREG_OFFSET_CAPTURE);
+
         foreach ($whereMatches[0] as $i => $match) {
             $name = str_replace(
                 "?",
                 "",
                 substr($match[0], 1, -1)
             );
-            $value = trim($matches[$i + 1][0][0]);
+            $value = trim($matches[3 * $i + 1][0][0]);
             if ($value !== "")
                 $parameters[$name] = $value;
         }

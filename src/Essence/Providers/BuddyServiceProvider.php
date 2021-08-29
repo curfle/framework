@@ -13,6 +13,7 @@ use Curfle\Console\Commands\MakeMigrationCommand;
 use Curfle\Console\Commands\MakeModelCommand;
 use Curfle\Console\Commands\MakeSecretCommand;
 use Curfle\Console\Commands\MakeSeederCommand;
+use Curfle\Console\Commands\MakeTestCommand;
 use Curfle\Console\Commands\MigrateCommand;
 use Curfle\Console\Commands\MigrateFreshCommand;
 use Curfle\Console\Commands\MigrateNextCommand;
@@ -77,6 +78,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // make:seeder
         Buddy::command(new MakeSeederCommand($this->app));
+
+        // make:test
+        Buddy::command(new MakeTestCommand($this->app));
 
         // migrate
         Buddy::command(new MigrateCommand($this->app));
