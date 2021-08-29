@@ -7,6 +7,7 @@ use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
+use Curfle\Support\Exceptions\Routing\MissingControllerInformationException;
 use Curfle\View\View;
 
 class Route
@@ -44,7 +45,7 @@ class Route
      *
      * @var mixed
      */
-    private mixed $action;
+    private array $action;
 
     /**
      * The conditions for the parameter.
@@ -72,7 +73,7 @@ class Route
      * @param string $uri
      * @param mixed $action
      */
-    public function __construct(array|string $methods, string $uri, mixed $action)
+    public function __construct(array|string $methods, string $uri, callable|array|null $action)
     {
         $this->setUri($uri)
             ->setMethods(is_array($methods) ? $methods : [$methods])
@@ -191,11 +192,16 @@ class Route
         }
 
         // resolve the request
-        $response = $this->action;
+        $response = null;
 
-        // call the resolver
-        if (is_callable($this->action))
-            $response = $this->container->call($this->action);
+        // check for controller and resolve via the controller method if a controller is used
+        if($this->action["useController"]){
+            $controller = $this->container->make($this->action["controller"]);
+            $response = $controller->callAction($this->action["method"], $request->inputs());
+        }else{
+            // action contains a callable
+            $response = $this->container->call($this->action["callable"]);
+        }
 
         // if response is null, default it to the apps' singleton response instance,
         // else set the return value as content
@@ -207,7 +213,6 @@ class Route
             else
                 $response = $this->container["response"]->setContent($response);
         }
-
 
         return $response;
     }
@@ -264,10 +269,11 @@ class Route
      *
      * @param mixed $action
      * @return Route
+     * @throws MissingControllerInformationException
      */
-    public function setAction(mixed $action): static
+    public function setAction(callable|array|null $action): static
     {
-        $this->action = $action;
+        $this->action = RouteAction::parse($this->uri, $action);
         return $this;
     }
 }

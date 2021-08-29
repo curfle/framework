@@ -1,0 +1,20 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Routing\Controller;
+
+class DummyClass extends Controller{
+
+    /**
+     * Dummy method. E.g. callable via:
+     *  Route::get("/uri/{id}", [App\Http\Controllers\DummyClass::class, "get"])->where("get", "[0-9]+").
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function get(int $id): mixed
+    {
+        // TODO: implement get() method.
+    }
+}

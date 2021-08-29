@@ -8,14 +8,14 @@ class DummyClass extends Model
 {
 
     public int $id;
-    public string $property;
 
     /**
      * @param string|null $property
      */
-    public function __construct(string $property = null)
+    public function __construct(
+        public ?string $property = null
+    )
     {
-        $this->property = $property;
     }
 
     /**

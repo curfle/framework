@@ -81,10 +81,10 @@ class Router
      * Register a new GET route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function get(string $uri, callable|array|string $action = null): Route
+    public function get(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute(['GET', 'HEAD'], $uri, $action);
     }
@@ -93,10 +93,10 @@ class Router
      * Register a new POST route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function post(string $uri, callable|array|string $action = null): Route
+    public function post(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute('POST', $uri, $action);
     }
@@ -105,10 +105,10 @@ class Router
      * Register a new PUT route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function put(string $uri, callable|array|string $action = null): Route
+    public function put(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute('PUT', $uri, $action);
     }
@@ -117,10 +117,10 @@ class Router
      * Register a new PATCH route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function patch(string $uri, callable|array|string $action = null): Route
+    public function patch(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute('PATCH', $uri, $action);
     }
@@ -129,10 +129,10 @@ class Router
      * Register a new DELETE route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function delete(string $uri, callable|array|string $action = null): Route
+    public function delete(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute('DELETE', $uri, $action);
     }
@@ -141,10 +141,10 @@ class Router
      * Register a new OPTIONS route with the router.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function options(string $uri, callable|array|string $action = null): Route
+    public function options(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute('OPTIONS', $uri, $action);
     }
@@ -154,10 +154,10 @@ class Router
      *
      * @param array $methods
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function methods(array $methods, string $uri, callable|array|string $action = null): Route
+    public function methods(array $methods, string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute($methods, $uri, $action);
     }
@@ -166,10 +166,10 @@ class Router
      * Register a new route responding to all verbs.
      *
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function any(string $uri, callable|array|string $action = null): Route
+    public function any(string $uri, callable|array|null $action = null): Route
     {
         return $this->addRoute(self::$verbs, $uri, $action);
     }
@@ -177,10 +177,10 @@ class Router
     /**
      * Register a new Fallback route with the router.
      *
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    public function fallback(callable|array|string|null $action): Route
+    public function fallback(callable|array|null $action): Route
     {
         $placeholder = 'fallbackPlaceholder';
 
@@ -262,10 +262,10 @@ class Router
      *
      * @param array|string $methods
      * @param string $uri
-     * @param callable|array|string|null $action
+     * @param callable|array|null $action
      * @return Route
      */
-    private function addRoute(array|string $methods, string $uri, callable|array|string|null $action): Route
+    private function addRoute(array|string $methods, string $uri, callable|array|null $action): Route
     {
         // create route and add to route collector
         $route = $this->routeCollector->add(
@@ -292,7 +292,7 @@ class Router
      * @param mixed $action
      * @return Route
      */
-    private function createRoute(array|string $methods, string $uri, mixed $action): Route
+    private function createRoute(array|string $methods, string $uri, callable|array|null $action): Route
     {
         return (new Route($methods, $uri, $action))
             ->setRouter($this)

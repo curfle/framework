@@ -4,6 +4,7 @@ namespace Curfle\Essence\Providers;
 
 use Curfle\Console\Commands\DbCommand;
 use Curfle\Console\Commands\DbSeedCommand;
+use Curfle\Console\Commands\MakeControllerCommand;
 use Curfle\Console\Commands\MakeExceptionCommand;
 use Curfle\Console\Commands\MakeGuardianCommand;
 use Curfle\Console\Commands\MakeMailCommand;
@@ -49,6 +50,9 @@ class BuddyServiceProvider extends ServiceProvider
 
         // list
         Buddy::command(new ListCommand($this->app));
+
+        // make:controller
+        Buddy::command(new MakeControllerCommand($this->app));
 
         // make:exception
         Buddy::command(new MakeExceptionCommand($this->app));
