@@ -74,4 +74,17 @@ class ChronosTest extends TestCase
         $this->assertSame((int)date("i"), $chronos->minute());
         $this->assertSame((int)date("s"), $chronos->second());
     }
+
+    /**
+     * Tests the ::get() function.
+     * @throws Exception
+     */
+    public function testGet()
+    {
+        Chronos::useTimezone("EUROPE/Berlin");
+        $chronos = Chronos::parse("2021-08-07 20:08:07");
+
+        $this->assertSame("2021-08-07 20:08:07", $chronos->get());
+        $this->assertSame("2021-08-07", $chronos->get("Y-m-d"));
+    }
 }

@@ -60,8 +60,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function year(): int
+    public function year(): int
     {
         return (int)$this->format("Y");
     }
@@ -71,8 +70,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function month(): int
+    public function month(): int
     {
         return (int)$this->format("m");
     }
@@ -82,8 +80,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function day(): int
+    public function day(): int
     {
         return (int)$this->format("d");
     }
@@ -93,8 +90,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function hour(): int
+    public function hour(): int
     {
         return (int)$this->format("H");
     }
@@ -104,8 +100,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function minute(): int
+    public function minute(): int
     {
         return (int)$this->format("i");
     }
@@ -115,8 +110,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function second(): int
+    public function second(): int
     {
         return (int)$this->format("s");
     }
@@ -126,8 +120,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function microSecond(): int
+    public function microSecond(): int
     {
         return (int)$this->format("u");
     }
@@ -137,8 +130,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function milliSecond(): int
+    public function milliSecond(): int
     {
         return (int)$this->format("v");
     }
@@ -148,8 +140,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function weekDay(): int
+    public function weekDay(): int
     {
         return (int)$this->format("w");
     }
@@ -159,8 +150,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function yearDay(): int
+    public function yearDay(): int
     {
         return (int)$this->format("z");
     }
@@ -170,8 +160,7 @@ class Chronos extends \DateTime
      *
      * @return int
      */
-    public
-    function week(): int
+    public function week(): int
     {
         return (int)$this->format("W");
     }
@@ -181,9 +170,19 @@ class Chronos extends \DateTime
      *
      * @return bool
      */
-    public
-    function isLeapYear(): bool
+    public function isLeapYear(): bool
     {
         return (bool)$this->format("Y");
+    }
+
+    /**
+     * Returns the formatted timestamp.
+     *
+     * @param string|null $format
+     * @return string
+     */
+    public function get(?string $format = null): string
+    {
+        return $this->format($format ?? "Y-m-d H:i:s");
     }
 }
