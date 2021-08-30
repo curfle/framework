@@ -131,7 +131,7 @@ class MySQLGrammar extends SQLGrammar
                 $column->shouldUseCurrent()
                     ? "CURRENT_TIMESTAMP "
                     : ($column->getDefault() !== null
-                        ? "'{$connector->escape($column->getDefault())}'"
+                        ? ($column->useDefaultRaw() ? $column->getDefault() : "'{$connector->escape($column->getDefault())}'")
                         : "NULL") . " "
                 ) : "") . ($column->shouldUseCurrentOnUpdate() ? "ON UPDATE CURRENT_TIMESTAMP " : "")
             . ($column->isAutoincrement() ? "AUTO_INCREMENT " : "")

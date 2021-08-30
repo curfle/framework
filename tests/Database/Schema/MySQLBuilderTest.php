@@ -93,6 +93,21 @@ class MySQLBuilderTest extends TestCase
     }
 
     /**
+     * test ->default()
+     */
+    public function testCreateWithDefaults()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->string("firstname", 250)->default("Jane", false);
+                $table->string("lastname", 250)->default("substring(MD5(RAND()),1,20)", false);
+            })
+        );
+    }
+
+    /**
      * test ->table()
      */
     public function testTable()

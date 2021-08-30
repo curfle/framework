@@ -35,7 +35,7 @@ interface BuilderColumn
      * @param mixed $value
      * @return BuilderColumn
      */
-    public function default(mixed $value): static;
+    public function default(mixed $value, bool $raw = false): static;
 
     /**
      * Marks the column to use CURRENT_TIMESTAMP as default value.
@@ -96,6 +96,11 @@ interface BuilderColumn
      * @return mixed
      */
     public function getDefault(): mixed;
+
+    /**
+     * @return mixed
+     */
+    public function useDefaultRaw(): bool;
 
     /**
      * @return bool

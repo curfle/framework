@@ -122,7 +122,7 @@ class SQLiteGrammar extends SQLGrammar
                 $column->shouldUseCurrent()
                     ? ($column->getType() === BuilderColumn::TYPE_DATETIME ? "(DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')) " : "CURRENT_TIMESTAMP ")
                     : ($column->getDefault() !== null
-                        ? "'{$connector->escape($column->getDefault())}'"
+                        ? ($column->useDefaultRaw() ? $column->getDefault() : "'{$connector->escape($column->getDefault())}'")
                         : "NULL") . " "
                 ) : "")
             . ($column->isUnique() ? "UNIQUE " : "")

@@ -78,6 +78,13 @@ class BuilderColumn implements BuilderColumnAgreement
     private mixed $default = null;
 
     /**
+     * Determines if the columns' default value will be used without escaping.
+     *
+     * @var bool
+     */
+    private bool $defaultRaw = false;
+
+    /**
      * Indicates that the column should use CURRENT_TIMESTAMP as default value.
      *
      * @var bool
@@ -167,7 +174,7 @@ class BuilderColumn implements BuilderColumnAgreement
     /**
      * @inheritDoc
      */
-    public function default(mixed $value): static
+    public function default(mixed $value, bool $raw = false): static
     {
         $this->hasDefault = true;
 
@@ -176,6 +183,7 @@ class BuilderColumn implements BuilderColumnAgreement
             $value = $value ? 1 : 0;
 
         $this->default = $value;
+        $this->defaultRaw = $raw;
         return $this;
     }
 
@@ -296,6 +304,14 @@ class BuilderColumn implements BuilderColumnAgreement
     public function getDefault(): mixed
     {
         return $this->default;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function useDefaultRaw(): bool
+    {
+        return $this->defaultRaw;
     }
 
     /**
