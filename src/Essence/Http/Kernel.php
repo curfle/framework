@@ -8,6 +8,7 @@ use Curfle\Essence\Application;
 use Curfle\Essence\Bootstrap\BootProviders;
 use Curfle\Essence\Bootstrap\LoadConfiguration;
 use Curfle\Essence\Bootstrap\LoadEnvironmentVariables;
+use Curfle\Essence\Bootstrap\ReformatRequest;
 use Curfle\Essence\Bootstrap\RegisterFacade;
 use Curfle\Essence\Bootstrap\RegisterProviders;
 use Curfle\Essence\Exceptions\ExceptionHandler;
@@ -47,7 +48,8 @@ class Kernel implements KernelAgreement
         LoadConfiguration::class,
         RegisterFacade::class,
         RegisterProviders::class,
-        BootProviders::class
+        BootProviders::class,
+        ReformatRequest::class
     ];
 
     /**
