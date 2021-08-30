@@ -4,6 +4,7 @@ namespace Curfle\Mail;
 
 use Curfle\Agreements\Mail\Mailable as MailableAgreement;
 use Curfle\Mail\MailContent;
+use Curfle\View\View;
 
 abstract class Mailable implements MailableAgreement
 {
@@ -15,11 +16,28 @@ abstract class Mailable implements MailableAgreement
     abstract public function subject() : string;
 
     /**
-     * Returns the HTML formatted content of the email.
+     * Returns the HTML formatted content of the email or a view containing the HTML formatted content.
+     *
+     * @return string|View
+     */
+    abstract public function content() : string|View;
+
+    /**
+     * Transforms the content into a string.
      *
      * @return string
      */
-    abstract public function content() : string;
+    protected function loadContent() : string
+    {
+        // load content
+        $content = $this->content();
+
+        // redenr view if content is a view
+        if($content instanceof View)
+            $content = $content->render();
+
+        return $content;
+    }
 
     /**
      * Returns the content without HTML formatting.
@@ -28,12 +46,19 @@ abstract class Mailable implements MailableAgreement
      */
     public function plainContent() : string
     {
+        // load content
+        $content = $this->loadContent();
+
+        // just use the <body></body>
+        if (preg_match('/<body>(.*)<\/body>/is', $content, $match) == 1)
+            $content = $match[1];
+
         return preg_replace(
             "/\n\s+/",
             "\n",
             rtrim(
                 html_entity_decode(
-                    strip_tags($this->content())
+                    strip_tags($content)
                 )
             )
         );
@@ -56,7 +81,7 @@ abstract class Mailable implements MailableAgreement
     public function build(): MailContent
     {
         return (new MailContent())
-            ->setContent($this->content())
+            ->setContent($this->loadContent())
             ->setPlainContent($this->plainContent())
             ->setSubject($this->subject())
             ->setAttachments($this->attachments());
