@@ -568,7 +568,7 @@ class SQLQueryBuilder
     }
 
     /**
-     * selects the maximum of (a) specific column(s)
+     * selects the maximum of (a) specific, previously selected, column(s)
      * @return mixed
      */
     public function max(): mixed
@@ -584,7 +584,7 @@ class SQLQueryBuilder
     }
 
     /**
-     * selects the minimum of (a) specific column(s)
+     * selects the minimum of (a) specific, previously selected, column(s)
      * @return mixed
      */
     public function min(): mixed
@@ -600,7 +600,7 @@ class SQLQueryBuilder
     }
 
     /**
-     * selects the average of (a) specific column(s)
+     * selects the average of (a) specific, previously selected, column(s)
      * @return mixed
      */
     public function avg(): mixed
@@ -608,6 +608,24 @@ class SQLQueryBuilder
         $this->_fields = array_merge($this->_fields ?? [], array_map(function ($item) {
             return "avg($item)";
         }, func_get_args()));
+
+        if (count($this->_fields) === 1)
+            return $this->connector->field($this->build());
+        else
+            return $this->connector->row($this->build());
+    }
+
+    /**
+     * counts all rows if no parameters are passed. If parameters are given, each count macro is
+     * executed on the according parameter.
+     *
+     * @return mixed
+     */
+    public function count(): mixed
+    {
+        $this->_fields = array_merge($this->_fields ?? [], array_map(function ($item) {
+            return "count($item)";
+        }, empty(func_get_args()) ? ["*"] : func_get_args()));
 
         if (count($this->_fields) === 1)
             return $this->connector->field($this->build());

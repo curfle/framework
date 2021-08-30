@@ -3,9 +3,11 @@
 namespace Curfle\Tests\Database\Query;
 
 use Curfle\Database\Connectors\SQLiteConnector;
+use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\Support\Facades\DB;
 use Curfle\Support\Facades\Facade;
+use Curfle\Support\Facades\Schema;
 use PHPUnit\Framework\TestCase;
 
 class SQLQueryBuilderTest extends TestCase
@@ -15,16 +17,26 @@ class SQLQueryBuilderTest extends TestCase
     {
         // fake application
         $app = new Application();
-        $app->singleton("db", function() {
+        $app->singleton("db", function () {
             return new SQLiteConnector(DB_SQLITE_FILENAME);
         });
         Facade::setFacadeApplication($app);
+
+
+        DB::exec("DROP TABLE IF EXISTS users");
+        DB::exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(100))");
+    }
+
+    protected function tearDown(): void
+    {
+        DB::exec("DROP TABLE IF EXISTS users");
     }
 
     /**
      * Builds simple SELECT query
      */
-    public function testsimpleSelectQuery() {
+    public function testsimpleSelectQuery()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->build(),
@@ -35,7 +47,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests value() and where()
      */
-    public function testValueAndWhereInSelect() {
+    public function testValueAndWhereInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->where("name", "John")
@@ -48,7 +61,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests multiple value() and where()
      */
-    public function testMultipleValueAndWhereInSelect() {
+    public function testMultipleValueAndWhereInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->where("name", "John")
@@ -71,7 +85,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests orderBy() and where()
      */
-    public function testOrderByAndWhereInSelect() {
+    public function testOrderByAndWhereInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->where("email", "john@example.de")
@@ -84,7 +99,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests orderBy() and multiple where()
      */
-    public function testOrderByAndMultipleWhereInSelect() {
+    public function testOrderByAndMultipleWhereInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->where("email", "john@example.de")
@@ -100,7 +116,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests distinct()
      */
-    public function testDistinctInSelect() {
+    public function testDistinctInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->distinct()
@@ -112,7 +129,8 @@ class SQLQueryBuilderTest extends TestCase
     /**
      * tests groupBy()
      */
-    public function testGroupByInSelect() {
+    public function testGroupByInSelect()
+    {
         $this->assertEquals(
             DB::table("users")
                 ->groupBy("registered")
@@ -319,5 +337,68 @@ class SQLQueryBuilderTest extends TestCase
         );
     }
 
+    /**
+     * tests min()
+     */
+    public function testMin()
+    {
+        // insert dummy user
+        for ($i = 0; $i < 2; $i++)
+            DB::table("users")->insert(["name" => "User $i"]);
 
+        $this->assertEquals(
+            1,
+            DB::table("users")->min("id")
+        );
+    }
+
+    /**
+     * tests max()
+     */
+    public function testMax()
+    {
+        // insert dummy user
+        for ($i = 0; $i < 2; $i++)
+            DB::table("users")->insert(["name" => "User $i"]);
+
+        $this->assertEquals(
+            2,
+            DB::table("users")->max("id")
+        );
+    }
+
+    /**
+     * tests avg()
+     */
+    public function testAvg()
+    {
+        // insert dummy user
+        for ($i = 0; $i < 3; $i++)
+            DB::table("users")->insert(["name" => "User $i"]);
+
+        $this->assertEquals(
+            2,
+            DB::table("users")->avg("id")
+        );
+    }
+
+    /**
+     * tests count()
+     */
+    public function testCount()
+    {
+        // insert dummy user
+        for ($i = 0; $i < 3; $i++)
+            DB::table("users")->insert(["name" => $i <= 1 ? "User $i" : null]);
+
+        $this->assertEquals(
+            3,
+            DB::table("users")->count()
+        );
+
+        $this->assertEquals(
+            2,
+            DB::table("users")->count("name")
+        );
+    }
 }

@@ -20,6 +20,7 @@ use ReflectionProperty;
 /**
  * @method static SQLQueryBuilder distinct()
  * @method static SQLQueryBuilder value()
+ * @method static SQLQueryBuilder valueAs(string $value, string $as)
  * @method static SQLQueryBuilder join(string $table, string $columnA, string $operator, string $columnB)
  * @method static SQLQueryBuilder leftJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static SQLQueryBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
@@ -38,11 +39,12 @@ use ReflectionProperty;
  * @method static SQLQueryBuilder limit(int $n)
  * @method static SQLQueryBuilder offset(int $n)
  * @method static string build()
- * @method static ?array first()
- * @method static ?array find($id)
+ * @method static array|null first()
+ * @method static array|null find($id)
  * @method static mixed max()
  * @method static mixed min()
  * @method static mixed avg()
+ * @method static mixed count()
  * @method static bool exists()
  * @method static bool doesntExist()
  *

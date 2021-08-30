@@ -12,7 +12,7 @@ namespace Curfle\Support\Facades;
  * @method static bool dropColumn(string $table, string $column)
  * @method static bool hasTable(string $table)
  *
- * @see \Curfle\Routing\Router
+ * @see \Curfle\Database\Schema\Builder
  */
 class Schema extends Facade
 {
