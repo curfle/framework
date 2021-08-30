@@ -3,6 +3,7 @@
 namespace DummyNamespace;
 
 use Curfle\Mail\Mailable;
+use Curfle\View\View;
 
 class DummyClass extends Mailable
 {
@@ -18,7 +19,7 @@ class DummyClass extends Mailable
     /**
      * @inheritDoc
      */
-    public function content(): string
+    public function content(): string|View
     {
         return "<h1>Hello World!</h1>";
     }
