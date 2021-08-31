@@ -22,7 +22,7 @@ class ServeCommand extends Command
             ->resolver(function (Input $input, FileSystem $files) {
                 // get serving address or default it to "http://localhost:8080"
                 $address = $input->namedArgument("address");
-                if($address === "")
+                if($address === null)
                     $address = "localhost:8080";
 
                 // find the server file
