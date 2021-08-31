@@ -181,12 +181,20 @@ class Command
         preg_match_all($parameterRegex, $this->signature, $whereMatches, PREG_OFFSET_CAPTURE);
 
         foreach ($whereMatches[0] as $i => $match) {
-            $name = str_replace(
-                "?",
-                "",
-                substr($match[0], 1, -1)
+            // get the name of the parameter
+            $name = rtrim(
+                trim($match[0], "{}"),
+                "?"
             );
-            $value = trim($matches[3 * $i + 1][0][0]);
+
+            // get index in matches
+            $index = $i + 1;
+            for ($j = 0; $j < $i; $j++) {
+                $index += substr_count($this->where[array_keys($this->where)[$j]], "(");
+            }
+
+            // set parameter value
+            $value = trim($matches[$index][0][0]);
             if ($value !== "")
                 $parameters[$name] = $value;
         }

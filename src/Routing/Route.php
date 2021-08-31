@@ -72,6 +72,7 @@ class Route
      * @param array|string $methods
      * @param string $uri
      * @param mixed $action
+     * @throws MissingControllerInformationException
      */
     public function __construct(array|string $methods, string $uri, callable|array|null $action)
     {
@@ -121,13 +122,27 @@ class Route
         if (empty($matches[0]))
             return null;
 
+        echo "<pre>";
+        var_dump($matches, $this->where, $uri);
+
         // sort where conditions in order of uri
         $whereMatches = [];
         $parameterRegex = '/{([a-z]|[A-Z]|[0-9])*}/m';
         preg_match_all($parameterRegex, $this->uri, $whereMatches, PREG_OFFSET_CAPTURE);
         foreach ($whereMatches[0] as $i => $match) {
+            // get name of parameter
             $name = substr($match[0], 1, -1);
-            $parameters[$name] = $matches[$i + 1][0][0];
+
+            // get index in matches
+            $index = $i + 1;
+            for ($j = 0; $j < $i; $j++) {
+                $index += substr_count($this->where[array_keys($this->where)[$j]], "(");
+            }
+
+            // set parameter value
+            $value = $matches[$index][0][0];
+            if($value !== "")
+                $parameters[$name] = $value;
         }
 
         // cache params
@@ -195,20 +210,20 @@ class Route
         $response = null;
 
         // check for controller and resolve via the controller method if a controller is used
-        if($this->action["useController"]){
+        if ($this->action["useController"]) {
             $controller = $this->container->make($this->action["controller"]);
             $response = $controller->callAction($this->action["method"], $request->inputs());
-        }else{
+        } else {
             // action contains a callable
             $response = $this->container->call($this->action["callable"]);
         }
 
         // if response is null, default it to the apps' singleton response instance,
         // else set the return value as content
-        if($response === null)
+        if ($response === null)
             $response = $this->container["response"];
-        else if (!$response instanceof Response){
-            if($response instanceof View)
+        else if (!$response instanceof Response) {
+            if ($response instanceof View)
                 $response = $this->container["response"]->setContent($response->render());
             else
                 $response = $this->container["response"]->setContent($response);

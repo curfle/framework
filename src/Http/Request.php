@@ -268,7 +268,7 @@ class Request
      */
     public function input(string $name): mixed
     {
-        return $this->inputs[$name];
+        return $this->inputs[$name] ?? null;
     }
 
     /**
