@@ -20,18 +20,29 @@ class ServeCommand extends Command
         $this->signature("serve {address?}")
             ->description("Serves the application under ")
             ->resolver(function (Input $input, FileSystem $files) {
-                // get serving address or default it to "http://localhost:8080"
+                // get serving address or default it to "http://localhost:PORT"
+                // where "PORT" is the next free port after 8080.
                 $address = $input->namedArgument("address");
-                if($address === null)
-                    $address = "localhost:8080";
+                if ($address === null) {
+                    // find free port
+                    $port = 8080;
+                    $foundPort = false;
+                    while (!$foundPort) {
+                        $connection = @fsockopen('localhost', (string)$port);
+                        $foundPort = !is_resource($connection);
+                        if (!$foundPort)
+                            $port++;
+                    }
+                    $address = "localhost:$port";
+                }
 
                 // find the server file
                 $serverFile = $this->app->basePath("server.php");
-                if(!$files->exists($serverFile))
+                if (!$files->exists($serverFile))
                     throw new FileNotFoundException("The server.php in the projects' base directory could not be found.");
 
                 // inform user
-                $this->success("Curfle development server started at: http://$address");
+                $this->success("Starting Curfle development server at: http://$address");
                 $this->warning("Press Ctrl-C to exit...");
                 $this->flush();
 
