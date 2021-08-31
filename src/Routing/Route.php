@@ -122,9 +122,6 @@ class Route
         if (empty($matches[0]))
             return null;
 
-        echo "<pre>";
-        var_dump($matches, $this->where, $uri);
-
         // sort where conditions in order of uri
         $whereMatches = [];
         $parameterRegex = '/{([a-z]|[A-Z]|[0-9])*}/m';
