@@ -446,9 +446,9 @@ class FileSystem
     public function files(string $directory, bool $hidden = false): array
     {
         $files = array_diff(scandir($directory), array('.', '..'));
-        return array_filter($files, function ($file) use ($hidden) {
+        return array_values(array_filter($files, function ($file) use ($hidden) {
             return $file[0] !== "." || $hidden;
-        });
+        }));
     }
 
     /**
