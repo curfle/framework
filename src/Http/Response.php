@@ -279,7 +279,7 @@ class Response{
      * @return $this
      * @throws StatusNotFoundException
      */
-    private function sendHeaders() : static
+    public function sendHeaders() : static
     {
         // check if http code is valid
         if(!array_key_exists($this->status, self::$statusTexts))
