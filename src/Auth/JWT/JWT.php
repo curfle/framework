@@ -52,7 +52,8 @@ class JWT
         // create the signature
         $signature = HMAC::hash(
             "$encodedHeader.$encodedPayload",
-            $secret
+            $secret,
+            binary: true
         );
         $encodedSignature = Base64::urlEncode($signature);
 
@@ -89,7 +90,8 @@ class JWT
         $correctSignature = Base64::urlEncode(
             HMAC::hash(
                 "$header.$payload",
-                $secret
+                $secret,
+                binary: true
             )
         );
 

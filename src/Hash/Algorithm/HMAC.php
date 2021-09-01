@@ -16,7 +16,7 @@ class HMAC implements HashAlgorithm
      * @param bool $binary
      * @return string
      */
-    public static function hash(string $string, string $secret, string $algorithm = "SHA256", bool $binary = true): string
+    public static function hash(string $string, string $secret, string $algorithm = "SHA256", bool $binary = false): string
     {
         return hash_hmac($algorithm, $string, $secret, $binary);
     }
