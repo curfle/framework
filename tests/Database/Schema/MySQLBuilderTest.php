@@ -306,4 +306,18 @@ class MySQLBuilderTest extends TestCase
 
         self::assertFalse($this->builder->hasColumn("user", "firstname"));
     }
+
+    /**
+     * test ->softDeletes()
+     */
+    public function testSoftDeletes()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->softDeletes();
+            })
+        );
+    }
 }

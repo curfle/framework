@@ -126,7 +126,7 @@ class MySQLGrammar extends SQLGrammar
             . $this->typeMapping[$column->getType()]
             . ($column->getLength() !== null ? "({$column->getLength()}) " : " ")
             . ($column->isUnsignable() && $column->isUnsigned() ? "UNSIGNED " : "")
-            . (!$column->isNullable() ? "NOT NULL " : "")
+            . (!$column->isNullable() ? "NOT NULL " : "NULL ")
             . ($column->hasDefault() ? "DEFAULT " . (
                 $column->shouldUseCurrent()
                     ? "CURRENT_TIMESTAMP "
