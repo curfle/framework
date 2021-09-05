@@ -5,6 +5,16 @@ namespace Curfle\Utilities\Faker;
 class Faker
 {
     /**
+     * Sets the seed.
+     *
+     * @param int $seed
+     */
+    public static function setSeed(int $seed)
+    {
+        srand($seed);
+    }
+
+    /**
      * Returns a random firstname.
      *
      * @return string
