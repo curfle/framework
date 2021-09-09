@@ -320,4 +320,19 @@ class MySQLBuilderTest extends TestCase
             })
         );
     }
+
+    /**
+     * test ->enum()
+     */
+    public function testEnum()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->enum("type", ["USER", "ADMIN", "OWNER"]);
+                $table->softDeletes();
+            })
+        );
+    }
 }

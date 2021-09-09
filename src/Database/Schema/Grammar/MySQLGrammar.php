@@ -26,6 +26,7 @@ class MySQLGrammar extends SQLGrammar
         BuilderColumn::TYPE_DATE => "DATE",
         BuilderColumn::TYPE_DATETIME => "DATETIME",
         BuilderColumn::TYPE_TIMESTAMP => "TIMESTAMP",
+        BuilderColumn::TYPE_ENUM => "ENUM",
     ];
 
     /**
@@ -125,6 +126,7 @@ class MySQLGrammar extends SQLGrammar
         return $column->getName() . " "
             . $this->typeMapping[$column->getType()]
             . ($column->getLength() !== null ? "({$column->getLength()}) " : " ")
+            . ($column->getValues() !== null ? "(" . implode(",", array_map(fn($x) => "\"$x\"", $column->getValues())) . ") " : " ")
             . ($column->isUnsignable() && $column->isUnsigned() ? "UNSIGNED " : "")
             . (!$column->isNullable() ? "NOT NULL " : "NULL ")
             . ($column->hasDefault() ? "DEFAULT " . (

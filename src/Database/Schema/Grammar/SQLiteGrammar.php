@@ -27,6 +27,7 @@ class SQLiteGrammar extends SQLGrammar
         BuilderColumn::TYPE_DATE => "DATE",
         BuilderColumn::TYPE_DATETIME => "DATETIME",
         BuilderColumn::TYPE_TIMESTAMP => "TIMESTAMP",
+        BuilderColumn::TYPE_ENUM => "TEXT",
     ];
 
     /**
@@ -110,13 +111,14 @@ class SQLiteGrammar extends SQLGrammar
      */
     private function buildColumnDefinition(BuilderColumn $column, SQLConnectorInterface $connector): string
     {
-        if($column->shouldUseCurrentOnUpdate())
+        if ($column->shouldUseCurrentOnUpdate())
             throw new NoSuchStatement("SQLite does not support updating timestamps ON UPDATE");
 
         // see https://www.sqlite.org/lang_createtable.html
         return $column->getName() . " "
             . $this->typeMapping[$column->getType()]
             . (($column->getLength() !== null && !$column->isPrimary()) ? "({$column->getLength()}) " : " ")
+            . (($column->getValues() !== null) ? "CHECK ({$column->getName()} IN (" . implode(",", array_map(fn($x) => "\"$x\"", $column->getValues())) . ")) " : " ")
             . (!$column->isNullable() ? "NOT NULL " : "")
             . ($column->hasDefault() ? "DEFAULT " . (
                 $column->shouldUseCurrent()

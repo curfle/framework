@@ -252,4 +252,19 @@ class SQLiteBuilderTest extends TestCase
 
         self::assertTrue($this->builder->hasColumn("user", "firstname"));
     }
+
+    /**
+     * test ->softDeletes()
+     */
+    public function testEnum()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->enum("type", ["USER", "ADMIN", "OWNER"]);
+                $table->softDeletes();
+            })
+        );
+    }
 }

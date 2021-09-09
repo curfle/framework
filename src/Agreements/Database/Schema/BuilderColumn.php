@@ -88,6 +88,14 @@ interface BuilderColumn
     public function change(): static;
 
     /**
+     * Sets the permitted enum values.
+     *
+     * @param array $values
+     * @return $this
+     */
+    public function values(array $values): static;
+
+    /**
      * @return bool
      */
     public function isUnique(): bool;
@@ -146,5 +154,10 @@ interface BuilderColumn
      * @return string
      */
     public function getName(): string;
+
+    /**
+     * @return array|null
+     */
+    public function getValues(): ?array;
 
 }

@@ -28,6 +28,9 @@ class BuilderColumn implements BuilderColumnAgreement
     const TYPE_DATETIME = 301;
     const TYPE_TIMESTAMP = 302;
 
+    // enum (400-499)
+    const TYPE_ENUM = 400;
+
     /**
      * The column's type.
      *
@@ -132,6 +135,13 @@ class BuilderColumn implements BuilderColumnAgreement
      * @var bool
      */
     private bool $changed = false;
+
+    /**
+     * Permitted values that an enum can take.
+     *
+     * @var array|null
+     */
+    private ?array $values = null;
 
     /**
      * @param string $name
@@ -255,6 +265,15 @@ class BuilderColumn implements BuilderColumnAgreement
     public function change(): static
     {
         $this->changed = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function values(array $values): static
+    {
+        $this->values = $values;
         return $this;
     }
 
@@ -384,5 +403,13 @@ class BuilderColumn implements BuilderColumnAgreement
     public function shouldUseCurrentOnUpdate(): bool
     {
         return $this->useCurrentOnUpdate;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getValues(): ?array
+    {
+        return $this->values;
     }
 }

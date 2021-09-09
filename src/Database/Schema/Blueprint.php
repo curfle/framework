@@ -208,6 +208,18 @@ class Blueprint
     }
 
     /**
+     * Creates a new enum column.
+     *
+     * @param string $name
+     * @param array $values
+     * @return BuilderColumn
+     */
+    public function enum(string $name, array $values = []): BuilderColumn
+    {
+        return $this->columns[] = (new BuilderColumn($name, BuilderColumn::TYPE_ENUM))->values($values);
+    }
+
+    /**
      * Creates a deleted column.
      *
      * @return BuilderColumn
