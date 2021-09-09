@@ -174,20 +174,23 @@ if (!function_exists('storage_path')) {
 
 if (!function_exists('url')) {
     /**
-     * Get the path to an asset file.
+     * Get a fully qualified url.
      *
      * @param string $path
+     * @param bool $encode
      * @return string
      */
-    function url(string $path): string
+    function url(string $path, bool $encode = false): string
     {
         $url = env("APP_URL", null);
         $path = implode(
             "/",
-            array_map(
+            $encode
+                ? array_map(
                 "urlencode",
                 explode("/", $path)
             )
+                : explode("/", $path)
         );
         return trim($url, "/") . "/" . ltrim($path, "/");
     }

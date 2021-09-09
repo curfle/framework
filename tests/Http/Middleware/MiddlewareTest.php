@@ -45,7 +45,7 @@ class MiddlewareTest extends TestCase
               `email` varchar(250) NOT NULL,
               `password` varchar(100) NOT NULL,
               `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-              `deleted` timestamp DEFAULT NULL,
+              `deleted` timestamp NULL DEFAULT NULL,
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         $this->connector->exec("INSERT INTO user (id, firstname, lastname, email, password) VALUES (42, 'Jane', 'Doe', '', '')");
