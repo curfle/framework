@@ -18,6 +18,7 @@ use Curfle\Database\Query\SQLQueryBuilder;
  * @method static mixed lastInsertedId()
  * @method static string escape(string $string)
  * @method static void beginTransaction()
+ * @method static void commitTransaction()
  * @method static void rollbackTransaction()
  * @method static SQLConnectorInterface connector(string $name = null)
  *

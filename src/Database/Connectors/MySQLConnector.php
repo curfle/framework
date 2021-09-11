@@ -266,6 +266,15 @@ class MySQLConnector implements SQLConnectorInterface
      * @inheritDoc
      * @throws ConnectionFailedException
      */
+    function commitTransaction()
+    {
+        $this->connect()->commit();
+    }
+
+    /**
+     * @inheritDoc
+     * @throws ConnectionFailedException
+     */
     function rollbackTransaction()
     {
         $this->connect()->rollback();

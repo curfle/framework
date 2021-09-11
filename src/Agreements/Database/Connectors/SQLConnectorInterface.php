@@ -125,6 +125,12 @@ interface SQLConnectorInterface {
     public function beginTransaction();
 
     /**
+     * Commits a transaction.
+     *
+     */
+    public function commitTransaction();
+
+    /**
      * Rolls back a transaction.
      *
      */

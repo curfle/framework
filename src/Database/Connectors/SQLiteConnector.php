@@ -253,6 +253,15 @@ class SQLiteConnector implements SQLConnectorInterface
      * @inheritDoc
      * @throws FileNotFoundException
      */
+    function commitTransaction()
+    {
+        $this->query("COMMIT");
+    }
+
+    /**
+     * @inheritDoc
+     * @throws FileNotFoundException
+     */
     function rollbackTransaction()
     {
         $this->query("ROLLBACK");
