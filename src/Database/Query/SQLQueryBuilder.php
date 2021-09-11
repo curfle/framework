@@ -3,6 +3,8 @@
 namespace Curfle\Database\Query;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Database\Connectors\MySQLConnector;
+use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Utilities\Constants\IgnoreValue;
 use Exception;
@@ -436,8 +438,14 @@ class SQLQueryBuilder
             // offset
             $sql .= $this->_offset !== null ? "OFFSET $this->_offset " : "";
         } else if ($this->_operation === "INSERT") {
-            // ignore
-            $sql .= $this->_ignoreOnExists ? "IGNORE " : "";
+            // update on duplicate key
+            if ($this->connector instanceof SQLiteConnector)
+                $sql .= $this->_updateOnDuplicateKey ? "OR REPLACE " : "";
+            // ignore on duplicate key
+            if ($this->connector instanceof MySQLConnector)
+                $sql .= $this->_ignoreOnExists ? "IGNORE " : "";
+            if ($this->connector instanceof SQLiteConnector)
+                $sql .= $this->_ignoreOnExists ? "OR IGNORE " : "";
             // table
             $sql .= "INTO $this->_table ";
             // column names
@@ -454,8 +462,11 @@ class SQLQueryBuilder
                             return (!is_numeric($value) and !$value instanceof IgnoreValue) ? "'$value'" : $value;
                         }, $insert)) . ")";
                 }, $this->_insert)) . " ";
-            // update
-            $sql .= $this->_updateOnDuplicateKey ? "ON DUPLICATE KEY UPDATE " : "";
+            // update on duplicate key
+            if ($this->connector instanceof MySQLConnector)
+                $sql .= $this->_updateOnDuplicateKey ? "ON DUPLICATE KEY UPDATE " . implode(", ", array_map(function ($column) {
+                        return " $column = VALUES($column)";
+                    }, array_keys($this->_insert[0]))) : "";
         } else if ($this->_operation === "UPDATE") {
             // ignore
             $sql .= $this->_ignoreOnExists ? "IGNORE " : "";
@@ -686,6 +697,16 @@ class SQLQueryBuilder
     public function insertOrIgnore(array $data): bool
     {
         $this->_ignoreOnExists = true;
+        return $this->insert($data);
+    }
+
+    /**
+     * inserts entries into the database and updates them if they already exist
+     * @throws Exception
+     */
+    public function insertOrUpdate(array $data): bool
+    {
+        $this->_updateOnDuplicateKey = true;
         return $this->insert($data);
     }
 

@@ -401,4 +401,24 @@ class SQLQueryBuilderTest extends TestCase
             DB::table("users")->count("name")
         );
     }
+
+    /**
+     * tests count()
+     */
+    public function testInsertOrUpdate()
+    {
+        // insert dummy users
+        for ($i = 0; $i < 3; $i++)
+            DB::table("users")->insert(["name" => "User($i)"]);
+
+        $this->assertEquals(
+            3,
+            DB::table("users")->count()
+        );
+
+        // insert or update operation
+        DB::table("users")->insertOrUpdate(["id" => 3, "name" => "User(4)"]);
+
+        $this->assertSame("User(4)", DB::table("users")->where("id", 3)->first()["name"]);
+    }
 }
