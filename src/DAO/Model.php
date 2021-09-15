@@ -7,6 +7,7 @@ use Curfle\DAO\Relationships\ManyToManyRelationship;
 use Curfle\DAO\Relationships\ManyToOneRelationship;
 use Curfle\DAO\Relationships\OneToManyRelationship;
 use Curfle\DAO\Relationships\OneToOneRelationship;
+use Curfle\DAO\Relationships\Relationship;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Query\SQLQueryBuilder;
@@ -432,8 +433,13 @@ abstract class Model implements DAOInterface
      */
     public function __get(string $name)
     {
-        if (method_exists($this, $name))
-            return $this->{$name}()->get();
+        if (method_exists($this, $name)){
+            $value = $this->{$name}();
+            if($value instanceof Relationship)
+                return $value->get();
+            else
+                return $value;
+        }
         throw new UndefinedPropertyException("Undefined property [" . get_class($this) . "::${$name}]");
     }
 
