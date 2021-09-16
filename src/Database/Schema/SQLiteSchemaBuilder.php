@@ -7,7 +7,7 @@ use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Database\Schema\Grammar\MySQLGrammar;
 use Curfle\Database\Schema\Grammar\SQLiteGrammar;
-use Curfle\Support\Exceptions\Database\NoSuchStatement;
+use Curfle\Support\Exceptions\Database\NoSuchStatementException;
 
 class SQLiteSchemaBuilder extends Builder
 {
@@ -61,10 +61,10 @@ class SQLiteSchemaBuilder extends Builder
     }
 
     /**
-     * @throws NoSuchStatement
+     * @throws NoSuchStatementException
      */
     public function dropColumn(string $table, string $column): bool
     {
-        throw new NoSuchStatement("SQLite does not support dropping columns from existing tables");
+        throw new NoSuchStatementException("SQLite does not support dropping columns from existing tables");
     }
 }

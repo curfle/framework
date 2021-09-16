@@ -109,6 +109,20 @@ class BuilderColumn implements BuilderColumnAgreement
     private bool $nullable = false;
 
     /**
+     * Marks an index to be created on the column.
+     *
+     * @var bool
+     */
+    private bool $createIndex = false;
+
+    /**
+     * Holds the index name.
+     *
+     * @var string|null
+     */
+    private ?string $indexName = null;
+
+    /**
      * Marks the column as autoincrement.
      *
      * @var bool
@@ -202,8 +216,8 @@ class BuilderColumn implements BuilderColumnAgreement
      */
     public function defaultCurrent(): static
     {
-        if($this->type === BuilderColumn::TYPE_TIMESTAMP
-            || $this->type === BuilderColumn::TYPE_DATETIME){
+        if ($this->type === BuilderColumn::TYPE_TIMESTAMP
+            || $this->type === BuilderColumn::TYPE_DATETIME) {
             $this->hasDefault = true;
             $this->useCurrent = true;
         }
@@ -215,8 +229,8 @@ class BuilderColumn implements BuilderColumnAgreement
      */
     public function defaultCurrentOnUpdate(): static
     {
-        if($this->type === BuilderColumn::TYPE_TIMESTAMP
-            || $this->type === BuilderColumn::TYPE_DATETIME){
+        if ($this->type === BuilderColumn::TYPE_TIMESTAMP
+            || $this->type === BuilderColumn::TYPE_DATETIME) {
             $this->hasDefault = true;
             $this->useCurrentOnUpdate = true;
         }
@@ -229,6 +243,18 @@ class BuilderColumn implements BuilderColumnAgreement
     public function nullable(): static
     {
         $this->nullable = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function index(?string $name = null): static
+    {
+        $this->createIndex = true;
+        if ($name === null)
+            $name = "idx_" . $this->getName();
+        $this->indexName = $name;
         return $this;
     }
 
@@ -411,5 +437,21 @@ class BuilderColumn implements BuilderColumnAgreement
     public function getValues(): ?array
     {
         return $this->values;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function shouldCreateIndex(): bool
+    {
+        return $this->createIndex;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIndexName(): ?string
+    {
+        return $this->indexName;
     }
 }

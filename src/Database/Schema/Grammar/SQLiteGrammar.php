@@ -6,7 +6,8 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
-use Curfle\Support\Exceptions\Database\NoSuchStatement;
+use Curfle\Support\Exceptions\Database\NoSuchStatementException;
+use Curfle\Support\Exceptions\Misc\NotImplementedException;
 
 class SQLiteGrammar extends SQLGrammar
 {
@@ -33,7 +34,7 @@ class SQLiteGrammar extends SQLGrammar
     /**
      * @param SQLConnectorInterface $connector
      * @inheritDoc
-     * @throws NoSuchStatement
+     * @throws NoSuchStatementException
      */
     public function compileCreateBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {
@@ -63,7 +64,7 @@ class SQLiteGrammar extends SQLGrammar
 
     /**
      * @inheritDoc
-     * @throws NoSuchStatement
+     * @throws NoSuchStatementException
      */
     public function compileAlterBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {
@@ -78,22 +79,22 @@ class SQLiteGrammar extends SQLGrammar
             if (!$column->isChanged()) {
                 $sql .= "ADD COLUMN " . $this->buildColumnDefinition($column, $connector);
             } else {
-                throw new NoSuchStatement("SQLite does not support changing columns");
+                throw new NoSuchStatementException("SQLite does not support changing columns");
             }
             $sql .= ", ";
         }
 
         // add foreign keys
         if (!empty($blueprint->getForeignKeys()))
-            throw new NoSuchStatement("SQLite does not support adding foreign keys to existing tables");
+            throw new NoSuchStatementException("SQLite does not support adding foreign keys to existing tables");
 
         // drop foreign keys
         if (!empty($blueprint->getDropForeignKeys()))
-            throw new NoSuchStatement("SQLite does not support dropping foreign keys from existing tables");
+            throw new NoSuchStatementException("SQLite does not support dropping foreign keys from existing tables");
 
         // drop columns
         if (!empty($blueprint->getDropColumns()))
-            throw new NoSuchStatement("SQLite does not support dropping columns from existing tables");
+            throw new NoSuchStatementException("SQLite does not support dropping columns from existing tables");
 
 
         $sql = substr($sql, 0, -2);
@@ -107,12 +108,16 @@ class SQLiteGrammar extends SQLGrammar
      * @param BuilderColumn $column
      * @param SQLConnectorInterface $connector
      * @return string
-     * @throws NoSuchStatement
+     * @throws NoSuchStatementException
+     * @throws NotImplementedException
      */
     private function buildColumnDefinition(BuilderColumn $column, SQLConnectorInterface $connector): string
     {
         if ($column->shouldUseCurrentOnUpdate())
-            throw new NoSuchStatement("SQLite does not support updating timestamps ON UPDATE");
+            throw new NoSuchStatementException("SQLite does not support updating timestamps ON UPDATE");
+
+        if ($column->shouldCreateIndex())
+            throw new NotImplementedException("Creating indexes is not supported by the SQLiteGrammar");
 
         // see https://www.sqlite.org/lang_createtable.html
         return $column->getName() . " "

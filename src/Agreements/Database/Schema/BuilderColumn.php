@@ -59,6 +59,14 @@ interface BuilderColumn
     public function nullable(): static;
 
     /**
+     * Creates an index on the column.
+     *
+     * @param string|null $name
+     * @return BuilderColumn
+     */
+    public function index(?string $name = null): static;
+
+    /**
      * Marks the column as autoincrement.
      *
      * @return BuilderColumn
@@ -160,4 +168,13 @@ interface BuilderColumn
      */
     public function getValues(): ?array;
 
+    /**
+     * @return bool
+     */
+    public function shouldCreateIndex(): bool;
+
+    /**
+     * @return string|null
+     */
+    public function getIndexName(): ?string;
 }

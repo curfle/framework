@@ -2,7 +2,7 @@
 
 namespace Curfle\Support\Exceptions\Database;
 
-class NoSuchStatement extends DatabaseException
+class NoSuchStatementException extends DatabaseException
 {
 
 }

@@ -335,4 +335,19 @@ class MySQLBuilderTest extends TestCase
             })
         );
     }
+
+    /**
+     * test ->enum()
+     */
+    public function testIndex()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->int("age")->unsigned()->index();
+            })
+        );
+        exit();
+    }
 }

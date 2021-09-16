@@ -138,7 +138,9 @@ class MySQLGrammar extends SQLGrammar
                 ) : "") . ($column->shouldUseCurrentOnUpdate() ? "ON UPDATE CURRENT_TIMESTAMP " : "")
             . ($column->isAutoincrement() ? "AUTO_INCREMENT " : "")
             . ($column->isUnique() ? "UNIQUE " : "")
-            . ($column->isPrimary() ? "PRIMARY KEY " : "");
+            . ($column->isPrimary() ? "PRIMARY KEY " : "")
+            // indexes
+            . ($column->shouldCreateIndex() ? ", INDEX `{$column->getIndexName()}` (`{$column->getName()}`) " : "");
     }
 
     /**
