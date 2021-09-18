@@ -630,16 +630,16 @@ class SQLQueryBuilder
      * counts all rows if no parameters are passed. If parameters are given, each count macro is
      * executed on the according parameter.
      *
-     * @return mixed
+     * @return int|array|null
      */
-    public function count(): mixed
+    public function count(): int|array|null
     {
         $this->_fields = array_merge($this->_fields ?? [], array_map(function ($item) {
             return "count($item)";
         }, empty(func_get_args()) ? ["*"] : func_get_args()));
 
         if (count($this->_fields) === 1)
-            return $this->connector->field($this->build());
+            return (int) $this->connector->field($this->build());
         else
             return $this->connector->row($this->build());
     }
