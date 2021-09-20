@@ -6,6 +6,7 @@ use Curfle\Agreements\Auth\Guardian as GuardianAgreement;
 use Curfle\Auth\Authenticatable;
 use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
+use Curfle\Support\Exceptions\Auth\AuthenticatableInstanceNotFoundException;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
 use Curfle\Support\Exceptions\Auth\MissingAuthenticatableException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
@@ -115,6 +116,7 @@ abstract class Guardian implements GuardianAgreement
 
     /**
      * @inheritDoc
+     * @throws AuthenticatableInstanceNotFoundException
      */
     public function login(mixed $id)
     {
@@ -123,6 +125,8 @@ abstract class Guardian implements GuardianAgreement
                 "{$this->authenticatableClass()}::fromIdentifier",
                 $id
             );
+            if ($this->authenticatedUser === null)
+                throw new AuthenticatableInstanceNotFoundException("The authenticatable model [{$this->authenticatableClass()}] returned [null] as instance.");
         }
     }
 
