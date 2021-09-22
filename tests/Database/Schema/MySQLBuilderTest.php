@@ -348,6 +348,5 @@ class MySQLBuilderTest extends TestCase
                 $table->int("age")->unsigned()->index();
             })
         );
-        exit();
     }
 }

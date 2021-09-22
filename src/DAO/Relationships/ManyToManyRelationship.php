@@ -8,7 +8,7 @@ use Curfle\DAO\Model;
 class ManyToManyRelationship extends Relationship
 {
     public function __construct(
-        private Model $model,
+        private Model  $model,
         private string $targetClass,
         private string $pivotTable,
         private string $fkColumnOfCurrentModelInPivotTable,
@@ -41,7 +41,7 @@ class ManyToManyRelationship extends Relationship
     {
         $statement = $this->model::__callTableOnConnector($this->pivotTable);
 
-        if($object !== null)
+        if ($object !== null)
             $statement = $statement->where($this->fkColumnOfOtherModelInPivotTable, $object->primaryKey());
 
         return $statement
@@ -54,13 +54,28 @@ class ManyToManyRelationship extends Relationship
      */
     function get(): array
     {
-        $targetClass = $this->targetClass;
+        $modelConfig = $this->model::__getCleanedConfig();
+        $targetConfig = $this->targetClass::__getCleanedConfig();
+
         $entries = $this->model::__callTableOnConnector($this->pivotTable)
-            ->valueAs($this->fkColumnOfOtherModelInPivotTable, "id")
+            ->value("{$targetConfig["table"]}.*")
+            ->leftJoin(
+                $targetConfig["table"],
+                "{$this->pivotTable}.{$this->fkColumnOfOtherModelInPivotTable}",
+                "=",
+                "{$targetConfig["table"]}.{$targetConfig["primaryKey"]}",
+            )
             ->where($this->fkColumnOfCurrentModelInPivotTable, $this->model->primaryKey())
-            ->get();
-        return array_map(function($entry) use($targetClass) {
-            return call_user_func($targetClass . "::get", $entry["id"]);
+            ->orderBy("{$this->pivotTable}.id", "ASC");
+
+        if ($targetConfig["softDelete"])
+            $entries->where("deleted", null);
+
+        $entries = $entries->get();
+
+        $targetClass = $this->targetClass;
+        return array_map(function ($entry) use ($targetClass) {
+            return call_user_func($targetClass . "::__createInstanceFromArray", $entry);
         }, $entries);
     }
 }
