@@ -42,16 +42,33 @@ class XML
     private static function arrayToXML(array $data, SimpleXMLElement &$xml_data)
     {
         foreach ($data as $key => $value) {
-            // check if key is numeric
-            if (is_numeric($key))
-                $key = "item" . $key;
-
-            // check if is leaf node or has childs
+            // check if $value is array and all nodes are leafs
+            $allNodesAreLeafs = true;
             if (is_array($value)) {
-                $subnode = $xml_data->addChild($key);
-                static::arrayToXML($value, $subnode);
-            } else {
-                $xml_data->addChild((string)$key, htmlspecialchars((string)$value));
+                foreach ($value as $inner_key => $inner_value)
+                    if (is_array($inner_value))
+                        $allNodesAreLeafs = false;
+            }else{
+                $allNodesAreLeafs = false;
+            }
+
+            // handle array
+            if($allNodesAreLeafs){
+                foreach($value as $inner_key => $inner_value){
+                    $xml_data->addChild((string)$key, htmlspecialchars((string)$inner_value));
+                }
+            }else{
+                // check if key is numeric
+                if (is_numeric($key))
+                    $key = "item$key";
+
+                // check if is leaf node or has childs
+                if (is_array($value)) {
+                    $subnode = $xml_data->addChild($key);
+                    static::arrayToXML($value, $subnode);
+                } else {
+                    $xml_data->addChild((string)$key, htmlspecialchars((string)$value));
+                }
             }
         }
     }
