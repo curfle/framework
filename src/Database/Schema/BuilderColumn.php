@@ -144,6 +144,13 @@ class BuilderColumn implements BuilderColumnAgreement
     private ?string $after = null;
 
     /**
+     * Indicates that the column should be added as first column.
+     *
+     * @var bool
+     */
+    private bool $first = false;
+
+    /**
      * Indicates that the column exists and should be changed.
      *
      * @var bool
@@ -288,6 +295,15 @@ class BuilderColumn implements BuilderColumnAgreement
     /**
      * @inheritDoc
      */
+    public function first(): static
+    {
+        $this->first = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function change(): static
     {
         $this->changed = true;
@@ -389,6 +405,14 @@ class BuilderColumn implements BuilderColumnAgreement
     public function getAfter(): ?string
     {
         return $this->after;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFirst(): bool
+    {
+        return $this->first;
     }
 
     /**

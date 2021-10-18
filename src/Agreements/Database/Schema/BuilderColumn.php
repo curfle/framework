@@ -89,6 +89,13 @@ interface BuilderColumn
     public function after(string $column): static;
 
     /**
+     * Sets the column as first column in the table when altering.
+     *
+     * @return BuilderColumn
+     */
+    public function first(): static;
+
+    /**
      * Indicates that the column should be altered.
      *
      * @return BuilderColumn

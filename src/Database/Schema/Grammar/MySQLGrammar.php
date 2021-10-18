@@ -74,6 +74,10 @@ class MySQLGrammar extends SQLGrammar
         foreach ($blueprint->getColumns() as $column) {
             if (!$column->isChanged()) {
                 $sql .= "ADD COLUMN " . $this->buildColumnDefinition($column, $connector);
+                if($column->getAfter() !== null)
+                    $sql .= "AFTER `{$column->getAfter()}` ";
+                if($column->isFirst())
+                    $sql .= "FIRST ";
             } else {
                 $sql .= "CHANGE {$column->getName()} " . $this->buildColumnDefinition($column, $connector);
             }
