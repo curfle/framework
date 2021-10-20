@@ -186,6 +186,17 @@ class Blueprint
     }
 
     /**
+     * Creates a new time column.
+     *
+     * @param string $name
+     * @return BuilderColumn
+     */
+    public function time(string $name): BuilderColumn
+    {
+        return $this->columns[] = new BuilderColumn($name, BuilderColumn::TYPE_TIME);
+    }
+
+    /**
      * Creates a new date column.
      *
      * @param string $name

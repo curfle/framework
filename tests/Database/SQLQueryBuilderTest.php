@@ -13,9 +13,7 @@ class SQLQueryBuilderTest extends TestCase
     public function __construct()
     {
         parent::__construct();
-        $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(
-            __DIR__ . "/../Resources/Database/database.db"
-        );
+        $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(DB_SQLITE_FILENAME);
     }
 
     protected function setUp(): void

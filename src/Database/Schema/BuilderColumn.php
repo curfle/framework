@@ -27,6 +27,7 @@ class BuilderColumn implements BuilderColumnAgreement
     const TYPE_DATE = 300;
     const TYPE_DATETIME = 301;
     const TYPE_TIMESTAMP = 302;
+    const TYPE_TIME = 303;
 
     // enum (400-499)
     const TYPE_ENUM = 400;

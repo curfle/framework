@@ -337,6 +337,20 @@ class MySQLBuilderTest extends TestCase
     }
 
     /**
+     * test ->time()
+     */
+    public function testTime()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->time("birthtime");
+            })
+        );
+    }
+
+    /**
      * test ->enum()
      */
     public function testIndex()

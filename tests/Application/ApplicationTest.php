@@ -56,9 +56,7 @@ class ApplicationTest extends TestCase
     {
         $app = new Application();
         $app->singleton("db", function(){
-            return new SQLiteConnector(
-                __DIR__ . "/../Resources/Database/database.db"
-            );
+            return new SQLiteConnector(DB_SQLITE_FILENAME);
         });
 
         $this->assertTrue($app->resolve("db") instanceof SQLiteConnector);

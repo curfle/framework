@@ -26,6 +26,7 @@ class MySQLGrammar extends SQLGrammar
         BuilderColumn::TYPE_DATE => "DATE",
         BuilderColumn::TYPE_DATETIME => "DATETIME",
         BuilderColumn::TYPE_TIMESTAMP => "TIMESTAMP",
+        BuilderColumn::TYPE_TIME => "TIME",
         BuilderColumn::TYPE_ENUM => "ENUM",
     ];
 
