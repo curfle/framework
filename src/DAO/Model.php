@@ -183,7 +183,7 @@ abstract class Model implements DAOInterface
         }
 
         // create instance of class and pass all possible values by constructor
-        $instance = empty($arguments) ? new get_called_class() : (new ReflectionClass(get_called_class()))->newInstanceArgs(
+        $instance = empty($arguments) ? new $className() : (new ReflectionClass(get_called_class()))->newInstanceArgs(
             array_map(function ($argument) use ($arr) {
                 return $arr[$argument] ?? null;
             }, $arguments));
