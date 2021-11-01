@@ -8,7 +8,7 @@ use Curfle\DAO\Relationships\OneToManyRelationship;
 use Curfle\DAO\Relationships\OneToOneRelationship;
 
 /**
- * @property-read ?Job $job
+ * @property-read ?Phone $phone
  * @property-read Login[] $logins
  * @property-read Role[] $roles
  */
@@ -27,8 +27,7 @@ class User extends AuthenticatableModel
     public function __construct(
         public ?string $firstname = null,
         public ?string $lastname = null,
-        public ?string $email = null,
-        public ?int    $job_id = null
+        public ?string $email = null
     )
     {
     }
@@ -45,13 +44,13 @@ class User extends AuthenticatableModel
     }
 
     /**
-     * Returns the associated job.
+     * Returns the associated phone.
      *
      * @return OneToOneRelationship
      */
-    public function job(): OneToOneRelationship
+    public function phone(): OneToOneRelationship
     {
-        return $this->hasOne(Job::class);
+        return $this->hasOne(Phone::class);
     }
 
     /**

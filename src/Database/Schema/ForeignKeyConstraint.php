@@ -126,6 +126,15 @@ class ForeignKeyConstraint implements ForeignKeyConstraintAgreement
     }
 
     /**
+     * @inheritDoc
+     */
+    public function name(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string

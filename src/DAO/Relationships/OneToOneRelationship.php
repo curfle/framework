@@ -4,6 +4,7 @@ namespace Curfle\DAO\Relationships;
 
 use Curfle\Agreements\DAO\DAOInterface;
 use Curfle\DAO\Model;
+use Exception;
 
 class OneToOneRelationship extends Relationship
 {
@@ -23,8 +24,20 @@ class OneToOneRelationship extends Relationship
      */
     function set(Model $object): bool
     {
-        $this->model->{$this->fkColumnInClass} = $object->primaryKey();
-        return $this->model->update();
+        $targetConfig = call_user_func($this->targetClass . "::__getCleanedConfig");
+        $success = $this->model::__callTableOnConnector($targetConfig["table"])
+            ->where($targetConfig["primaryKey"], $object->primaryKey())
+            ->update([
+                $this->fkColumnInClass => $this->model->primaryKey()
+            ]);
+
+        // set model property
+        if($success){
+            $modelPropertiesToColumns = array_flip($object->__getCleanedConfig()["fields"]);
+            $object->{$modelPropertiesToColumns[$this->fkColumnInClass] ?? $this->fkColumnInClass} = $this->model->primaryKey();
+        }
+
+        return $success;
     }
 
     /**
@@ -34,8 +47,12 @@ class OneToOneRelationship extends Relationship
      */
     function detach(): bool
     {
-        $this->model->{$this->fkColumnInClass} = null;
-        return $this->model->update();
+        $targetConfig = call_user_func($this->targetClass . "::__getCleanedConfig");
+        return $this->model::__callTableOnConnector($targetConfig["table"])
+            ->where($this->fkColumnInClass, $this->model->primaryKey())
+            ->update([
+                $this->fkColumnInClass => null
+            ]);
     }
 
     /**
@@ -43,6 +60,10 @@ class OneToOneRelationship extends Relationship
      */
     function get(): mixed
     {
-        return call_user_func($this->targetClass . "::get", $this->model->{$this->fkColumnInClass});
+        $item = call_user_func(
+            $this->targetClass . "::where",
+            $this->fkColumnInClass, $this->model->primaryKey()
+        )->first();
+        return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
     }
 }

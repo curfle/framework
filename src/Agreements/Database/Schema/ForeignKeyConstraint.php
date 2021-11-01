@@ -47,4 +47,12 @@ interface ForeignKeyConstraint
      */
     public function onUpdate(string $action): static;
 
+    /**
+     * Sets the name of the constraint.
+     *
+     * @param string $name
+     * @return ForeignKeyConstraint
+     */
+    public function name(string $name): static;
+
 }

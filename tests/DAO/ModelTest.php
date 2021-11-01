@@ -12,6 +12,7 @@ use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
 use Curfle\Tests\Resources\DummyClasses\DAO\Job;
 use Curfle\Tests\Resources\DummyClasses\DAO\Login;
+use Curfle\Tests\Resources\DummyClasses\DAO\Phone;
 use Curfle\Tests\Resources\DummyClasses\DAO\Role;
 use Curfle\Tests\Resources\DummyClasses\DAO\User;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,7 @@ class ModelTest extends TestCase
     {
         $this->builder->dropIfExists("user_role");
         $this->builder->dropIfExists("login");
+        $this->builder->dropIfExists("phone");
         $this->builder->dropIfExists("user");
         $this->builder->dropIfExists("job");
         $this->builder->dropIfExists("role");
@@ -39,6 +41,12 @@ class ModelTest extends TestCase
         $this->builder->create("job", function (Blueprint $table) {
             $table->id("id");
             $table->string("name");
+        });
+
+        $this->builder->create("phone", function (Blueprint $table) {
+            $table->id("id");
+            $table->string("number");
+            $table->int("user_id")->unsigned()->nullable()->unique();
         });
 
         $this->builder->create("user", function (Blueprint $table) {
@@ -214,18 +222,18 @@ class ModelTest extends TestCase
     public function testOneToOne()
     {
 
-        $job = Job::create([
-            "name" => "PHP developer"
-        ]);
-
-        User::create([
+        $user = User::create([
             "firstname" => "Jane",
             "lastname" => "Doe",
-            "email" => "jane.doe@example.dd",
-            "job_id" => $job->id
+            "email" => "jane.doe@example.dd"
         ]);
 
-        $this->assertEquals($job, User::get(1)->job);
+        $phone = Phone::create([
+            "number" => "+49 1234 56789",
+            "user_id" => $user->id
+        ]);
+
+        $this->assertEquals($phone, User::get(1)->phone);
     }
 
     /**
@@ -234,29 +242,32 @@ class ModelTest extends TestCase
     public function testOneToOneEditing()
     {
 
-        $job = Job::create([
-            "name" => "PHP developer"
-        ]);
-
-        $secondJob = Job::create([
-            "name" => "PHP / JS full stack developer"
-        ]);
-
-        $user = User::create([
+        $jane = User::create([
             "firstname" => "Jane",
             "lastname" => "Doe",
-            "email" => "jane.doe@example.dd",
-            "job_id" => $job->id
+            "email" => "jane.doe@example.dd"
         ]);
-        $this->assertEquals($job, $user->job);
+
+        $john = User::create([
+            "firstname" => "John",
+            "lastname" => "Doe",
+            "email" => "john.doe@example.dd"
+        ]);
+
+        $phone = Phone::create([
+            "number" => "+49 1234 56789",
+            "user_id" => $jane->id
+        ]);
+
+        $this->assertEquals($phone, $jane->phone);
         
-        // set second job
-        $user->job()->set($secondJob);
-        $this->assertEquals($secondJob, $user->job);
+        // give the phone to john
+        $john->phone()->set($phone);
+        $this->assertEquals($phone, $john->phone);
 
         // detach job
-        $user->job()->detach();
-        $this->assertNull( User::get(1)->job);
+        $john->phone()->detach();
+        $this->assertNull( $john->phone);
     }
 
 

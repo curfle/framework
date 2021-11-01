@@ -2,6 +2,8 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Relationships\ManyToOneRelationship;
+
 class Job extends \Curfle\DAO\Model
 {
 
@@ -10,8 +12,16 @@ class Job extends \Curfle\DAO\Model
     /**
      * @param string|null $name
      */
-    public function __construct(public ?string $name=null)
+    public function __construct(public ?string $name = null)
     {
+    }
+
+    /**
+     * @return ManyToOneRelationship
+     */
+    public function user(): ManyToOneRelationship
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

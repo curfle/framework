@@ -350,13 +350,14 @@ abstract class Model implements DAOInterface
      * @param string|null $fkColumn
      * @return mixed
      */
-    protected function hasOne(string $class, string $fkColumn = null): OneToOneRelationship
+    protected function hasOne(string $class, string $fkColumnInClass = null): OneToOneRelationship
     {
-        if ($fkColumn === null) {
-            $targetConfig = call_user_func("$class::__getCleanedConfig");
-            $fkColumn = $targetConfig["table"] . "_id";
-        }
-        return new OneToOneRelationship($this, $class, $fkColumn);
+        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+
+        if ($fkColumnInClass === null)
+            $fkColumnInClass = $config["table"] . "_id";
+
+        return new OneToOneRelationship($this, $class, $fkColumnInClass);
     }
 
     /**
