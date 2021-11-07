@@ -13,6 +13,7 @@ class ManyToOneRelationship extends Relationship
         private string $fkColumn,
     )
     {
+        parent::__construct();
     }
 
     /**
@@ -74,5 +75,13 @@ class ManyToOneRelationship extends Relationship
             $targetConfig["primaryKey"], $this->model->{$modelPropertiesToColumns[$this->fkColumn] ?? $this->fkColumn}
         )->first();
         return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getCacheKey(): string
+    {
+        return $this->model::class . "|" . $this->targetClass . "|" . $this->fkColumn;
     }
 }

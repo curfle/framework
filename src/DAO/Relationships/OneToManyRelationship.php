@@ -13,6 +13,7 @@ class OneToManyRelationship extends Relationship
         private string $fkColumnInClass
     )
     {
+        parent::__construct();
     }
 
     /**
@@ -75,5 +76,13 @@ class OneToManyRelationship extends Relationship
         return array_map(function($item){
             return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
         }, $items);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getCacheKey(): string
+    {
+        return $this->model::class . "|" . $this->targetClass . "|" . $this->fkColumnInClass;
     }
 }

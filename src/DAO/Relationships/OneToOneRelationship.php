@@ -14,6 +14,7 @@ class OneToOneRelationship extends Relationship
         private string $fkColumnInClass
     )
     {
+        parent::__construct();
     }
 
     /**
@@ -32,7 +33,7 @@ class OneToOneRelationship extends Relationship
             ]);
 
         // set model property
-        if($success){
+        if ($success) {
             $modelPropertiesToColumns = array_flip($object->__getCleanedConfig()["fields"]);
             $object->{$modelPropertiesToColumns[$this->fkColumnInClass] ?? $this->fkColumnInClass} = $this->model->primaryKey();
         }
@@ -65,5 +66,13 @@ class OneToOneRelationship extends Relationship
             $this->fkColumnInClass, $this->model->primaryKey()
         )->first();
         return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getCacheKey(): string
+    {
+        return $this->model::class . "|" . $this->targetClass . "|" . $this->fkColumnInClass;
     }
 }

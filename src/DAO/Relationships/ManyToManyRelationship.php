@@ -14,6 +14,7 @@ class ManyToManyRelationship extends Relationship
         private string $fkColumnOfCurrentModelInPivotTable,
         private string $fkColumnOfOtherModelInPivotTable)
     {
+        parent::__construct();
     }
 
     /**
@@ -77,5 +78,14 @@ class ManyToManyRelationship extends Relationship
         return array_map(function ($entry) use ($targetClass) {
             return call_user_func($targetClass . "::__createInstanceFromArray", $entry);
         }, $entries);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getCacheKey(): string
+    {
+        return $this->model::class . "|" . $this->targetClass . "|" . $this->pivotTable . "|"
+            . $this->fkColumnOfCurrentModelInPivotTable . "|" . $this->fkColumnOfOtherModelInPivotTable;
     }
 }
