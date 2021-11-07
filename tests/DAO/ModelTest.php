@@ -4,12 +4,16 @@ namespace Curfle\Tests\DAO;
 
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
+use Curfle\Container\Container;
 use Curfle\DAO\Model;
+use Curfle\DAO\Relationships\RelationshipCache;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
+use Curfle\Essence\Application;
+use Curfle\Support\Facades\Facade;
 use Curfle\Tests\Resources\DummyClasses\DAO\Job;
 use Curfle\Tests\Resources\DummyClasses\DAO\Login;
 use Curfle\Tests\Resources\DummyClasses\DAO\Phone;
@@ -21,6 +25,7 @@ class ModelTest extends TestCase
 {
     private SQLConnectorInterface $connector;
     private MySQLSchemaBuilder $builder;
+    private Application $app;
 
     public function __construct()
     {
@@ -31,6 +36,13 @@ class ModelTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->app = new Application();
+        $this->app->singleton("relationshipcache", function () {
+            return new RelationshipCache();
+        });
+        Facade::setFacadeApplication($this->app);
+        Container::setInstance($this->app);
+
         $this->builder->dropIfExists("user_role");
         $this->builder->dropIfExists("login");
         $this->builder->dropIfExists("phone");
@@ -260,7 +272,7 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertEquals($phone, $jane->phone);
-        
+
         // give the phone to john
         $john->phone()->set($phone);
         $this->assertEquals($phone, $john->phone);
@@ -268,6 +280,45 @@ class ModelTest extends TestCase
         // detach job
         $john->phone()->detach();
         $this->assertNull( $john->phone);
+    }
+
+    /**
+     * Tests one-to-one lazy cache
+     */
+    public function testOneToOneLazy()
+    {
+
+        $jane = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $john = User::create([
+            "firstname" => "John",
+            "lastname" => "Doe",
+            "email" => "john.doe@example.dd"
+        ]);
+
+        $phone = Phone::create([
+            "number" => "+49 1234 56789",
+            "user_id" => $jane->id
+        ]);
+
+        $this->assertEquals($phone, $jane->phone()->lazy());
+
+        // give the phone to john
+        $john->phone()->set($phone);
+        $this->assertEquals($phone->id, $john->phone()->lazy()->id);
+
+        //
+
+        // detatch object and ensure cache is still active
+        $john->phone()->detach();
+        $this->assertEquals($phone->id, $jane->phone()->lazy()->id);
+        $this->assertEquals($phone->id, $john->phone()->lazy()->id);
+        $this->assertNull( $john->phone()->lazy(true));
+        $this->assertNull( $john->phone()->lazy(true));
     }
 
 
@@ -326,6 +377,35 @@ class ModelTest extends TestCase
 
 
     /**
+     * Tests one-to-many lazy cache
+     */
+    public function testOneToManyLazy()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $loginOne = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $loginTwo = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $this->assertCount(2, $user->logins()->lazy());
+
+        $user->logins()->dissociate($loginOne);
+        $user->logins()->dissociate($loginTwo);
+
+        $this->assertCount(2, $user->logins()->lazy());
+        $this->assertCount(0, $user->logins()->lazy(true));
+    }
+
+
+    /**
      * Tests many-to-one relationships
      */
     public function testManyToOne()
@@ -367,6 +447,28 @@ class ModelTest extends TestCase
         $login->user()->associate($user);
         $this->assertEquals($user, $login->user);
 
+    }
+
+
+    /**
+     * Tests many-to-one lazy cache
+     */
+    public function testManyToOneLazy()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $login = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $this->assertEquals($user, $login->user()->lazy());
+        $login->user()->dissociate();
+        $this->assertEquals($user, $login->user()->lazy());
+        $this->assertNull($login->user()->lazy(true));
     }
 
 

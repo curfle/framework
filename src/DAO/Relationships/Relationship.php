@@ -42,8 +42,6 @@ abstract class Relationship
     {
         $cacheKey = $this->getCacheKey();
 
-        var_dump($cacheKey, $this->relationshipCache->inCache($cacheKey));
-
         // check if cache can be used
         if (!$forceRefresh && $this->relationshipCache->inCache($cacheKey))
             return $this->relationshipCache->get($cacheKey);
