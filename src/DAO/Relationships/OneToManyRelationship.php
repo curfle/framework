@@ -83,6 +83,7 @@ class OneToManyRelationship extends Relationship
      */
     protected function getCacheKey(): string
     {
-        return $this->model::class . "|" . $this->targetClass . "|" . $this->fkColumnInClass;
+        return $this->model::class . "|" . $this->model->primaryKey() . "|"
+            . $this->targetClass . "|" . $this->fkColumnInClass;
     }
 }

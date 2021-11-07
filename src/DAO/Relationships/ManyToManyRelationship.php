@@ -85,7 +85,8 @@ class ManyToManyRelationship extends Relationship
      */
     protected function getCacheKey(): string
     {
-        return $this->model::class . "|" . $this->targetClass . "|" . $this->pivotTable . "|"
-            . $this->fkColumnOfCurrentModelInPivotTable . "|" . $this->fkColumnOfOtherModelInPivotTable;
+        return $this->model::class . "|" . $this->model->primaryKey() . "|" . $this->targetClass . "|"
+            . $this->pivotTable . "|" . $this->fkColumnOfCurrentModelInPivotTable . "|"
+            . $this->fkColumnOfOtherModelInPivotTable;
     }
 }

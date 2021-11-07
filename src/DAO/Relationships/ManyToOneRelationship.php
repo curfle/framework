@@ -82,6 +82,7 @@ class ManyToOneRelationship extends Relationship
      */
     protected function getCacheKey(): string
     {
-        return $this->model::class . "|" . $this->targetClass . "|" . $this->fkColumn;
+        return $this->model::class . "|" . $this->model->primaryKey() . "|"
+            . $this->targetClass . "|" . $this->fkColumn;
     }
 }
