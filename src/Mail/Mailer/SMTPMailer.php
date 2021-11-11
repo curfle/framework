@@ -160,10 +160,16 @@ class SMTPMailer implements Mailer
         $this->PHPMailer->Body = $content->html();
         $this->PHPMailer->AltBody = $content->plain();
         foreach($content->attachments() as $name => $attachment){
-            if(is_string($name))
-                $this->PHPMailer->addAttachment($attachment, $name);
+            $name = is_string($name) ? $name : "";
+            if(is_array($attachment))
+                $this->PHPMailer->addStringAttachment(
+                    $attachment["content"],
+                    $name,
+                    $attachment["encoding"],
+                    $attachment["type"]
+                );
             else
-                $this->PHPMailer->addAttachment($attachment);
+                $this->PHPMailer->addAttachment($attachment, $name);
         }
 
         return $this->PHPMailer->send();
