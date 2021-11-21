@@ -15,7 +15,7 @@ class DummyClass extends Middleware
      * @param Request $request
      * @return void
      */
-    public static function handle(Request $request)
+    public function handle(Request $request)
     {
         // TODO: Implement handle() method.
     }
