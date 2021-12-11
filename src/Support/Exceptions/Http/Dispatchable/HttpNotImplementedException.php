@@ -6,9 +6,9 @@ use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Exception;
 use Throwable;
 
-class HttpAccessDeniedException extends HttpDispatchableException
+class HttpNotImplementedException extends HttpDispatchableException
 {
-    public function __construct(string $message = "Access Denied", int $code = 403, Throwable $previous = null)
+    public function __construct(string $message = "Not Implemented", int $code = 501, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

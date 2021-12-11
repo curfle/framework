@@ -6,9 +6,9 @@ use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Exception;
 use Throwable;
 
-class HttpAccessDeniedException extends HttpDispatchableException
+class HttpTooManyRequestsException extends HttpDispatchableException
 {
-    public function __construct(string $message = "Access Denied", int $code = 403, Throwable $previous = null)
+    public function __construct(string $message = "Too Many Requests", int $code = 429, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

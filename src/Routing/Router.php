@@ -7,8 +7,8 @@ use Curfle\Essence\Application;
 use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Exceptions\Http\Dispatchable\HttpNotFoundException;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
-use Curfle\Support\Exceptions\Http\NotFoundHttpException;
 
 class Router
 {
@@ -316,7 +316,7 @@ class Router
      *
      * @param Request $request
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws HttpNotFoundException
      * @throws MiddlewareNotFoundException
      */
     public function resolve(Request $request): Response
@@ -339,7 +339,7 @@ class Router
             }
         }
 
-        throw new NotFoundHttpException("Not found", 404);
+        throw new HttpNotFoundException();
     }
 
     /**

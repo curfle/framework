@@ -15,10 +15,10 @@ use Curfle\Essence\Exceptions\ExceptionHandler;
 use Curfle\Routing\Router;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Exceptions\Http\Dispatchable\HttpNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Misc\InvalidArgumentException;
-use Curfle\Support\Exceptions\Http\NotFoundHttpException;
 use ReflectionException;
 use Throwable;
 
@@ -112,7 +112,7 @@ class Kernel implements KernelAgreement
      * @param Request $request
      * @return Response
      * @throws BindingResolutionException|CircularDependencyException|ReflectionException
-     * @throws NotFoundHttpException
+     * @throws HttpNotFoundException
      */
     protected function sendRequestThroughRouter(Request $request): Response
     {
