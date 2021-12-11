@@ -8,6 +8,7 @@ use Curfle\Essence\Application;
 use Curfle\Console\Command;
 use Curfle\Support\Facades\Buddy;
 use Curfle\Support\Facades\DB;
+use Curfle\Support\Str;
 
 class DbCommand extends Command
 {
@@ -34,7 +35,7 @@ class DbCommand extends Command
 
                     try {
                         $result = $connector->rows($query);
-                        $content = str_replace("\n        ", "\n    ", print_r($result, true));
+                        $content = Str::replace(print_r($result, true), "\n        ", "\n    ");
                         $this->write($content, false);
                         $this->flush();
                     } catch (\Exception $e) {

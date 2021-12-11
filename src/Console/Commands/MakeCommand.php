@@ -119,7 +119,7 @@ abstract class MakeCommand extends Command
      */
     protected function createFileName(string $name, bool $addUniqueTimestamp = false): string
     {
-        $nameParts = explode("\\", $name);
+        $nameParts = Str::split($name, "\\");
         return ($addUniqueTimestamp ? date('YmdHis') . "_" : "")
             . end($nameParts)
             . ".php";
@@ -216,10 +216,10 @@ abstract class MakeCommand extends Command
         ];
 
         foreach ($searches as $search) {
-            $template = str_replace(
+            $template = Str::replace(
+                $template,
                 $search,
-                [$this->getNamespace($name)],
-                $template
+                [$this->getNamespace($name)]
             );
         }
 
@@ -234,13 +234,13 @@ abstract class MakeCommand extends Command
      */
     protected function getNamespace(string $name): string
     {
-        return trim(
+        return Str::trim(
             implode(
                 "\\",
                 array_slice(
-                    explode(
-                        "\\",
-                        $name
+                    Str::split(
+                        $name,
+                        "\\"
                     ),
                     0,
                     -1
@@ -259,8 +259,8 @@ abstract class MakeCommand extends Command
      */
     protected function replaceClass(string $template, string $name): string
     {
-        $class = str_replace($this->getNamespace($name) . "\\", "", $name);
-        return str_replace(["DummyClass", "{{ class }}", "{{class}}"], $class, $template);
+        $class = Str::replace($name, $this->getNamespace($name) . "\\", "");
+        return Str::replace($template, ["DummyClass", "{{ class }}", "{{class}}"], $class);
     }
 
     /**
@@ -281,8 +281,6 @@ abstract class MakeCommand extends Command
      */
     protected function isReservedName(string $name): string
     {
-        $name = strtolower($name);
-
-        return in_array($name, $this->reservedNames);
+        return in_array(Str::lower($name), $this->reservedNames);
     }
 }

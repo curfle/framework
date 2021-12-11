@@ -7,6 +7,7 @@ use Curfle\Essence\Application;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Facades\App;
+use Curfle\Support\Str;
 
 class ReformatRequest implements BootstrapInterface
 {
@@ -32,7 +33,7 @@ class ReformatRequest implements BootstrapInterface
 
         $request = App::resolve("request");
         $request->setUri(
-            str_replace($prefix, "", $request->uri())
+            Str::replace($request->uri(), $prefix, "")
         );
     }
 }

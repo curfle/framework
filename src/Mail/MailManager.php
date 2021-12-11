@@ -5,6 +5,7 @@ namespace Curfle\Mail;
 use Curfle\Agreements\Mail\Mailer;
 use Curfle\Mail\Mailer\SMTPMailer;
 use Curfle\Support\Exceptions\Mail\MailerNotFoundException;
+use Curfle\Support\Str;
 
 class MailManager
 {
@@ -16,7 +17,7 @@ class MailManager
         if($mailer === null)
             $mailer = config("mail.default");
 
-        return match (strtolower($mailer)) {
+        return match (Str::lower($mailer)) {
             "smtp" => new SMTPMailer(
                 config("mail.mailers.smtp.host"),
                 (int)config("mail.mailers.smtp.port"),

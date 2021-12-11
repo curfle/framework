@@ -4,6 +4,7 @@ namespace Curfle\Database\Schema;
 
 use Curfle\Agreements\Database\Schema\ForeignKeyConstraint as ForeignKeyConstraintAgreement;
 use Curfle\Support\Exceptions\Logic\LogicException;
+use Curfle\Support\Str;
 
 class ForeignKeyConstraint implements ForeignKeyConstraintAgreement
 {
@@ -105,7 +106,7 @@ class ForeignKeyConstraint implements ForeignKeyConstraintAgreement
      */
     public function onDelete(string $action): static
     {
-        if(!in_array(strtoupper($action), ["RESTRICT", "CASCADE", "SET NULL", "NO ACTION", "SET DEFAULT",]))
+        if(!in_array(Str::upper($action), ["RESTRICT", "CASCADE", "SET NULL", "NO ACTION", "SET DEFAULT",]))
             throw new LogicException("Cannot use [$action] on delete for foreign key");
 
         $this->onDelete = $action;
@@ -118,7 +119,7 @@ class ForeignKeyConstraint implements ForeignKeyConstraintAgreement
      */
     public function onUpdate(string $action): static
     {
-        if(!in_array(strtoupper($action), ["RESTRICT", "CASCADE", "SET NULL", "NO ACTION", "SET DEFAULT",]))
+        if(!in_array(Str::upper($action), ["RESTRICT", "CASCADE", "SET NULL", "NO ACTION", "SET DEFAULT",]))
             throw new LogicException("Cannot use [$action] on update for foreign key");
 
         $this->onUpdate = $action;

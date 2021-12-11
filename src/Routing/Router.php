@@ -9,6 +9,7 @@ use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\Dispatchable\HttpNotFoundException;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
+use Curfle\Support\Str;
 
 class Router
 {
@@ -389,7 +390,7 @@ class Router
      */
     public function getMiddleware(string $alias): Middleware
     {
-        $parts = explode(":", $alias);
+        $parts = Str::split($alias, ":");
         $alias = $parts[0];
         $parameters = array_slice($parts, 1);
 

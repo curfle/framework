@@ -8,6 +8,7 @@ use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
 use Curfle\Support\Exceptions\Routing\MissingControllerInformationException;
+use Curfle\Support\Str;
 use Curfle\View\View;
 
 class Route
@@ -128,7 +129,7 @@ class Route
         preg_match_all($parameterRegex, $this->uri, $whereMatches, PREG_OFFSET_CAPTURE);
         foreach ($whereMatches[0] as $i => $match) {
             // get name of parameter
-            $name = substr($match[0], 1, -1);
+            $name = Str::substring($match[0], 1, -1);
 
             // get index in matches
             $index = $i + 1;
@@ -157,10 +158,10 @@ class Route
     {
         $uri = $this->uri;
         foreach ($this->where as $parameter => $regex) {
-            $uri = str_replace("{{$parameter}}", "($regex)", $uri);
+            $uri = Str::replace($uri, "{{$parameter}}", "($regex)");
         }
 
-        $uri = str_replace("/", "\/", $uri);
+        $uri = Str::replace($uri, "/", "\/");
 
         return "/^$uri$/m";
     }

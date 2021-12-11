@@ -157,7 +157,7 @@ class Arr
                 continue;
             }
 
-            $parts = explode('.', $key);
+            $parts = Str::split($key, '.');
 
             // clean up before each pass
             $array = &$original;
@@ -202,7 +202,7 @@ class Arr
             return $array[$key] ?? (is_callable($default) ? $default() : $default);
         }
 
-        foreach (explode('.', $key) as $segment) {
+        foreach (Str::split($key, '.') as $segment) {
             if (static::accessible($array) && static::exists($array, $segment)) {
                 $array = $array[$segment];
             } else {
@@ -235,7 +235,7 @@ class Arr
                 continue;
             }
 
-            foreach (explode('.', $key) as $segment) {
+            foreach (Str::split($key, '.') as $segment) {
                 if (static::accessible($subKeyArray) && static::exists($subKeyArray, $segment)) {
                     $subKeyArray = $subKeyArray[$segment];
                 } else {
@@ -306,7 +306,7 @@ class Arr
             return $array = $value;
         }
 
-        $keys = explode('.', $key);
+        $keys = Str::split($key, '.');
 
         foreach ($keys as $i => $key) {
             if (count($keys) === 1) {

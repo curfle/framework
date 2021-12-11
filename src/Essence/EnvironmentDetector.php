@@ -67,7 +67,7 @@ class EnvironmentDetector
             }
 
             if (Str::startsWith($value, '--env')) {
-                $array = array_slice(explode('=', $value), 1);
+                $array = array_slice(Str::split($value, '='), 1);
                 return reset($array);
             }
         }

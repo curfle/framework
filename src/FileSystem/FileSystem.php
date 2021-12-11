@@ -3,6 +3,7 @@
 namespace Curfle\FileSystem;
 
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
+use Curfle\Support\Str;
 use Exception;
 use FilesystemIterator;
 
@@ -164,10 +165,10 @@ class FileSystem
     {
         file_put_contents(
             $path,
-            str_replace(
+            Str::replace(
+                file_get_contents($path),
                 $search,
-                $replace,
-                file_get_contents($path)
+                $replace
             )
         );
     }
@@ -214,7 +215,7 @@ class FileSystem
             return chmod($path, $mode);
         }
 
-        return substr(sprintf('%o', fileperms($path)), -4);
+        return Str::substring(sprintf('%o', fileperms($path)), -4);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Curfle\Container;
 use Closure;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Str;
 use InvalidArgumentException;
 use ReflectionException;
 use ReflectionFunction;
@@ -53,7 +54,7 @@ class BoundMethod
      */
     protected static function callClass(Container $container, string $target, array $parameters = [], string $defaultMethod = null): mixed
     {
-        $segments = explode('@', $target);
+        $segments = Str::split($target, '@');
 
         // We will assume an @ sign is used to delimit the class name from the method
         // name. We will split on this @ sign and then build a callable array that
@@ -141,7 +142,7 @@ class BoundMethod
     protected static function getCallReflector(callable|string $callback): ReflectionMethod|ReflectionFunction|ReflectionFunctionAbstract
     {
         if (is_string($callback) && str_contains($callback, '::')) {
-            $callback = explode('::', $callback);
+            $callback = Str::split($callback, '::');
         } elseif (is_object($callback) && !$callback instanceof Closure) {
             $callback = [$callback, '__invoke'];
         }

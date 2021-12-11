@@ -33,7 +33,7 @@ class Str
     public static function startsWith(string $haystack, array|string $needles): bool
     {
         foreach ((array)$needles as $needle) {
-            if ((string)$needle !== "" && strncmp($haystack, $needle, strlen($needle)) === 0) {
+            if ((string)$needle !== "" && strncmp($haystack, $needle, static::length($needle)) === 0) {
                 return true;
             }
         }
@@ -80,14 +80,14 @@ class Str
     /**
      * Returns a substring of a string based on indices.
      *
-     * @param string $haystack
+     * @param string $string
      * @param int $start
      * @param int|null $length
      * @return string
      */
-    public static function substring(string $haystack, int $start, int $length = null): string
+    public static function substring(string $string, int $start, int $length = null): string
     {
-        return substr($haystack, $start, $length);
+        return substr($string, $start, $length);
     }
 
     /**
@@ -157,10 +157,10 @@ class Str
     /**
      * Makes a string lowercase.
      *
-     * @param string $string $string
+     * @param string|null $string
      * @return string
      */
-    public static function lower(string $string): string
+    public static function lower(?string $string): string
     {
         return strtolower($string);
     }
@@ -168,10 +168,10 @@ class Str
     /**
      * Makes a string uppercase.
      *
-     * @param string $string $string
+     * @param string|null $string
      * @return string
      */
-    public static function upper(string $string): string
+    public static function upper(?string $string): string
     {
         return strtoupper($string);
     }

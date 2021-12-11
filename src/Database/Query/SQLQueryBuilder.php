@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Support\Exceptions\Logic\LogicException;
+use Curfle\Support\Str;
 use Curfle\Utilities\Constants\IgnoreValue;
 use Exception;
 
@@ -498,7 +499,7 @@ class SQLQueryBuilder
             $sql .= $this->_limit !== null ? "LIMIT $this->_limit " : "";
         }
 
-        return trim($sql);
+        return Str::trim($sql);
     }
 
     /**

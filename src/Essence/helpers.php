@@ -5,6 +5,7 @@ use Curfle\Container\Container;
 use Curfle\Http\Response;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
+use Curfle\Support\Str;
 use Curfle\View\View;
 use Curfle\View\ViewFactory;
 
@@ -66,7 +67,7 @@ if (!function_exists('asset')) {
             "ASSET_URL",
             env("ASSET_FOLDER", "assets")
         );
-        return "/" . trim($url, "/") . "/" . ltrim($path, "/");
+        return "/" . Str::trim($url, "/") . "/" . ltrim($path, "/");
     }
 }
 
@@ -188,11 +189,11 @@ if (!function_exists('url')) {
             $encode
                 ? array_map(
                 "urlencode",
-                explode("/", $path)
+                Str::split($path, "/")
             )
-                : explode("/", $path)
+                : Str::split($path, "/")
         );
-        return trim($url, "/") . "/" . ltrim($path, "/");
+        return Str::trim($url, "/") . "/" . ltrim($path, "/");
     }
 }
 

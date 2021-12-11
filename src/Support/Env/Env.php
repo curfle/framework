@@ -5,6 +5,7 @@ namespace Curfle\Support\Env;
 use Closure;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Str;
 
 class Env
 {
@@ -67,14 +68,16 @@ class Env
         for ($i = count($matches[0]) - 1; $i >= 0; $i--) {
             // get variable name and index
             $match = $matches[0][$i];
-            $var = substr($match[0], 1);
+            $var = Str::substring($match[0], 1);
             $index = $match[1];
             // check if vraible is not an escaped dollar sign
             if ($index == 0 || ($index > 0 && $value[$index - 1] !== "\\")) {
                 // get variable value
                 $varValue = static::get($var, "");
                 // replace in string
-                $value = substr($value, 0, $index) . $varValue . substr($value, $index + strlen($var) + 1);
+                $value = Str::substring($value, 0, $index)
+                    . $varValue
+                    . Str::substring($value, $index + Str::length($var) + 1);
             }
         }
 
@@ -82,7 +85,7 @@ class Env
         if($mayCleanSeenVariables)
             static::$seenVariables = [];
 
-        return match (strtolower($value)) {
+        return match (Str::lower($value)) {
             'true', '(true)' => true,
             'false', '(false)' => false,
             'empty', '(empty)' => "",

@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Schema\Grammar\Grammar as GrammarAgreement;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Support\Exceptions\Misc\GuessException;
+use Curfle\Support\Str;
 
 abstract class SQLGrammar implements GrammarAgreement
 {
@@ -34,7 +35,7 @@ abstract class SQLGrammar implements GrammarAgreement
         foreach ($blueprint->getForeignKeys() as $foreignKey) {
             if ($foreignKey->getColumn() === null) {
                 // assuming format FK_referenceTable_primarykeyTable
-                $referenceTable = explode("_", $foreignKey->getName())[1] ?? null;
+                $referenceTable = Str::split($foreignKey->getName(), "_")[1] ?? null;
 
                 if ($referenceTable === null)
                     throw new GuessException("Could not extract reference table name from foreign key name [{$foreignKey->getName()}], assuming format [FK_referenceTable_primarykeyTable]");

@@ -2,6 +2,8 @@
 
 namespace Curfle\Utilities;
 
+use Curfle\Support\Str;
+
 class Base64
 {
     /**
@@ -34,10 +36,10 @@ class Base64
      */
     public static function urlEncode(string $string): string|null
     {
-        return str_replace(
+        return Str::replace(
+            self::encode($string),
             ["+", "/", "="],
-            ["-", "_", ""],
-            self::encode($string)
+            ["-", "_", ""]
         );
     }
 
@@ -50,10 +52,10 @@ class Base64
     public static function urlDecode(string $string): string|null
     {
         return self::decode(
-            str_replace(
+            Str::replace(
+                $string,
                 ["-", "_", ""],
-                ["+", "/", "="],
-                $string
+                ["+", "/", "="]
             )
         );
     }

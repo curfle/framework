@@ -3,6 +3,7 @@
 namespace Curfle\View;
 
 use Curfle\Essence\Application;
+use Curfle\Support\Str;
 
 class View
 {
@@ -53,8 +54,8 @@ class View
         // replace variables
         // TODO: add templating engine
         foreach ($this->data as $name => $value) {
-            $filecontent = str_replace("{{{$name}}}", $value, $filecontent);
-            $filecontent = str_replace("{{ {$name} }}", $value, $filecontent);
+            $filecontent = Str::replace($filecontent, "{{{$name}}}", $value);
+            $filecontent = Str::replace($filecontent, "{{ {$name} }}", $value);
         }
 
         return $filecontent;

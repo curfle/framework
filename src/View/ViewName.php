@@ -4,6 +4,7 @@ namespace Curfle\View;
 
 use Curfle\Essence\Application;
 use Curfle\Support\Facades\App;
+use Curfle\Support\Str;
 
 class ViewName
 {
@@ -28,7 +29,7 @@ class ViewName
     public static function normalize(string $name): string
     {
         // replace "." with "/"
-        $name = str_replace(".", "/", $name);
+        $name = Str::replace($name, ".", "/");
 
         // add ".php" extentension to file
         if(!str_contains($name, ".php"))

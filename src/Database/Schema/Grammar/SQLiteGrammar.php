@@ -8,6 +8,7 @@ use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Support\Exceptions\Database\NoSuchStatementException;
 use Curfle\Support\Exceptions\Misc\NotImplementedException;
+use Curfle\Support\Str;
 
 class SQLiteGrammar extends SQLGrammar
 {
@@ -57,7 +58,7 @@ class SQLiteGrammar extends SQLGrammar
             $sql .= ", ";
         }
 
-        $sql = substr($sql, 0, -2);
+        $sql = Str::substring($sql, 0, -2);
         $sql .= ")";
 
         return $sql;
@@ -98,7 +99,7 @@ class SQLiteGrammar extends SQLGrammar
             throw new NoSuchStatementException("SQLite does not support dropping columns from existing tables");
 
 
-        $sql = substr($sql, 0, -2);
+        $sql = Str::substring($sql, 0, -2);
 
         return $sql;
     }

@@ -2,6 +2,8 @@
 
 namespace Curfle\Console;
 
+use Curfle\Support\Str;
+
 class Input
 {
 
@@ -70,7 +72,7 @@ class Input
      */
     private static function parseInput(string $input): array
     {
-        $argv = explode(" ", $input);
+        $argv = Str::split($input, " ");
         if (($argv[0] ?? null) === "php")
             unset($argv[0]);
         if (($argv[1] ?? null) === "buddy")

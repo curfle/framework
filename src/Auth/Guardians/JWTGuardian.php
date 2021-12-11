@@ -7,6 +7,7 @@ use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Curfle\Support\Facades\Auth;
+use Curfle\Support\Str;
 
 class JWTGuardian extends Guardian
 {
@@ -29,7 +30,7 @@ class JWTGuardian extends Guardian
         if ($success === null && $this->supports(self::DRIVER_BEARER)) {
             $token = $request->header("Authorization");
             if ($token !== null) {
-                $token = str_replace("Bearer ", "", $token);
+                $token = Str::replace($token, "Bearer ", "");
                 $success = JWT::valid($token);
 
                 // add authenticated user if JWT is valid

@@ -4,6 +4,7 @@ namespace Curfle\Console;
 
 use Closure;
 use Curfle\Essence\Application;
+use Curfle\Support\Str;
 
 class Command
 {
@@ -183,7 +184,7 @@ class Command
         foreach ($whereMatches[0] as $i => $match) {
             // get the name of the parameter
             $name = rtrim(
-                trim($match[0], "{}"),
+                Str::trim($match[0], "{}"),
                 "?"
             );
 
@@ -194,7 +195,7 @@ class Command
             }
 
             // set parameter value
-            $value = trim($matches[$index][0][0]);
+            $value = Str::trim($matches[$index][0][0]);
             if ($value !== "")
                 $parameters[$name] = $value;
         }
@@ -214,12 +215,12 @@ class Command
     {
         $signature = $this->signature;
         foreach ($this->where as $parameter => $regex) {
-            $signature = str_replace("{{$parameter}}", "($regex)", $signature);
-            $signature = str_replace(" {{$parameter}?}", "( $regex)?", $signature);
+            $signature = Str::replace($signature, "{{$parameter}}", "($regex)");
+            $signature = Str::replace($signature, " {{$parameter}?}", "( $regex)?");
         }
 
-        $signature = str_replace("\/", "/", $signature);
-        $signature = str_replace("/", "\/", $signature);
+        $signature = Str::replace($signature, "\/", "/");
+        $signature = Str::replace($signature, "/", "\/");
 
         return "/^$signature$/m";
     }

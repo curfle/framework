@@ -5,6 +5,7 @@ namespace Curfle\Auth\JWT;
 use Curfle\Hash\Algorithm\HMAC;
 use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
+use Curfle\Support\Str;
 use Curfle\Utilities\Base64;
 use Curfle\Utilities\JSON;
 
@@ -77,7 +78,7 @@ class JWT
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
 
         // split the token
-        [$header, $payload, $signature] = explode(".", $token);
+        [$header, $payload, $signature] = Str::split($token, ".");
 
         $payloadParsed = JSON::parse(Base64::urlDecode($payload));
 
@@ -115,7 +116,7 @@ class JWT
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file.");
 
         // split the token
-        $parts = explode(".", $token);
+        $parts = Str::split($token, ".");
         if (count($parts) !== 3)
             throw new IncorrectJWTFormatException("The JWT provided is not formatted correctly.");
 
@@ -140,7 +141,7 @@ class JWT
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
 
         // split the token
-        $parts = explode(".", $token);
+        $parts = Str::split($token, ".");
         if (count($parts) !== 3)
             throw new IncorrectJWTFormatException("The JWT provided is not formatted correctly.");
 

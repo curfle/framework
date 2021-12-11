@@ -7,6 +7,7 @@ use Curfle\Hash\Algorithm\Argon2i;
 use Curfle\Hash\Algorithm\Argon2id;
 use Curfle\Hash\Algorithm\BCrypt;
 use Curfle\Support\Exceptions\Hash\HashAlgorithmNotFoundException;
+use Curfle\Support\Str;
 
 class HashManager
 {
@@ -16,7 +17,7 @@ class HashManager
         if($name === null)
             $name = config("hashing.driver");
 
-        return match (strtolower($name)) {
+        return match (Str::lower($name)) {
             "bcrypt" => new BCrypt(),
             "argon2i" => new Argon2i(),
             "argon2id" => new Argon2id(),

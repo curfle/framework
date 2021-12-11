@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
+use Curfle\Support\Str;
 
 class MySQLGrammar extends SQLGrammar
 {
@@ -54,7 +55,7 @@ class MySQLGrammar extends SQLGrammar
             $sql .= ", ";
         }
 
-        $sql = substr($sql, 0, -2);
+        $sql = Str::substring($sql, 0, -2);
         $sql .= ")";
 
         return $sql;
@@ -103,7 +104,7 @@ class MySQLGrammar extends SQLGrammar
             $sql .= "DROP COLUMN $column, ";
         }
 
-        $sql = substr($sql, 0, -2);
+        $sql = Str::substring($sql, 0, -2);
 
         return $sql;
     }

@@ -2,6 +2,8 @@
 
 namespace Curfle\Console;
 
+use Curfle\Support\Str;
+
 class Output
 {
     public const CONSOLE_COLOR_BLACK = 1;
@@ -146,7 +148,7 @@ class Output
      */
     public function getContent(): string
     {
-        return trim($this->content, "\n");
+        return Str::trim($this->content, "\n");
     }
 
     /**
@@ -164,8 +166,8 @@ class Output
 
         // replace all color codes with styled span-HTML-elements
         while (str_contains($content, "\033[")) {
-            $position = strpos($content, "\033[");
-            $color = substr($content, $position, 5);
+            $position = Str::find($content, "\033[");
+            $color = Str::substring($content, $position, 5);
             $colorHTML = match ($color) {
                 "\033[30m" => "#000000", // BLACK
                 "\033[97m" => "#ffffff", // WHITE
@@ -174,10 +176,10 @@ class Output
                 "\033[31m" => "#c91212", // RED
                 default => "#000",
             };
-            $content = substr($content, 0, $position)
+            $content = Str::substring($content, 0, $position)
                 . ($needClosingTag ? "</span>" : "")
                 . "<span style='color: $colorHTML'>"
-                . substr($content, $position + 5);
+                . Str::substring($content, $position + 5);
             $needClosingTag = true;
         }
 
@@ -195,10 +197,10 @@ class Output
      */
     public function getContentPlainFormatted(): string
     {
-        $content = str_replace(
+        $content = Str::replace(
+            $this->getContentHTMLFormatted(),
             "<br>",
-            "\n",
-            $this->getContentHTMLFormatted()
+            "\n"
         );
         return strip_tags($content);
     }
