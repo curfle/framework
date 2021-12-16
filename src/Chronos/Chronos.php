@@ -176,6 +176,16 @@ class Chronos extends \DateTime
     }
 
     /**
+     * Returns the unix timestamp.
+     *
+     * @return int
+     */
+    public function unix(): int
+    {
+        return $this->getTimestamp();
+    }
+
+    /**
      * Returns the formatted timestamp.
      *
      * @param string|null $format
