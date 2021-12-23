@@ -10,13 +10,23 @@ class XML
      * Parses an XML string into an array or object.
      *
      * @param string $xml
+     * @param null $prefix
+     * @param null $namespace
      * @param bool $toArray
      * @return array|object|null
      */
-    public static function parse(string $xml, bool $toArray = true): array|object|null
+    public static function parse(string $xml, $prefix = null, $namespace = null, bool $toArray = true): array|object|null
     {
-        $xml = simplexml_load_string($xml, "SimpleXMLElement", LIBXML_NOCDATA);
-        return json_decode(JSON::from($xml), $toArray);
+        $xml = simplexml_load_string(
+            $xml,
+            "SimpleXMLElement",
+            LIBXML_NOCDATA,
+            $namespace ?? $prefix ?? "",
+            $prefix !== null);
+
+        if ($toArray)
+            return json_decode(JSON::from($xml), true);
+        return $xml;
     }
 
     /**
