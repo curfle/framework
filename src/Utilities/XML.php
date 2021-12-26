@@ -15,7 +15,7 @@ class XML
      * @param bool $toArray
      * @return array|object|null
      */
-    public static function parse(string $xml, $prefix = null, $namespace = null, bool $toArray = true): array|object|null
+    public static function parse(string $xml, $prefix = null, $namespace = null, bool $toArray = false): array|object|null
     {
         $xml = simplexml_load_string(
             $xml,
@@ -24,8 +24,10 @@ class XML
             $namespace ?? $prefix ?? "",
             $prefix !== null);
 
+        // convert to array if forced
         if ($toArray)
             return json_decode(JSON::from($xml), true);
+
         return $xml;
     }
 
