@@ -161,7 +161,7 @@ class Repository implements ArrayAccess, ConfigAgreement
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->set($offset, $value);
     }
@@ -172,7 +172,7 @@ class Repository implements ArrayAccess, ConfigAgreement
      * @param string $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         $this->set($offset, null);
     }

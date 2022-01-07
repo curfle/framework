@@ -169,21 +169,21 @@ class Str
      *
      * @param string $haystack
      * @param string $needle
-     * @param int|null $offset
+     * @param int $offset
      * @return int
      */
-    public static function find(string $haystack, string $needle, int $offset = null): int
+    public static function find(string $haystack, string $needle, int $offset = 0): int
     {
-        return strpos($haystack, $needle, $offset);
+        return strpos($haystack, $needle);
     }
 
     /**
      * Makes a string lowercase.
      *
-     * @param string|null $string
+     * @param string $string
      * @return string
      */
-    public static function lower(?string $string): string
+    public static function lower(string $string): string
     {
         return strtolower($string);
     }

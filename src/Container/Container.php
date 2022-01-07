@@ -747,7 +747,7 @@ class Container implements ArrayAccess, ContainerAgreement
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->bind($offset, $value instanceof Closure ? $value : function () use ($value) {
             return $value;
@@ -760,7 +760,7 @@ class Container implements ArrayAccess, ContainerAgreement
      * @param string $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->bindings[$offset], $this->instances[$offset], $this->resolved[$offset]);
     }

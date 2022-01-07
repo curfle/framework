@@ -61,10 +61,11 @@ class SQLiteConnector implements SQLConnectorInterface
                 throw new FileNotFoundException("The given SQLite database file could not be found.");
 
             $this->connection = new SQLite3(
-                $this->filename,
-                $this->flags,
-                $this->encryptionKey,
+                ...$this->encryptionKey !== null
+                ? [$this->filename, $this->flags, $this->encryptionKey]
+                : [$this->filename, $this->flags,]
             );
+
 
             // enable errors to be reported
             $this->connection->enableExceptions(true);
