@@ -4,10 +4,13 @@ namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Agreements\Database\Schema\BuilderInterface;
-use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Database\Queries\Builders\SQLQueryBuilder;
+use Curfle\Database\Queries\SQLiteQuery;
 use Curfle\Database\Schema\SQLiteSchemaBuilder;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Curfle\Support\Exceptions\Logic\LogicException;
+use Curfle\Support\Str;
 use SQLite3;
 use SQLite3Result;
 use SQLite3Stmt;
@@ -31,20 +34,6 @@ class SQLiteConnector implements SQLConnectorInterface
      * @var SQLite3Stmt|null
      */
     private SQLite3Stmt|null $stmt = null;
-
-    /**
-     * SQLite3 result.
-     *
-     * @var SQLite3Result|null
-     */
-    private SQLite3Result|null $result = null;
-
-    /**
-     * Internal SQLite3 bound counter for positional params.
-     *
-     * @var int
-     */
-    private int $boundCounter = 1;
 
     /**
      * @param string $filename
@@ -100,56 +89,52 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
-     */
-    function query(string $query): SQLite3Result
-    {
-        $db = $this->connect();
-        return $db->query($query);
-    }
-
-    /**
-     * @inheritDoc
-     * @throws FileNotFoundException
-     */
-    function exec(string $query): bool
-    {
-        $db = $this->connect();
-        return $db->exec($query);
-    }
-
-    /**
-     * @inheritDoc
-     * @throws FileNotFoundException
      * @throws LogicException
+     */
+    function query(string $query = null): SQLite3Result
+    {
+        if ($query === null) {
+            if ($this->stmt === null) {
+                throw new LogicException("Cannot execute [null] statement. No prepared statement was provided.");
+            }
+            return $this->stmt->execute();
+        } else {
+            return $this->connect()->query($query);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function execute(string $query = null): bool
+    {
+        if ($query === null) {
+            if ($this->stmt === null) {
+                throw new LogicException("Cannot execute [null] statement. No prepared statement was provided.");
+            }
+            return $this->stmt->execute() !== false;
+        } else {
+            return $this->connect()->exec($query);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws FileNotFoundException|LogicException
      */
     function rows(string $query = null): array
     {
         $rows = [];
-        if ($query !== null) {
-            // use given query
-            $db = $this->connect();
-            $result = $db->query($query);
-            while ($row = $result->fetchArray(SQLITE3_ASSOC))
-                $rows[] = $row;
-        } else {
-            // use stmt
-            if ($this->result === null) {
-                if ($this->stmt !== null)
-                    $this->execute();
-                else
-                    throw new LogicException("Cannot get data from [null]. No prepared statement was executed.");
-            }
-
-            while ($row = $this->result->fetchArray(SQLITE3_ASSOC))
-                $rows[] = $row;
+        $result = $this->query($query);
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $rows[] = $row;
         }
         return $rows;
     }
 
     /**
      * @inheritDoc
-     * @throws FileNotFoundException
-     * @throws LogicException
+     * @throws FileNotFoundException|LogicException
      */
     function row(string $query = null): ?array
     {
@@ -159,7 +144,6 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
-     * @throws LogicException
      */
     function field(string $query = null): mixed
     {
@@ -173,53 +157,69 @@ class SQLiteConnector implements SQLConnectorInterface
      */
     function prepare(string $query): static
     {
+        $this->stmttxt = $query;
         $this->stmt = $this->connect()->prepare($query);
-        $this->result = null;
         return $this;
     }
 
     /**
      * @inheritDoc
+     * @throws LogicException
      */
-    function bind(mixed $value, int $type = null): static
+    function bind(mixed $values, int|array $types = null): static
     {
+
+        // check if statement is prepared
         if ($this->stmt === null)
             throw new LogicException("Cannot bind value to [null]. No prepared statement found.");
 
-        if ($type === null) {
-            if (is_int($value)) $type = static::INTEGER;
-            else if (is_float($value)) $type = static::FLOAT;
-            else if (is_string($value)) $type = static::STRING;
-            else $type = static::BLOB;
+        // cast $types to array if not null
+        if ($types !== null && !Arr::is($types))
+            $types = [$types];
+
+        // cast $values to array
+        if (!Arr::is($values))
+            $values = [$values];
+
+
+        // check if number of types equals number of values
+        if ($types !== null && Arr::length($values) !== Arr::length($types))
+            throw new LogicException("The number of values passed as parameter must equal the number of types.");
+
+        // cast bools to ints
+        array_walk($values, fn($value) => is_bool($value) ? (int)$value : $value);
+
+        // auto-detect types if null
+        if ($types === null) {
+            $types = array_map(fn($value) => match (gettype($value)) {
+                "boolean", "integer" => self::INTEGER,
+                "double" => self::FLOAT,
+                "string" => self::STRING,
+                default => self::BLOB,
+            }, $values);
         }
 
-        $type = match ($type) {
+        // cast types to SQLITE types
+        $types = array_map(fn($type) => match ($type) {
             static::INTEGER => SQLITE3_INTEGER,
             static::FLOAT => SQLITE3_FLOAT,
             static::BLOB => SQLITE3_BLOB,
             default => SQLITE3_TEXT,
-        };
+        }, $types);
 
-        if ($value === null)
-            $type = SQLITE3_NULL;
+        // check for null type
+        for ($i = 0; $i < Arr::length($values); $i++) {
+            if ($values[$i] === null) {
+                $types[$i] = SQLITE3_NULL;
+            }
+        }
 
-        $this->stmt->bindParam($this->boundCounter, $value, $type);
-
-        $this->boundCounter++;
+        // bind params by position
+        for ($i = 0; $i < Arr::length($values); $i++) {
+            $this->stmt->bindParam($i + 1, $values[$i], $types[$i]);
+        }
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    function execute(): bool
-    {
-        $result = $this->stmt->execute();
-        $this->result = $result !== false ? $result : null;
-        $this->boundCounter = 1;
-        $this->stmt = null;
-        return $result !== false;
     }
 
     /**
@@ -238,6 +238,14 @@ class SQLiteConnector implements SQLConnectorInterface
     function escape(string $string): string
     {
         return SQLite3::escapeString($string);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function table(string $table): SQLiteQuery
+    {
+        return (new SQLiteQuery($this))->table($table);
     }
 
     /**
@@ -265,14 +273,6 @@ class SQLiteConnector implements SQLConnectorInterface
     function rollbackTransaction()
     {
         $this->query("ROLLBACK");
-    }
-
-    /**
-     * @inheritDoc
-     */
-    function table(string $table): SQLQueryBuilder
-    {
-        return new SQLQueryBuilder($this, $table);
     }
 
     /**

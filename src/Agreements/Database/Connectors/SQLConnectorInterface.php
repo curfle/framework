@@ -3,7 +3,7 @@
 namespace Curfle\Agreements\Database\Connectors;
 
 use Curfle\Agreements\Database\Schema\BuilderInterface;
-use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Database\Queries\Query;
 
 /**
  * Interface SQLConnectorInterface
@@ -32,28 +32,20 @@ interface SQLConnectorInterface {
     public function disconnect(): void;
 
     /**
-     * Entry point for executing a sql query via the SQLQueryBuilder.
-     *
-     * @param string $table
-     * @return SQLQueryBuilder
-     */
-    public function table(string $table) : SQLQueryBuilder;
-
-    /**
      * Executes a query and returns a result.
      *
-     * @param string $query
+     * @param string|null $query
      * @return mixed
      */
-    public function query(string $query): mixed;
+    public function query(string $query = null): mixed;
 
     /**
      * Executes a query and returns a success indicating bool.
      *
-     * @param string $query
+     * @param string|null $query
      * @return bool
      */
-    public function exec(string $query): bool;
+    public function execute(string $query = null): bool;
 
     /**
      * Fetches multiple rows. If no query provided, the last executed statements' result will be used.
@@ -88,20 +80,13 @@ interface SQLConnectorInterface {
     public function prepare(string $query) : static;
 
     /**
-     * Binds a value to a prepared statement.
+     * Binds one or more values to a prepared statement.
      *
-     * @param mixed $value
-     * @param int|null $type
+     * @param mixed $values
+     * @param int|array|null $types
      * @return mixed
      */
-    public function bind(mixed $value, int $type = null) : static;
-
-    /**
-     * Executes a prepared statement.
-     *
-     * @return mixed
-     */
-    public function execute() : bool;
+    public function bind(mixed $values, int|array $types = null) : static;
 
     /**
      * Returns the last inserted row id.
@@ -117,6 +102,14 @@ interface SQLConnectorInterface {
      * @return string
      */
     public function escape(string $string): string;
+
+    /**
+     * Creates a query on a table.
+     *
+     * @param string $table
+     * @return Query
+     */
+    public function table(string $table): Query;
 
     /**
      * Begins a transaction.

@@ -55,8 +55,7 @@ class SQLiteSchemaBuilder extends Builder
     {
         return !empty($this->connector
             ->prepare("SELECT name FROM sqlite_master WHERE type = ? AND name = ?")
-            ->bind("table")
-            ->bind($table)
+            ->bind(["table", $table])
             ->rows());
     }
 

@@ -118,7 +118,7 @@ abstract class Builder implements BuilderInterface
      */
     public function dropColumn(string $table, string $column): bool
     {
-        return $this->connector->exec("ALTER TABLE `$table` DROP $column");
+        return $this->connector->execute("ALTER TABLE `$table` DROP $column");
     }
 
     /**
