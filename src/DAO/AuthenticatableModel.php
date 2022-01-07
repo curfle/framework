@@ -54,8 +54,7 @@ abstract class AuthenticatableModel extends Model implements Authenticatable
 
         // obtain hash from model
         $hash = static::where(static::getUsernameColumnForAuth(), $username)
-            ->valueAs(static::getPasswordColumnForAuth(), "hash")
-            ->first()["hash"] ?? null;
+            ->value(static::getPasswordColumnForAuth()) ?? null;
 
         // return false if no matching user was found
         if($hash === null)

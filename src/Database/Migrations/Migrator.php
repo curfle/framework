@@ -80,9 +80,7 @@ class Migrator
             return [
                 "name" => $migration,
                 "filename" => $filename,
-                "timestamp" => DB::field(
-                    DB::table($this->getMigrationTable())->value("timestamp")->where("migration", $filename)->build()
-                )
+                "timestamp" => DB::table($this->getMigrationTable())->where("migration", $filename)->value("timestamp")
             ];
         }, $migrations, array_keys($migrations));
     }

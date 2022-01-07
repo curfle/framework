@@ -59,7 +59,7 @@ class ManyToManyRelationship extends Relationship
         $targetConfig = $this->targetClass::__getCleanedConfig();
 
         $entries = $this->model::__callTableOnConnector($this->pivotTable)
-            ->value("{$targetConfig["table"]}.*")
+            ->select("{$targetConfig["table"]}.*")
             ->leftJoin(
                 $targetConfig["table"],
                 "{$this->pivotTable}.{$this->fkColumnOfOtherModelInPivotTable}",

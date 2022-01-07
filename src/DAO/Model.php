@@ -10,7 +10,8 @@ use Curfle\DAO\Relationships\OneToOneRelationship;
 use Curfle\DAO\Relationships\Relationship;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
-use Curfle\Database\Query\SQLQueryBuilder;
+use Curfle\Database\Queries\Builders\SQLQueryBuilder;
+use Curfle\Database\Queries\Query;
 use Curfle\Support\Exceptions\DAO\UndefinedPropertyException;
 use Exception;
 use ReflectionClass;
@@ -19,36 +20,32 @@ use ReflectionParameter;
 use ReflectionProperty;
 
 /**
- * @method static SQLQueryBuilder distinct()
- * @method static SQLQueryBuilder value()
- * @method static SQLQueryBuilder valueAs(string $value, string $as)
- * @method static SQLQueryBuilder join(string $table, string $columnA, string $operator, string $columnB)
- * @method static SQLQueryBuilder leftJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static SQLQueryBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static SQLQueryBuilder rightJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static SQLQueryBuilder rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static SQLQueryBuilder crossJoin(string $table)
- * @method static SQLQueryBuilder where()
- * @method static SQLQueryBuilder orWhere()
- * @method static SQLQueryBuilder whereBetween(string $column, $min, $max)
- * @method static SQLQueryBuilder orWhereBetween(string $column, $min, $max)
- * @method static SQLQueryBuilder whereNotBetween(string $column, $min, $max)
- * @method static SQLQueryBuilder orWhereNotBetween(string $column, $min, $max)
- * @method static SQLQueryBuilder having()
- * @method static SQLQueryBuilder groupBy()
- * @method static SQLQueryBuilder orderBy()
- * @method static SQLQueryBuilder limit(int $n)
- * @method static SQLQueryBuilder offset(int $n)
- * @method static SQLQueryBuilder insert(array $data)
- * @method static SQLQueryBuilder insertOrIgnore(array $data)
- * @method static SQLQueryBuilder insertOrUpdate(array $data)
- * @method static string build()
+ * @method static Query distinct()
+ * @method static Query select(string $column, string $alias = null)
+ * @method static Query join(string $table, string $columnA, string $operator, string $columnB)
+ * @method static Query leftJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static Query leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static Query rightJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static Query rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static Query crossJoin(string $table)
+ * @method static Query where()
+ * @method static Query orWhere()
+ * @method static Query having()
+ * @method static Query groupBy()
+ * @method static Query orderBy()
+ * @method static Query limit(int $n)
+ * @method static Query offset(int $n)
+ * @method static bool insert(array $data)
+ * @method static bool insertOrUpdate(array $data)
+ * @method static bool insertOrIgnore(array $data)
  * @method static array|null first()
- * @method static array|null find($id)
+ * @method static array|null value(string $column)
+ * @method static array|null find($id, string $column = "id")
+ * @method static mixed count()
  * @method static mixed max()
  * @method static mixed min()
  * @method static mixed avg()
- * @method static mixed count()
+ * @method static mixed sum()
  * @method static bool exists()
  * @method static bool doesntExist()
  *
@@ -203,7 +200,7 @@ abstract class Model implements DAOInterface
      * Calls the ::table function on the connector.
      *
      * @param string $table
-     * @return SQLQueryBuilder|void
+     * @return Query
      */
     public static function __callTableOnConnector(string $table)
     {
