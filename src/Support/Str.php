@@ -91,7 +91,7 @@ class Str
     }
 
     /**
-     * Splits the string by a siven seperator.
+     * Splits the string by a given seperator.
      *
      * @param string $string
      * @param string $seperator
@@ -104,6 +104,18 @@ class Str
     }
 
     /**
+     * Concatenates an array into a string by a given seperator.
+     *
+     * @param array $array
+     * @param string $seperator
+     * @return string
+     */
+    public static function concat(array $array, string $seperator = " "): string
+    {
+        return implode($seperator, $array);
+    }
+
+    /**
      * Returns the length of a string.
      *
      * @param string $string
@@ -112,6 +124,17 @@ class Str
     public static function length(string $string): int
     {
         return strlen($string);
+    }
+
+    /**
+     * Returns wether the string is empty or not.
+     *
+     * @param string $string
+     * @return bool
+     */
+    public static function empty(string $string): bool
+    {
+        return $string === "";
     }
 
     /**

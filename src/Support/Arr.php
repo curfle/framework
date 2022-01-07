@@ -57,6 +57,17 @@ class Arr
     }
 
     /**
+     * Check if array is empty
+     *
+     * @param array $array
+     * @return bool
+     */
+    public static function empty(array $array): bool
+    {
+        return static::length($array) === 0;
+    }
+
+    /**
      * Get all the given array except for a specified array of keys.
      *
      * @param array $array
@@ -133,6 +144,17 @@ class Arr
     }
 
     /**
+     * Returns the length of the array.
+     *
+     * @param array $array
+     * @return int
+     */
+    public static function length(array $array): int
+    {
+        return count($array);
+    }
+
+    /**
      * Remove one or many array items from a given array using "dot" notation.
      *
      * @param array $array
@@ -143,7 +165,7 @@ class Arr
     {
         $original = &$array;
 
-        $keys = (array) $keys;
+        $keys = (array)$keys;
 
         if (count($keys) === 0) {
             return;
@@ -248,6 +270,28 @@ class Arr
     }
 
     /**
+     * Determine whether the given array is an array.
+     *
+     * @param mixed $array
+     * @return bool
+     */
+    public static function is(mixed $array): bool
+    {
+        return is_array($array);
+    }
+
+    /**
+     * Returns the array keys.
+     *
+     * @param array $array
+     * @return array
+     */
+    public static function keys(array $array): array
+    {
+        return array_keys($array);
+    }
+
+    /**
      * Get a subset of the items from the given array.
      *
      * @param array $array
@@ -340,7 +384,9 @@ class Arr
     public static function sort(array $array, callable|string $callback = null): array
     {
         $copy = $array;
-        usort($copy, $callback ?? function($a, $b){return $b-$a;});
+        usort($copy, $callback ?? function ($a, $b) {
+                return $b - $a;
+            });
         return $copy;
     }
 
