@@ -32,8 +32,8 @@ class XMLTest extends TestCase
         $data = ["hello" => "world", "this" => ["is" => "a", "nested" => ["xml", "array"]]];
 
         self::assertEquals(
-            $data,
-            XML::parse($xml)
+            XML::parse($xml)->hello,
+            "world"
         );
     }
 }
