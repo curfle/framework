@@ -8,6 +8,7 @@ use Curfle\Container\Container;
 use Curfle\DAO\Model;
 use Curfle\DAO\Relationships\RelationshipCache;
 use Curfle\Database\Connectors\MySQLConnector;
+use Curfle\Database\Queries\MySQLQuery;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;

@@ -38,7 +38,7 @@ class MiddlewareTest extends TestCase
 
         // create table and insert one user
         $this->connector = new MySQLConnector(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
-        $this->connector->exec("CREATE TABLE `user` (
+        $this->connector->execute("CREATE TABLE `user` (
               `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
               `firstname` varchar(250) NOT NULL,
               `lastname` varchar(250) NOT NULL,
@@ -48,7 +48,7 @@ class MiddlewareTest extends TestCase
               `deleted` timestamp NULL DEFAULT NULL,
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        $this->connector->exec("INSERT INTO user (id, firstname, lastname, email, password) VALUES (42, 'Jane', 'Doe', '', '')");
+        $this->connector->execute("INSERT INTO user (id, firstname, lastname, email, password) VALUES (42, 'Jane', 'Doe', '', '')");
 
         // application instance
         $this->app = new Application();
@@ -81,7 +81,7 @@ class MiddlewareTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->connector->exec("DROP TABLE IF EXISTS user");
+        $this->connector->execute("DROP TABLE IF EXISTS user");
     }
 
     /**

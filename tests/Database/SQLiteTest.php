@@ -35,7 +35,7 @@ class SQLiteTest extends TestCase
     public function testExec()
     {
         $this->assertTrue(
-            $this->connector->exec("
+            $this->connector->execute("
                 CREATE TABLE Persons (
                     PersonID int,
                     LastName varchar(255),
@@ -55,7 +55,7 @@ class SQLiteTest extends TestCase
     public function testPrepareExecute()
     {
         // create table
-        $this->connector->exec("
+        $this->connector->execute("
             CREATE TABLE Persons (
                 PersonId int,
                 LastName varchar(255),
@@ -68,11 +68,7 @@ class SQLiteTest extends TestCase
         // insert data
         $this->connector
             ->prepare("INSERT INTO Persons (PersonId, FirstName, LastName, Address, City) VALUES (?, ?, ?, ?, ?)")
-            ->bind(42)
-            ->bind("Jane")
-            ->bind("Doe")
-            ->bind("Example Street 42")
-            ->bind("Example City")
+            ->bind([42, "Jane", "Doe", "Example Street 42", "Example City"])
             ->execute();
 
         // get the person

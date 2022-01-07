@@ -2,6 +2,8 @@
 
 namespace Curfle\Tests\Database;
 
+use Curfle\Database\Queries\Builders\MySQLQueryBuilder;
+use Curfle\Database\Queries\MySQLQuery;
 use PHPUnit\Framework\TestCase;
 use Curfle\Database\Connectors\SQLiteConnector;
 
@@ -34,7 +36,7 @@ class SQLQueryBuilderTest extends TestCase
         $this->assertEquals(
             "SELECT * FROM users",
             $this->connector->table("users")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -44,11 +46,11 @@ class SQLQueryBuilderTest extends TestCase
     public function testValueAndWhereInSelect()
     {
         $this->assertEquals(
-            "SELECT email FROM users WHERE name = 'John'",
+            "SELECT email FROM users WHERE name=?",
             $this->connector->table("users")
                 ->where("name", "John")
-                ->value("email")
-                ->build()
+                ->select("email")
+                ->build()->getQuery()
         );
     }
 
@@ -58,21 +60,23 @@ class SQLQueryBuilderTest extends TestCase
     public function testMultipleValueAndWhereInSelect()
     {
         $this->assertEquals(
-            "SELECT email, name, created FROM users WHERE name = 'John'",
+            "SELECT email, name, created FROM users WHERE name=?",
             $this->connector->table("users")
                 ->where("name", "John")
-                ->value("email")
-                ->value("name")
-                ->value("created")
-                ->build()
+                ->select("email")
+                ->select("name")
+                ->select("created")
+                ->build()->getQuery()
         );
 
         $this->assertEquals(
-            "SELECT email, name, created FROM users WHERE name = 'John'",
+            "SELECT email, name, created FROM users WHERE name=?",
             $this->connector->table("users")
                 ->where("name", "John")
-                ->value("email", "name", "created")
-                ->build()
+                ->select("email")
+                ->select("name")
+                ->select("created")
+                ->build()->getQuery()
         );
     }
 
@@ -82,11 +86,11 @@ class SQLQueryBuilderTest extends TestCase
     public function testOrderByAndWhereInSelect()
     {
         $this->assertEquals(
-            "SELECT * FROM users WHERE email = 'john@example.de' ORDER BY id",
+            "SELECT * FROM users WHERE email=? ORDER BY id",
             $this->connector->table("users")
                 ->where("email", "john@example.de")
                 ->orderBy("id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -96,14 +100,14 @@ class SQLQueryBuilderTest extends TestCase
     public function testOrderByAndMultipleWhereInSelect()
     {
         $this->assertEquals(
-            "SELECT name FROM users WHERE email = 'john@example.de' AND registered = 1 AND id = 5 ORDER BY id DESC",
+            "SELECT name FROM users WHERE email=? AND registered=? AND id=? ORDER BY id DESC",
             $this->connector->table("users")
                 ->where("email", "john@example.de")
                 ->where("registered", true)
                 ->where("id", 5)
                 ->orderBy("id", "DESC")
-                ->value("name")
-                ->build()
+                ->select("name")
+                ->build()->getQuery()
         );
     }
 
@@ -116,7 +120,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT DISTINCT * FROM users",
             $this->connector->table("users")
                 ->distinct()
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -130,14 +134,14 @@ class SQLQueryBuilderTest extends TestCase
             $this->connector->table("users")
                 ->groupBy("registered")
                 ->groupBy("created")
-                ->build()
+                ->build()->getQuery()
         );
 
         $this->assertEquals(
             "SELECT * FROM users GROUP BY registered, created",
             $this->connector->table("users")
                 ->groupBy("registered", "created")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -147,12 +151,12 @@ class SQLQueryBuilderTest extends TestCase
     public function testGroupByWithHavingInSelect()
     {
         $this->assertEquals(
-            "SELECT * FROM users GROUP BY registered, created HAVING id >= 5",
+            "SELECT * FROM users GROUP BY registered, created HAVING id>=?",
             $this->connector->table("users")
                 ->groupBy("registered")
                 ->groupBy("created")
                 ->having("id", ">=", 5)
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -166,7 +170,7 @@ class SQLQueryBuilderTest extends TestCase
             $this->connector->table("users")
                 ->offset(20)
                 ->limit(10)
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -179,7 +183,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users JOIN payments ON payments.userId = users.id",
             $this->connector->table("users")
                 ->join("payments", "payments.userId", "=", "users.id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -192,7 +196,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users LEFT JOIN payments ON payments.userId = users.id",
             $this->connector->table("users")
                 ->leftJoin("payments", "payments.userId", "=", "users.id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -205,7 +209,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users RIGHT JOIN payments ON payments.userId = users.id",
             $this->connector->table("users")
                 ->rightJoin("payments", "payments.userId", "=", "users.id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -218,7 +222,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users LEFT OUTER JOIN payments ON payments.userId = users.id",
             $this->connector->table("users")
                 ->leftOuterJoin("payments", "payments.userId", "=", "users.id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -231,7 +235,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users RIGHT OUTER JOIN payments ON payments.userId = users.id",
             $this->connector->table("users")
                 ->rightOuterJoin("payments", "payments.userId", "=", "users.id")
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -244,76 +248,7 @@ class SQLQueryBuilderTest extends TestCase
             "SELECT * FROM users CROSS JOIN payments",
             $this->connector->table("users")
                 ->crossJoin("payments")
-                ->build()
-        );
-    }
-
-    /**
-     * tests whereBetween()
-     */
-    public function testWhereBetweenInSelect()
-    {
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10",
-            $this->connector->table("users")
-                ->whereBetween("id", 5, 10)
-                ->build()
-        );
-
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10 AND created BETWEEN 1234567 AND 2345678",
-            $this->connector->table("users")
-                ->whereBetween("id", 5, 10)
-                ->whereBetween("created", 1234567, 2345678)
-                ->build()
-        );
-    }
-
-    /**
-     * tests whereBetween() and orWhereBetween()
-     */
-    public function testWhereBetweenOrWhereBetweenInSelect()
-    {
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10 OR created BETWEEN 1234567 AND 2345678",
-            $this->connector->table("users")
-                ->whereBetween("id", 5, 10)
-                ->orWhereBetween("created", 1234567, 2345678)
-                ->build()
-        );
-    }
-
-    /**
-     * tests whereNotBetween()
-     */
-    public function testWhereNotBetweenInSelect()
-    {
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10",
-            $this->connector->table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->build()
-        );
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 AND created NOT BETWEEN 1234567 AND 2345678",
-            $this->connector->table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->whereNotBetween("created", 1234567, 2345678)
-                ->build()
-        );
-    }
-
-    /**
-     * tests whereNotBetween() and orWhereNotBetween()
-     */
-    public function testWhereNotBetweenOrWhereNotBetweenInSelect()
-    {
-        $this->assertEquals(
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 OR created NOT BETWEEN 1234567 AND 2345678",
-            $this->connector->table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->orWhereNotBetween("created", 1234567, 2345678)
-                ->build()
+                ->build()->getQuery()
         );
     }
 
@@ -323,11 +258,13 @@ class SQLQueryBuilderTest extends TestCase
     public function testInsert()
     {
         $this->assertEquals(
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 OR created NOT BETWEEN 1234567 AND 2345678",
-            $this->connector->table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->orWhereNotBetween("created", 1234567, 2345678)
-                ->build()
+            "INSERT INTO users (id, name, email) VALUES (?, ?, ?)",
+            (new MySQLQueryBuilder())->table("users")
+                ->insert([
+                    "id" => 2,
+                    "name" => "Jane",
+                    "email" => "jane@doe.dd"
+                ])->build()->getQuery()
         );
     }
 

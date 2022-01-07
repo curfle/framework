@@ -1,8 +1,9 @@
 <?php
 
-namespace Curfle\Tests\Database\Query;
+namespace Curfle\Tests\Database\Queries;
 
 use Curfle\Database\Connectors\SQLiteConnector;
+use Curfle\Database\Queries\Builders\SQLiteQueryBuilder;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\Support\Facades\DB;
@@ -23,13 +24,13 @@ class SQLQueryBuilderTest extends TestCase
         Facade::setFacadeApplication($app);
 
 
-        DB::exec("DROP TABLE IF EXISTS users");
-        DB::exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(100))");
+        DB::execute("DROP TABLE IF EXISTS users");
+        DB::execute("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(100))");
     }
 
     protected function tearDown(): void
     {
-        DB::exec("DROP TABLE IF EXISTS users");
+        DB::execute("DROP TABLE IF EXISTS users");
     }
 
     /**
@@ -38,9 +39,9 @@ class SQLQueryBuilderTest extends TestCase
     public function testsimpleSelectQuery()
     {
         $this->assertEquals(
+            "SELECT * FROM users",
             DB::table("users")
-                ->build(),
-            "SELECT * FROM users"
+                ->build()->getQuery()
         );
     }
 
@@ -50,11 +51,11 @@ class SQLQueryBuilderTest extends TestCase
     public function testValueAndWhereInSelect()
     {
         $this->assertEquals(
+            "SELECT email FROM users WHERE name=?",
             DB::table("users")
                 ->where("name", "John")
-                ->value("email")
-                ->build(),
-            "SELECT email FROM users WHERE name = 'John'"
+                ->select("email")
+                ->build()->getQuery()
         );
     }
 
@@ -64,21 +65,23 @@ class SQLQueryBuilderTest extends TestCase
     public function testMultipleValueAndWhereInSelect()
     {
         $this->assertEquals(
+            "SELECT email, name, created FROM users WHERE name=?",
             DB::table("users")
                 ->where("name", "John")
-                ->value("email")
-                ->value("name")
-                ->value("created")
-                ->build(),
-            "SELECT email, name, created FROM users WHERE name = 'John'"
+                ->select("email")
+                ->select("name")
+                ->select("created")
+                ->build()->getQuery()
         );
 
         $this->assertEquals(
+            "SELECT email, name, created FROM users WHERE name=?",
             DB::table("users")
                 ->where("name", "John")
-                ->value("email", "name", "created")
-                ->build(),
-            "SELECT email, name, created FROM users WHERE name = 'John'"
+                ->select("email")
+                ->select("name")
+                ->select("created")
+                ->build()->getQuery()
         );
     }
 
@@ -88,11 +91,11 @@ class SQLQueryBuilderTest extends TestCase
     public function testOrderByAndWhereInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users WHERE email=? ORDER BY id",
             DB::table("users")
                 ->where("email", "john@example.de")
                 ->orderBy("id")
-                ->build(),
-            "SELECT * FROM users WHERE email = 'john@example.de' ORDER BY id"
+                ->build()->getQuery()
         );
     }
 
@@ -102,14 +105,14 @@ class SQLQueryBuilderTest extends TestCase
     public function testOrderByAndMultipleWhereInSelect()
     {
         $this->assertEquals(
+            "SELECT name FROM users WHERE email=? AND registered=? AND id=? ORDER BY id ASC",
             DB::table("users")
                 ->where("email", "john@example.de")
+                ->select("name")
                 ->where("registered", true)
                 ->where("id", 5)
                 ->orderBy("id", "ASC")
-                ->value("name")
-                ->build(),
-            "SELECT name FROM users WHERE email = 'john@example.de' AND registered = 1 AND id = 5 ORDER BY id ASC"
+                ->build()->getQuery()
         );
     }
 
@@ -119,10 +122,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testDistinctInSelect()
     {
         $this->assertEquals(
+            "SELECT DISTINCT * FROM users",
             DB::table("users")
                 ->distinct()
-                ->build(),
-            "SELECT DISTINCT * FROM users"
+                ->build()->getQuery()
         );
     }
 
@@ -132,18 +135,18 @@ class SQLQueryBuilderTest extends TestCase
     public function testGroupByInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users GROUP BY registered, created",
             DB::table("users")
                 ->groupBy("registered")
                 ->groupBy("created")
-                ->build(),
-            "SELECT * FROM users GROUP BY registered, created"
+                ->build()->getQuery()
         );
 
         $this->assertEquals(
+            "SELECT * FROM users GROUP BY registered, created",
             DB::table("users")
                 ->groupBy("registered", "created")
-                ->build(),
-            "SELECT * FROM users GROUP BY registered, created"
+                ->build()->getQuery()
         );
     }
 
@@ -153,12 +156,12 @@ class SQLQueryBuilderTest extends TestCase
     public function testGroupByWithHavingInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users GROUP BY registered, created HAVING id>=?",
             DB::table("users")
                 ->groupBy("registered")
                 ->groupBy("created")
                 ->having("id", ">=", 5)
-                ->build(),
-            "SELECT * FROM users GROUP BY registered, created HAVING id >= 5"
+                ->build()->getQuery()
         );
     }
 
@@ -168,11 +171,11 @@ class SQLQueryBuilderTest extends TestCase
     public function testOffsetAndLimitInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users LIMIT 10 OFFSET 20",
             DB::table("users")
                 ->offset(20)
                 ->limit(10)
-                ->build(),
-            "SELECT * FROM users LIMIT 10 OFFSET 20"
+                ->build()->getQuery()
         );
     }
 
@@ -182,10 +185,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users JOIN payments ON payments.userId = users.id",
             DB::table("users")
                 ->join("payments", "payments.userId", "=", "users.id")
-                ->build(),
-            "SELECT * FROM users JOIN payments ON payments.userId = users.id"
+                ->build()->getQuery()
         );
     }
 
@@ -195,10 +198,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testLeftJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users LEFT JOIN payments ON payments.userId = users.id",
             DB::table("users")
                 ->leftJoin("payments", "payments.userId", "=", "users.id")
-                ->build(),
-            "SELECT * FROM users LEFT JOIN payments ON payments.userId = users.id"
+                ->build()->getQuery()
         );
     }
 
@@ -208,10 +211,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testRightJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users RIGHT JOIN payments ON payments.userId = users.id",
             DB::table("users")
                 ->rightJoin("payments", "payments.userId", "=", "users.id")
-                ->build(),
-            "SELECT * FROM users RIGHT JOIN payments ON payments.userId = users.id"
+                ->build()->getQuery()
         );
     }
 
@@ -221,10 +224,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testLeftOuterJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users LEFT OUTER JOIN payments ON payments.userId = users.id",
             DB::table("users")
                 ->leftOuterJoin("payments", "payments.userId", "=", "users.id")
-                ->build(),
-            "SELECT * FROM users LEFT OUTER JOIN payments ON payments.userId = users.id"
+                ->build()->getQuery(),
         );
     }
 
@@ -234,10 +237,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testRightOuterJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users RIGHT OUTER JOIN payments ON payments.userId = users.id",
             DB::table("users")
                 ->rightOuterJoin("payments", "payments.userId", "=", "users.id")
-                ->build(),
-            "SELECT * FROM users RIGHT OUTER JOIN payments ON payments.userId = users.id"
+                ->build()->getQuery()
         );
     }
 
@@ -247,79 +250,10 @@ class SQLQueryBuilderTest extends TestCase
     public function testCrossJoinInSelect()
     {
         $this->assertEquals(
+            "SELECT * FROM users CROSS JOIN payments",
             DB::table("users")
                 ->crossJoin("payments")
-                ->build(),
-            "SELECT * FROM users CROSS JOIN payments"
-        );
-    }
-
-    /**
-     * tests whereBetween()
-     */
-    public function testWhereBetweenInSelect()
-    {
-        $this->assertEquals(
-            DB::table("users")
-                ->whereBetween("id", 5, 10)
-                ->build(),
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10"
-        );
-
-        $this->assertEquals(
-            DB::table("users")
-                ->whereBetween("id", 5, 10)
-                ->whereBetween("created", 1234567, 2345678)
-                ->build(),
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10 AND created BETWEEN 1234567 AND 2345678"
-        );
-    }
-
-    /**
-     * tests whereBetween() and orWhereBetween()
-     */
-    public function testWhereBetweenOrWhereBetweenInSelect()
-    {
-        $this->assertEquals(
-            DB::table("users")
-                ->whereBetween("id", 5, 10)
-                ->orWhereBetween("created", 1234567, 2345678)
-                ->build(),
-            "SELECT * FROM users WHERE id BETWEEN 5 AND 10 OR created BETWEEN 1234567 AND 2345678"
-        );
-    }
-
-    /**
-     * tests whereNotBetween()
-     */
-    public function testWhereNotBetweenInSelect()
-    {
-        $this->assertEquals(
-            DB::table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->build(),
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10"
-        );
-        $this->assertEquals(
-            DB::table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->whereNotBetween("created", 1234567, 2345678)
-                ->build(),
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 AND created NOT BETWEEN 1234567 AND 2345678"
-        );
-    }
-
-    /**
-     * tests whereNotBetween() and orWhereNotBetween()
-     */
-    public function testWhereNotBetweenOrWhereNotBetweenInSelect()
-    {
-        $this->assertEquals(
-            DB::table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->orWhereNotBetween("created", 1234567, 2345678)
-                ->build(),
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 OR created NOT BETWEEN 1234567 AND 2345678"
+                ->build()->getQuery()
         );
     }
 
@@ -329,11 +263,13 @@ class SQLQueryBuilderTest extends TestCase
     public function testInsert()
     {
         $this->assertEquals(
-            DB::table("users")
-                ->whereNotBetween("id", 5, 10)
-                ->orWhereNotBetween("created", 1234567, 2345678)
-                ->build(),
-            "SELECT * FROM users WHERE id NOT BETWEEN 5 AND 10 OR created NOT BETWEEN 1234567 AND 2345678"
+            "INSERT INTO users (id, name, email) VALUES (?, ?, ?)",
+            (new SQLiteQueryBuilder())->table("users")
+                ->insert([
+                    "id" => 2,
+                    "name" => "Jane",
+                    "email" => "jane@doe.dd"
+                ])->build()->getQuery()
         );
     }
 
