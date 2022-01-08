@@ -60,20 +60,4 @@ class View
 
         return $filecontent;
     }
-
-    /**
-     * @param string $path
-     */
-    public function setPath(string $path): void
-    {
-        $this->path = $path;
-    }
-
-    /**
-     * @param array $data
-     */
-    public function setData(array $data): void
-    {
-        $this->data = $data;
-    }
 }

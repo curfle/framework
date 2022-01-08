@@ -33,7 +33,6 @@ class Repository implements RepositoryAgreement
      * Loads the .env file.
      *
      * @return Repository
-     * @throws FileNotFoundException
      */
     public function load() : static
     {
@@ -78,14 +77,6 @@ class Repository implements RepositoryAgreement
     }
 
     /**
-     * @return string|null
-     */
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    /**
      * @inheritDoc
      */
     public function has(string $name): bool
@@ -107,15 +98,6 @@ class Repository implements RepositoryAgreement
     public function set(string $name, string $value): bool
     {
         $this->variables[$name] = $value;
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function clear(string $name): bool
-    {
-        unset($this->variables[$name]);
         return true;
     }
 }

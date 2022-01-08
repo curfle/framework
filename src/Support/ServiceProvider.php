@@ -105,7 +105,7 @@ abstract class ServiceProvider
      *
      * @return void
      */
-    function register()
+    public function register()
     {
     }
 
@@ -114,7 +114,7 @@ abstract class ServiceProvider
      *
      * @return void
      */
-    function boot()
+    public function boot()
     {
     }
 }

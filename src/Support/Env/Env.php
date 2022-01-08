@@ -8,13 +8,6 @@ use Curfle\Support\Str;
 class Env
 {
     /**
-     * Indicates if the putenv adapter is enabled.
-     *
-     * @var bool
-     */
-    protected static bool $putenv = true;
-
-    /**
      * The environment repository instance.
      *
      * @var Repository|null
