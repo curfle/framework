@@ -27,7 +27,7 @@ use ReflectionProperty;
  * @method static Query rightJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static Query rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static Query crossJoin(string $table)
- * @method static Query where()
+ * @method static Query where(...$condition)
  * @method static Query orWhere()
  * @method static Query having()
  * @method static Query groupBy()

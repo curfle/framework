@@ -99,9 +99,7 @@ class SQLiteGrammar extends SQLGrammar
             throw new NoSuchStatementException("SQLite does not support dropping columns from existing tables");
 
 
-        $sql = Str::substring($sql, 0, -2);
-
-        return $sql;
+        return Str::substring($sql, 0, -2);
     }
 
     /**

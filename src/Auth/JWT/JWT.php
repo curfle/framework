@@ -22,7 +22,7 @@ class JWT
      */
     public static function generate(array $payload, int $lifetime = 60 * 60 * 24 * 30, string $algorithm = "HS256"): string
     {
-        $secret = env("SECRET", null);
+        $secret = env("SECRET");
 
         if ($secret === null)
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
@@ -36,8 +36,8 @@ class JWT
         // fill payload
         $payload = array_merge(
             [
-                "iss" => env("JWT_ISS", null),      // issuer
-                "aud" => env("JWT_AUD", null),      // audience
+                "iss" => env("JWT_ISS"),      // issuer
+                "aud" => env("JWT_AUD"),      // audience
                 "exp" => time() + $lifetime,                    // expiration time
                 "nbf" => time(),                                // not before
                 "iat" => time(),                                // issued at time
@@ -72,7 +72,7 @@ class JWT
      */
     public static function valid(string $token, bool $checkExpIfAvailable = true): bool
     {
-        $secret = env("SECRET", null);
+        $secret = env("SECRET");
 
         if ($secret === null)
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");
@@ -110,7 +110,7 @@ class JWT
      */
     public static function decode(string $token): array|null
     {
-        $secret = env("SECRET", null);
+        $secret = env("SECRET");
 
         if ($secret === null)
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file.");
@@ -135,7 +135,7 @@ class JWT
      */
     public static function decodeHeader(string $token): array|null
     {
-        $secret = env("SECRET", null);
+        $secret = env("SECRET");
 
         if ($secret === null)
             throw new SecretNotPresentException("The SECRET property is not defined in your .env file");

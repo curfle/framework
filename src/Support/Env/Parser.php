@@ -39,7 +39,7 @@ class Parser
                 );
             // else use until first space or #
             else
-                $value = Str::split(Str::split($value, "#")[0], " ")[0];
+                $value = Str::split(Str::split($value, "#")[0])[0];
 
             if (!array_key_exists($name, $result)) {
                 $result[$name] = $value;

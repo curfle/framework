@@ -23,7 +23,6 @@ class ModelTest extends TestCase
 {
     private SQLConnectorInterface $connector;
     private MySQLSchemaBuilder $builder;
-    private Application $app;
 
     public function __construct()
     {
@@ -34,12 +33,12 @@ class ModelTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->app = new Application();
-        $this->app->singleton("relationshipcache", function () {
+        $app = new Application();
+        $app->singleton("relationshipcache", function () {
             return new RelationshipCache();
         });
-        Facade::setFacadeApplication($this->app);
-        Container::setInstance($this->app);
+        Facade::setFacadeApplication($app);
+        Container::setInstance($app);
 
         $this->builder->dropIfExists("user_role");
         $this->builder->dropIfExists("login");

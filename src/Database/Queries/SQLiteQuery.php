@@ -10,6 +10,6 @@ class SQLiteQuery extends Query
     public function __construct(SQLConnectorInterface $connector)
     {
         parent::__construct($connector);
-        $this->builder = new SQLiteQueryBuilder($connector);
+        $this->builder = new SQLiteQueryBuilder();
     }
 }

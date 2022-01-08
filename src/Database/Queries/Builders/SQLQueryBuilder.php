@@ -562,8 +562,8 @@ abstract class SQLQueryBuilder
                 if (!Str::empty($join[2])) {
                     $join[2] = static::ON . " " . $join[2];
                 }
-                return Str::concat($join, " ");
-            }, $this->join), " ") . " "
+                return Str::concat($join);
+            }, $this->join)) . " "
             : "";
 
         // where
@@ -682,7 +682,7 @@ abstract class SQLQueryBuilder
         foreach ($conditions as $condition) {
             if (Arr::is($condition[0])) {
                 // containing multiple or statements
-                $stringified = $this->buildWhereCondition($condition, "", "OR");
+                $stringified = $this->buildWhereCondition($condition, "");
             } else {
                 [$column, $operand, $value, $concatenator] = $condition;
                 $stringified = !Arr::empty($stringifiedWhereConditions) ? $concatenator . " " : "";
@@ -692,7 +692,7 @@ abstract class SQLQueryBuilder
             $stringifiedWhereConditions[] = $stringified;
         }
 
-        return $prefix . " " . Str::concat($stringifiedWhereConditions, " ") . " ";
+        return $prefix . " " . Str::concat($stringifiedWhereConditions) . " ";
     }
 
     /**

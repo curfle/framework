@@ -182,7 +182,7 @@ if (!function_exists('url')) {
      */
     function url(string $path, bool $encode = false): string
     {
-        $url = env("APP_URL", null);
+        $url = env("APP_URL");
         $path = implode(
             "/",
             $encode

@@ -55,7 +55,7 @@ class Env
         $value = static::getRepository()->get($key) ?? $default;
 
         // check for variables and resolve them
-        preg_match_all('/\$(_|[A-Z])+/m', $value ?? "", $matches, PREG_OFFSET_CAPTURE, 0);
+        preg_match_all('/\$(_|[A-Z])+/m', $value ?? "", $matches, PREG_OFFSET_CAPTURE);
         for ($i = count($matches[0]) - 1; $i >= 0; $i--) {
             // get variable name and index
             $match = $matches[0][$i];

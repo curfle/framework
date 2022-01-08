@@ -104,9 +104,7 @@ class MySQLGrammar extends SQLGrammar
             $sql .= "DROP COLUMN $column, ";
         }
 
-        $sql = Str::substring($sql, 0, -2);
-
-        return $sql;
+        return Str::substring($sql, 0, -2);
     }
 
     /**

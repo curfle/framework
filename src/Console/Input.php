@@ -65,7 +65,7 @@ class Input
      */
     private static function parseInput(string $input): array
     {
-        $argv = Str::split($input, " ");
+        $argv = Str::split($input);
         if (($argv[0] ?? null) === "php")
             unset($argv[0]);
         if (($argv[1] ?? null) === "buddy")

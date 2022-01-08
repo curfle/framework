@@ -169,12 +169,11 @@ class Migrator
     /**
      * Resets all migrations that were run.
      *
-     * @return $this
+     * @return void
      */
-    private function resetAllMigrationsRun(): static
+    private function resetAllMigrationsRun(): void
     {
         $this->migrationsRun = null;
-        return $this;
     }
 
     /**

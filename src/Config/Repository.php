@@ -174,6 +174,6 @@ class Repository implements ArrayAccess, ConfigAgreement
      */
     public function offsetUnset(mixed $offset): void
     {
-        $this->set($offset, null);
+        $this->set($offset);
     }
 }

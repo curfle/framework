@@ -51,7 +51,7 @@ class XML
      * @param array $data
      * @param SimpleXMLElement $xml_data
      */
-    private static function arrayToXML(array $data, SimpleXMLElement &$xml_data)
+    private static function arrayToXML(array $data, SimpleXMLElement $xml_data)
     {
         foreach ($data as $key => $value) {
             // check if $value is array and all nodes are leafs

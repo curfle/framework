@@ -21,7 +21,6 @@ class AuthenticatableModelTest extends TestCase
 {
     private SQLConnectorInterface $connector;
     private MySQLSchemaBuilder $builder;
-    private Application $app;
 
     public function __construct()
     {
@@ -32,16 +31,16 @@ class AuthenticatableModelTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->app = new Application();
-        $this->app->singleton("hash", function(){
+        $app = new Application();
+        $app->singleton("hash", function(){
             return new HashManager();
         });
-        $this->app->singleton("config", function(){
+        $app->singleton("config", function(){
             return new Repository([
                 "hashing" => ["driver" => "bcrypt"]
             ]);
         });
-        Facade::setFacadeApplication($this->app);
+        Facade::setFacadeApplication($app);
         
         $this->builder->dropIfExists("user_role");
         $this->builder->dropIfExists("login");
