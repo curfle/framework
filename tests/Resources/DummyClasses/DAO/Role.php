@@ -2,12 +2,13 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Model;
 use Curfle\DAO\Relationships\ManyToManyRelationship;
 
 /**
  * @property-read User[] $users
  */
-class Role extends \Curfle\DAO\Model
+class Role extends Model
 {
 
     public int $id;

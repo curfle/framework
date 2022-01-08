@@ -4,7 +4,9 @@ namespace Curfle\Support\Facades;
 
 use Curfle\Essence\Application;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Misc\RuntimeException;
+use ReflectionException;
 
 abstract class Facade
 {
@@ -16,7 +18,7 @@ abstract class Facade
 
     /**
      * Instance of the facade's root instance
-     * @var object
+     * @var array
      */
     protected static array $instance = [];
 
@@ -39,6 +41,8 @@ abstract class Facade
      * Returns the aliased singleton instance of the facade
      * @return object
      * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public static function getFacadeInstance(): object
     {

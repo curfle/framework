@@ -14,7 +14,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
 
-class Container implements ArrayAccess, ContainerAgreement
+class Container implements ContainerAgreement
 {
     /**
      * The current globally available container (if any).
@@ -715,53 +715,5 @@ class Container implements ArrayAccess, ContainerAgreement
     protected function getExtenders(string $id): array
     {
         return $this->extenders[$this->getAlias($id)] ?? [];
-    }
-
-    /**
-     * Determine if a given offset exists.
-     *
-     * @param string $offset
-     * @return bool
-     */
-    public function offsetExists($offset): bool
-    {
-        return $this->bound($offset);
-    }
-
-    /**
-     * Get the value at a given offset.
-     *
-     * @param string $offset
-     * @return object
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
-     */
-    public function offsetGet($offset): object
-    {
-        return $this->make($offset);
-    }
-
-    /**
-     * Set the value at a given offset.
-     *
-     * @param string $offset
-     * @param mixed $value
-     * @return void
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        $this->bind($offset, $value instanceof Closure ? $value : function () use ($value) {
-            return $value;
-        });
-    }
-
-    /**
-     * Unset the value at a given offset.
-     *
-     * @param string $offset
-     * @return void
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        unset($this->bindings[$offset], $this->instances[$offset], $this->resolved[$offset]);
     }
 }

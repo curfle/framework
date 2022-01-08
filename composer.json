@@ -24,7 +24,9 @@
     "ext-simplexml": "*",
     "ext-libxml": "*",
     "ext-mysqli": "*",
-    "ext-sqlite3": "*"
+    "ext-sqlite3": "*",
+    "ext-readline": "*",
+    "ext-fileinfo": "*"
   },
   "autoload": {
     "files": [

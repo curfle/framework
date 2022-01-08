@@ -24,7 +24,9 @@ class BoundMethod
      * @param string|null $defaultMethod
      * @return mixed
      *
-     * @throws InvalidArgumentException
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public static function call(Container $container, callable|string $callback, array $parameters = [], string $defaultMethod = null): mixed
     {

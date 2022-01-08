@@ -2,10 +2,11 @@
 
 namespace Curfle\Chronos;
 
+use DateTime;
 use DateTimeZone;
 use Exception;
 
-class Chronos extends \DateTime
+class Chronos extends DateTime
 {
     /**
      * Holds the timezone of the date.

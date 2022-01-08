@@ -127,6 +127,7 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws SQLException
+     * @throws LogicException|ConnectionFailedException
      */
     function execute(string $query = null): bool
     {
@@ -158,6 +159,8 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws ConnectionFailedException
+     * @throws LogicException
+     * @throws SQLException
      */
     function row(string $query = null): ?array
     {
@@ -167,6 +170,8 @@ class MySQLConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws ConnectionFailedException
+     * @throws LogicException
+     * @throws SQLException
      */
     function field(string $query = null): mixed
     {

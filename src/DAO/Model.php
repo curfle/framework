@@ -12,6 +12,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 use Curfle\Database\Queries\Query;
 use Curfle\Support\Exceptions\DAO\UndefinedPropertyException;
+use Curfle\Support\Exceptions\Logic\LogicException;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
@@ -201,7 +202,7 @@ abstract class Model implements DAOInterface
      * @param string $table
      * @return Query
      */
-    public static function __callTableOnConnector(string $table)
+    public static function __callTableOnConnector(string $table): Query
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $statement = self::$connector->table($table);
@@ -236,10 +237,7 @@ abstract class Model implements DAOInterface
      */
     private static function __callLastInsertedIdOnConnector()
     {
-        if (self::$connector instanceof SQLConnectorInterface)
-            return self::$connector->lastInsertedId();
-        else
-            call_user_func(self::$connector . "::lastInsertedId");
+        return self::$connector->lastInsertedId();
     }
 
     /**
@@ -253,6 +251,7 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
+     * @throws ReflectionException
      */
     public static function all(): array
     {
@@ -267,6 +266,7 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
+     * @throws ReflectionException
      */
     public static function get($id): ?static
     {
@@ -279,6 +279,7 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
+     * @throws LogicException|ReflectionException
      */
     public static function create(array $data): ?static
     {
@@ -295,6 +296,7 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
+     * @throws ReflectionException
      */
     public function update(): bool
     {
@@ -307,6 +309,7 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
+     * @throws LogicException|ReflectionException
      */
     public function store(): bool
     {
@@ -341,7 +344,7 @@ abstract class Model implements DAOInterface
      * Returns one instance of the referenced class or null.
      *
      * @param string $class
-     * @param string|null $fkColumn
+     * @param string|null $fkColumnInClass
      * @return mixed
      */
     protected function hasOne(string $class, string $fkColumnInClass = null): OneToOneRelationship
@@ -394,7 +397,7 @@ abstract class Model implements DAOInterface
      * @param string $pivotTableName
      * @param string|null $fkColumnOfCurrentModelInPivotTable
      * @param string|null $fkColumnOfOtherModelInPivotTable
-     * @return array
+     * @return ManyToManyRelationship
      */
     protected function belongsToMany(
         string $class,

@@ -3,6 +3,7 @@
 namespace Curfle\DAO\Relationships;
 
 use Curfle\DAO\Model;
+use Exception;
 
 class OneToOneRelationship extends Relationship
 {
@@ -20,6 +21,7 @@ class OneToOneRelationship extends Relationship
      *
      * @param Model $object
      * @return bool
+     * @throws Exception
      */
     function set(Model $object): bool
     {

@@ -176,10 +176,13 @@ class Kernel implements KernelAgreement
      *
      * @param Throwable $e
      * @return void
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     protected function reportException(Throwable $e)
     {
-        $this->app[ExceptionHandler::class]->report($e);
+        $this->app->resolve(ExceptionHandler::class)->report($e);
     }
 
     /**
@@ -188,9 +191,12 @@ class Kernel implements KernelAgreement
      * @param Request $request
      * @param Throwable $e
      * @return Response
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     protected function renderException(Request $request, Throwable $e): Response
     {
-        return $this->app[ExceptionHandler::class]->render($request, $e);
+        return $this->app->resolve(ExceptionHandler::class)->render($request, $e);
     }
 }

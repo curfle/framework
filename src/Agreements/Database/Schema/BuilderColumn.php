@@ -31,6 +31,7 @@ interface BuilderColumn
      * Defaults the column to a value.
      *
      * @param mixed $value
+     * @param bool $raw
      * @return BuilderColumn
      */
     public function default(mixed $value, bool $raw = false): static;

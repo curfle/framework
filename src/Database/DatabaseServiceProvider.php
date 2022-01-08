@@ -25,7 +25,7 @@ class DatabaseServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('db.connection', function (Application $app) {
-            return $app['db']->connector();
+            return $app->resolve('db')->connector();
         });
     }
 }

@@ -4,6 +4,7 @@ use Curfle\Container\Container;
 use Curfle\Http\Response;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Str;
 use Curfle\View\View;
 use Curfle\View\ViewFactory;
@@ -121,6 +122,7 @@ if (!function_exists('env')) {
      * @param string $key
      * @param mixed|null $default
      * @return mixed
+     * @throws CircularDependencyException
      */
     function env(string $key, mixed $default = null): mixed
     {

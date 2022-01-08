@@ -6,6 +6,9 @@ use Curfle\Agreements\Auth\Guardian;
 use Curfle\Essence\Application;
 use Curfle\Support\Exceptions\Auth\GuardianNotFoundException;
 use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstanceException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use ReflectionException;
 
 class AuthenticationManager
 {
@@ -55,10 +58,13 @@ class AuthenticationManager
 
     /**
      * @throws ProvidedGuardianNotGuardianInstanceException
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     private function loadGuardians()
     {
-        $guardians = $this->app["config"]["auth.guardians"];
+        $guardians = $this->app->resolve("config")["auth.guardians"];
 
         foreach ($guardians as $name => $guardian) {
             // create instance of guardian

@@ -265,6 +265,7 @@ class Response{
      * Sends the response.
      *
      * @return $this
+     * @throws StatusNotFoundException
      */
     public function send(): static
     {

@@ -53,7 +53,9 @@ class AuthenticatableModelTest extends TestCase
             $table->string("name");
         });
 
-        $this->builder->create("user", function (Blueprint $table) {
+        $this->builder->create(/**
+         * @throws \Curfle\Support\Exceptions\Logic\LogicException
+         */ "user", function (Blueprint $table) {
             $table->id("id");
             $table->string("firstname", 250);
             $table->string("lastname", 250);

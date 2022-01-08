@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
+use Curfle\Support\Exceptions\Misc\GuessException;
 use Curfle\Support\Str;
 
 class MySQLGrammar extends SQLGrammar
@@ -34,6 +35,7 @@ class MySQLGrammar extends SQLGrammar
     /**
      * @param SQLConnectorInterface $connector
      * @inheritDoc
+     * @throws GuessException
      */
     public function compileCreateBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {
@@ -63,6 +65,7 @@ class MySQLGrammar extends SQLGrammar
 
     /**
      * @inheritDoc
+     * @throws GuessException
      */
     public function compileAlterBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {

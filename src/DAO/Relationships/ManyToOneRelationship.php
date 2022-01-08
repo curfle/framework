@@ -3,6 +3,7 @@
 namespace Curfle\DAO\Relationships;
 
 use Curfle\DAO\Model;
+use Exception;
 
 class ManyToOneRelationship extends Relationship
 {
@@ -20,6 +21,7 @@ class ManyToOneRelationship extends Relationship
      *
      * @param Model $object
      * @return bool
+     * @throws Exception
      */
     function associate(Model $object): bool
     {
@@ -43,6 +45,7 @@ class ManyToOneRelationship extends Relationship
      * Removes the relationship to another object.
      *
      * @return bool
+     * @throws Exception
      */
     function dissociate(): bool
     {
@@ -64,6 +67,7 @@ class ManyToOneRelationship extends Relationship
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     function get(): mixed
     {

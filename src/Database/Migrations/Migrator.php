@@ -55,7 +55,7 @@ class Migrator
      */
     private function getMigrationTable(): string
     {
-        return $this->app["config"]["database.migrations"];
+        return $this->app->resolve("config")["database.migrations"];
     }
 
     /**
@@ -204,6 +204,7 @@ class Migrator
      * @throws CircularDependencyException
      * @throws DirectoryNotFoundException
      * @throws ReflectionException
+     * @throws Exception
      */
     public function run(int $amount = null): array
     {
@@ -263,6 +264,7 @@ class Migrator
      * @throws BindingResolutionException
      * @throws CircularDependencyException
      * @throws ReflectionException
+     * @throws Exception
      */
     public function rollback(int $amount = null): array
     {

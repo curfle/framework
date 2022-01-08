@@ -3,6 +3,8 @@
 namespace Curfle\Tests\Http\Middleware;
 
 use Curfle\Auth\AuthenticationManager;
+use Curfle\Auth\Guardians\Guardian;
+use Curfle\Auth\Guardians\JWTGuardian;
 use Curfle\Auth\JWT\JWT;
 use Curfle\Auth\Middleware\Authenticate;
 use Curfle\Config\Repository;
@@ -58,10 +60,10 @@ class MiddlewareTest extends TestCase
                     "guardians" => [
                         "default" => [
                             "drivers" => [
-                                \Curfle\Auth\Guardians\Guardian::DRIVER_BEARER
+                                Guardian::DRIVER_BEARER
                             ],
                             "authenticatable" => User::class,
-                            "guardian" => \Curfle\Auth\Guardians\JWTGuardian::class
+                            "guardian" => JWTGuardian::class
                         ]
                     ]
                 ]

@@ -104,6 +104,7 @@ class SQLiteConnector implements SQLConnectorInterface
 
     /**
      * @inheritDoc
+     * @throws LogicException|FileNotFoundException
      */
     function execute(string $query = null): bool
     {
@@ -143,6 +144,7 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
+     * @throws LogicException
      */
     function field(string $query = null): mixed
     {
@@ -250,6 +252,7 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
+     * @throws LogicException
      */
     function beginTransaction()
     {
@@ -259,6 +262,7 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
+     * @throws LogicException
      */
     function commitTransaction()
     {
@@ -268,6 +272,7 @@ class SQLiteConnector implements SQLConnectorInterface
     /**
      * @inheritDoc
      * @throws FileNotFoundException
+     * @throws LogicException
      */
     function rollbackTransaction()
     {

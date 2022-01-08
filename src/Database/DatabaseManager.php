@@ -6,6 +6,9 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Essence\Application;
 use Curfle\Support\Exceptions\Database\ConnectionNotFoundException;
 use Curfle\Support\Exceptions\Database\DriverUnknownException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use ReflectionException;
 
 class DatabaseManager
 {
@@ -35,20 +38,27 @@ class DatabaseManager
      * Get the default connection name.
      *
      * @return string
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function getDefaultConnectionName(): string
     {
-        return $this->app["config"]["database.default"];
+        return $this->app->resolve("config")["database.default"];
     }
 
     /**
      * Sets the default connection name.
      *
+     * @param string $name
      * @return void
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function setDefaultConnectionName(string $name)
     {
-        $this->app["config"]["database.default"] = $name;
+        $this->app->resolve("config")["database.default"] = $name;
     }
 
     /**
@@ -80,7 +90,7 @@ class DatabaseManager
      */
     private function createConnector(string $name): SQLConnectorInterface
     {
-        $possibleConnections = $this->app["config"]["database.connections"];
+        $possibleConnections = $this->app->resolve("config")["database.connections"];
         if (!isset($possibleConnections[$name]))
             throw new ConnectionNotFoundException("The connection [$name] could not be found in the projects configuration.");
 

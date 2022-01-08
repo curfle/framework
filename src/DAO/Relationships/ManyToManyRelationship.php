@@ -3,6 +3,7 @@
 namespace Curfle\DAO\Relationships;
 
 use Curfle\DAO\Model;
+use Curfle\Support\Exceptions\Logic\LogicException;
 
 class ManyToManyRelationship extends Relationship
 {
@@ -20,7 +21,8 @@ class ManyToManyRelationship extends Relationship
      * Attaches an objects to the relationship.
      *
      * @param Model $object
-     * @return $this
+     * @return bool
+     * @throws LogicException
      */
     function attach(Model $object): bool
     {

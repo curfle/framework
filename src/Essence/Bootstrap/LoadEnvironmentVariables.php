@@ -12,7 +12,6 @@ class LoadEnvironmentVariables implements BootstrapInterface
 
     /**
      * @inheritDoc
-     * @throws FileNotFoundException
      */
     function bootstrap(Application $app)
     {

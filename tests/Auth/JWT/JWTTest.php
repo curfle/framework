@@ -5,6 +5,7 @@ namespace Curfle\Tests\Auth\JWT;
 
 use Curfle\Auth\JWT\JWT;
 use Curfle\Support\Env\Env;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use PHPUnit\Framework\TestCase;
 
@@ -61,6 +62,7 @@ class JWTTest extends TestCase
     /**
      * Tests the ::verify() function.
      * @throws SecretNotPresentException
+     * @throws CircularDependencyException
      */
     public function testNonValidToken()
     {

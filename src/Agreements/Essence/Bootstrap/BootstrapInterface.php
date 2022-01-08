@@ -2,7 +2,7 @@
 
 namespace Curfle\Agreements\Essence\Bootstrap;
 
-use \Curfle\Essence\Application;
+use Curfle\Essence\Application;
 
 interface BootstrapInterface
 {

@@ -2,18 +2,19 @@
 
 namespace Curfle\Tests\Database;
 
+use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Database\Queries\Builders\MySQLQueryBuilder;
 use PHPUnit\Framework\TestCase;
 
 class SQLQueryBuilderTest extends TestCase
 {
 
-    public \Curfle\Database\Connectors\SQLiteConnector $connector;
+    public SQLiteConnector $connector;
 
     public function __construct()
     {
         parent::__construct();
-        $this->connector = new \Curfle\Database\Connectors\SQLiteConnector(DB_SQLITE_FILENAME);
+        $this->connector = new SQLiteConnector(DB_SQLITE_FILENAME);
     }
 
     protected function setUp(): void

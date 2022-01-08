@@ -6,9 +6,12 @@ use Curfle\Agreements\Container\Container;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Routing\MissingControllerInformationException;
 use Curfle\Support\Str;
 use Curfle\View\View;
+use ReflectionException;
 
 class Route
 {
@@ -195,6 +198,9 @@ class Route
      * @param Request $request
      * @return Response
      * @throws MiddlewareNotFoundException
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function resolve(Request $request): Response
     {
@@ -216,12 +222,12 @@ class Route
         // if response is null, default it to the apps' singleton response instance,
         // else set the return value as content
         if ($response === null)
-            $response = $this->container["response"];
+            $response = $this->container->resolve("response");
         else if (!$response instanceof Response) {
             if ($response instanceof View)
-                $response = $this->container["response"]->setContent($response->render());
+                $response = $this->container->resolve("response")->setContent($response->render());
             else
-                $response = $this->container["response"]->setContent($response);
+                $response = $this->container->resolve("response")->setContent($response);
         }
 
         return $response;

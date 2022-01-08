@@ -3,7 +3,15 @@
 namespace Curfle\Essence;
 
 use Closure;
+use Curfle\Config\Repository;
+use Curfle\Console\Input;
 use Curfle\Container\Container;
+use Curfle\Filesystem\Filesystem;
+use Curfle\Hash\HashManager;
+use Curfle\Http\Request;
+use Curfle\Http\Response;
+use Curfle\Mail\MailManager;
+use Curfle\Routing\Router;
 use Curfle\Routing\RoutingServiceProvider;
 use Curfle\Support\Arr;
 use Curfle\Support\Env\Env;
@@ -487,14 +495,14 @@ class Application extends Container
     {
         foreach ([
                      "app" => [self::class, Container::class, Application::class],
-                     "config" => [\Curfle\Config\Repository::class, \Curfle\Agreements\Config\Repository::class],
-                     "files" => [\Curfle\Filesystem\Filesystem::class],
-                     "hash" => [\Curfle\Hash\HashManager::class],
-                     "input" => [\Curfle\Console\Input::class],
-                     "mail" => [\Curfle\Mail\MailManager::class],
-                     "request" => [\Curfle\Http\Request::class],
-                     "router" => [\Curfle\Routing\Router::class],
-                     "response" => [\Curfle\Http\Response::class],
+                     "config" => [Repository::class, \Curfle\Agreements\Config\Repository::class],
+                     "files" => [Filesystem::class],
+                     "hash" => [HashManager::class],
+                     "input" => [Input::class],
+                     "mail" => [MailManager::class],
+                     "request" => [Request::class],
+                     "router" => [Router::class],
+                     "response" => [Response::class],
                  ] as $id => $aliases) {
             foreach ($aliases as $alias) {
                 $this->alias($id, $alias);
@@ -529,6 +537,7 @@ class Application extends Container
      * Determine if the application is running in the console.
      *
      * @return bool
+     * @throws CircularDependencyException
      */
     public function runningInConsole(): bool
     {
@@ -553,6 +562,9 @@ class Application extends Container
      * Register all the configured providers.
      *
      * @return void
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function registerConfiguredProviders()
     {

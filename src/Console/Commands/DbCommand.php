@@ -6,6 +6,7 @@ use Curfle\Console\Input;
 use Curfle\Console\Command;
 use Curfle\Support\Facades\DB;
 use Curfle\Support\Str;
+use Exception;
 
 class DbCommand extends Command
 {
@@ -35,7 +36,7 @@ class DbCommand extends Command
                         $content = Str::replace(print_r($result, true), "\n        ", "\n    ");
                         $this->write($content, false);
                         $this->flush();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $this->error($e->getMessage())->flush();
                     }
                 }

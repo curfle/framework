@@ -22,7 +22,6 @@ class User extends AuthenticatableModel
      * @param string|null $firstname
      * @param string|null $lastname
      * @param string|null $email
-     * @param int|null $job_id
      */
     public function __construct(
         public ?string $firstname = null,

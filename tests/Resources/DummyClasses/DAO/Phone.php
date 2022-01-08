@@ -2,7 +2,9 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
-class Phone extends \Curfle\DAO\Model
+use Curfle\DAO\Model;
+
+class Phone extends Model
 {
 
     public int $id;

@@ -8,7 +8,11 @@ use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\Dispatchable\HttpNotFoundException;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
+use Curfle\Support\Exceptions\Routing\MissingControllerInformationException;
 use Curfle\Support\Str;
+use ReflectionException;
 
 class Router
 {
@@ -291,6 +295,7 @@ class Router
      * @param string $uri
      * @param mixed $action
      * @return Route
+     * @throws MissingControllerInformationException
      */
     private function createRoute(array|string $methods, string $uri, callable|array|null $action): Route
     {
@@ -386,6 +391,9 @@ class Router
      * @param string $alias
      * @return Middleware
      * @throws MiddlewareNotFoundException
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function getMiddleware(string $alias): Middleware
     {

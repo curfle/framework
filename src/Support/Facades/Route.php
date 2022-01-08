@@ -2,6 +2,8 @@
 
 namespace Curfle\Support\Facades;
 
+use Curfle\Routing\Router;
+
 /**
  * @method static \Curfle\Routing\Route any(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route fallback(array|string|callable|null $action = null)
@@ -12,10 +14,10 @@ namespace Curfle\Support\Facades;
  * @method static \Curfle\Routing\Route put(string $uri, array|string|callable|null $action = null)
  * @method static \Curfle\Routing\Route methods(array $methods, string $uri, callable|array|string $action = null)
  * @method static \Curfle\Routing\Route redirect(string $uri, string $target, int $code = 302)
- * @method static \Curfle\Routing\Router prefix(string $prefix)
- * @method static \Curfle\Routing\Router middleware(string $middleware)
- * @method static \Curfle\Routing\Router group(mixed $routes)
- * @method static \Curfle\Routing\Router registerRouteFile(string $filename)
+ * @method static Router prefix(string $prefix)
+ * @method static Router middleware(string $middleware)
+ * @method static Router group(mixed $routes)
+ * @method static Router registerRouteFile(string $filename)
  *
  * @see \Curfle\Routing\Router
  */

@@ -7,6 +7,7 @@ use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Support\Exceptions\Database\NoSuchStatementException;
+use Curfle\Support\Exceptions\Misc\GuessException;
 use Curfle\Support\Exceptions\Misc\NotImplementedException;
 use Curfle\Support\Str;
 
@@ -37,6 +38,7 @@ class SQLiteGrammar extends SQLGrammar
      * @param SQLConnectorInterface $connector
      * @inheritDoc
      * @throws NoSuchStatementException
+     * @throws GuessException|NotImplementedException
      */
     public function compileCreateBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {
@@ -67,6 +69,7 @@ class SQLiteGrammar extends SQLGrammar
     /**
      * @inheritDoc
      * @throws NoSuchStatementException
+     * @throws GuessException|NotImplementedException
      */
     public function compileAlterBlueprint(string $name, Blueprint $blueprint, SQLConnectorInterface $connector): string
     {

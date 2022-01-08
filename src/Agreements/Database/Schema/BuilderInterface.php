@@ -47,7 +47,7 @@ interface BuilderInterface
      * @param Closure $callback
      * @return $this
      */
-    public function table(string $table, \Closure $callback): static;
+    public function table(string $table, Closure $callback): static;
 
     /**
      * Returns if an existsing table has a column.

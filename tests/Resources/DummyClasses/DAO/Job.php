@@ -2,9 +2,10 @@
 
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
+use Curfle\DAO\Model;
 use Curfle\DAO\Relationships\ManyToOneRelationship;
 
-class Job extends \Curfle\DAO\Model
+class Job extends Model
 {
 
     public int $id;

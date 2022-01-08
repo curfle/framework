@@ -100,19 +100,11 @@ class Kernel implements KernelAgreement
 
     /**
      * @inheritDoc
+     * @throws BindingResolutionException|CircularDependencyException|ReflectionException|CommandNotFoundException
      */
     public function run(Input $input): Output
     {
-        try {
-            return $this->runInputThroughBuddy($input);
-        } catch (Throwable $e) {
-            throw $e;
-            $this->reportException($e);
-
-            $this->renderException($output, $e);
-
-            return 1;
-        }
+        return $this->runInputThroughBuddy($input);
     }
 
     /**

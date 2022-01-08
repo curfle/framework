@@ -12,6 +12,9 @@ use Curfle\Support\Str;
 class HashManager
 {
 
+    /**
+     * @throws HashAlgorithmNotFoundException
+     */
     public function algorithm(string $name = null) : HashAlgorithm
     {
         if($name === null)
