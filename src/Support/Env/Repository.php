@@ -3,7 +3,6 @@
 namespace Curfle\Support\Env;
 
 use Curfle\Agreements\Support\Env\Repository as RepositoryAgreement;
-use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 
 class Repository implements RepositoryAgreement
 {
