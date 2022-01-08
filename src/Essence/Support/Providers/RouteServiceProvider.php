@@ -16,13 +16,6 @@ class RouteServiceProvider extends ServiceProvider
     protected ?Closure $loadRoutesUsing = null;
 
     /**
-     * The RouteServiceProvider's namespace.
-     *
-     * @var string|null
-     */
-    protected ?string $namespace = null;
-
-    /**
      * Register any application services.
      *
      * @return void
