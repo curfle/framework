@@ -373,7 +373,7 @@ class Application extends Container
      */
     public function viewPath(string $path = ''): string
     {
-        $basePath = $this['config']->get('view.paths')[0];
+        $basePath = $this->resolve('config')->get('view.paths')[0];
 
         return rtrim($basePath, DIRECTORY_SEPARATOR) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
@@ -558,13 +558,14 @@ class Application extends Container
      * Detect the application's current environment.
      *
      * @param Closure $callback
-     * @return string
      */
-    public function detectEnvironment(Closure $callback): string
+    public function detectEnvironment(Closure $callback)
     {
         $args = $_SERVER['argv'] ?? null;
 
-        return $this['env'] = (new EnvironmentDetector)->detect($callback, $args);
+        $this->bind("env", function () use ($callback, $args) {
+            return (new EnvironmentDetector)->detect($callback, $args);
+        });
     }
 
     /**
@@ -621,14 +622,14 @@ class Application extends Container
      */
     public function namespace(): string
     {
-        if (! is_null($this->namespace)) {
+        if (!is_null($this->namespace)) {
             return $this->namespace;
         }
 
         $composer = json_decode(file_get_contents($this->basePath('composer.json')), true);
 
         foreach ($composer["autoload"]["psr-4"] as $namespace => $path) {
-            foreach ((array) $path as $pathChoice) {
+            foreach ((array)$path as $pathChoice) {
                 if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
                     return $this->namespace = $namespace;
                 }
