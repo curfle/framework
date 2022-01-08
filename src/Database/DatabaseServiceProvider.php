@@ -28,4 +28,12 @@ class DatabaseServiceProvider extends ServiceProvider
             return $app->resolve('db')->connector();
         });
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function terminate()
+    {
+        $this->app->resolve('db')->disconnectConnectors();
+    }
 }
