@@ -107,7 +107,7 @@ class Kernel implements KernelAgreement
     /**
      * @inheritDoc
      */
-    public function terminate()
+    public function terminate(): void
     {
         $this->app->terminate();
     }

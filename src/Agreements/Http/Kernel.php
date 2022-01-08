@@ -28,7 +28,7 @@ interface Kernel
      *
      * @return mixed
      */
-    public function terminate();
+    public function terminate(): void;
 
     /**
      * Get the Curfle application instance.
