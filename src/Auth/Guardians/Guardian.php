@@ -4,13 +4,10 @@ namespace Curfle\Auth\Guardians;
 
 use Curfle\Agreements\Auth\Guardian as GuardianAgreement;
 use Curfle\Auth\Authenticatable;
-use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\AuthenticatableInstanceNotFoundException;
 use Curfle\Support\Exceptions\Auth\DriverNotSupportedException;
 use Curfle\Support\Exceptions\Auth\MissingAuthenticatableException;
-use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
-use Curfle\Support\Facades\Auth;
 
 abstract class Guardian implements GuardianAgreement
 {

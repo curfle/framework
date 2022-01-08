@@ -16,6 +16,7 @@ abstract class SQLGrammar implements GrammarAgreement
      *
      * @param Blueprint $blueprint
      * @return void
+     * @throws GuessException
      */
     protected function boostrapBlueprint(Blueprint $blueprint)
     {

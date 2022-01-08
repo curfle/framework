@@ -7,10 +7,6 @@ use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
-use Curfle\Support\Exceptions\Database\ConnectionFailedException;
-use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
-use Curfle\Support\Exceptions\Logic\LogicException;
-use Curfle\Support\Facades\DB;
 use PHPUnit\Framework\TestCase;
 
 class MySQLBuilderTest extends TestCase

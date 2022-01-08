@@ -2,18 +2,10 @@
 
 namespace Curfle\Auth\Middleware;
 
-use Curfle\Agreements\Auth\Guardian;
-use Curfle\Console\Application;
-use Curfle\Container\Container;
 use Curfle\Http\Middleware;
 use Curfle\Http\Request;
-use Curfle\Support\Exceptions\Auth\GuardianNotFoundException;
-use Curfle\Support\Exceptions\Auth\ProvidedGuardianNotGuardianInstanceException;
 use Curfle\Support\Exceptions\Http\Dispatchable\HttpAccessDeniedException;
-use Curfle\Support\Exceptions\Misc\BindingResolutionException;
-use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Facades\Auth;
-use ReflectionException;
 
 class Authenticate extends Middleware
 {

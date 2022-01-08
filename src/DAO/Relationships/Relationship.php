@@ -2,7 +2,6 @@
 
 namespace Curfle\DAO\Relationships;
 
-use Curfle\Agreements\DAO\DAOInterface;
 use Curfle\Support\Facades\App;
 
 abstract class Relationship

@@ -5,7 +5,6 @@ namespace Curfle\Database;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Database\Connectors\SQLiteConnector;
-use Curfle\Support\Exceptions\Database\ConnectionNotFoundException;
 use Curfle\Support\Exceptions\Database\DriverUnknownException;
 
 class ConnectorFactory

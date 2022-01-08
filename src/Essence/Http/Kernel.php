@@ -2,7 +2,6 @@
 
 namespace Curfle\Essence\Http;
 
-use Closure;
 use Curfle\Agreements\Http\Kernel as KernelAgreement;
 use Curfle\Essence\Application;
 use Curfle\Essence\Bootstrap\BootProviders;
@@ -18,7 +17,6 @@ use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\Dispatchable\HttpNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
-use Curfle\Support\Exceptions\Misc\InvalidArgumentException;
 use ReflectionException;
 use Throwable;
 

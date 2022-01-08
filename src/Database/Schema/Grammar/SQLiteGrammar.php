@@ -54,7 +54,7 @@ class SQLiteGrammar extends SQLGrammar
 
         // foreign keys
         foreach ($blueprint->getForeignKeys() as $foreignKey) {
-            $sql .= $this->buildForeignKeyDefinition($foreignKey, $connector);
+            $sql .= $this->buildForeignKeyDefinition($foreignKey);
             $sql .= ", ";
         }
 
@@ -142,10 +142,9 @@ class SQLiteGrammar extends SQLGrammar
      * Builds a MySQL foreign key definition based on a ForeignKeyConstraint instance.
      *
      * @param ForeignKeyConstraint $foreignKey
-     * @param SQLConnectorInterface $connector
      * @return string
      */
-    private function buildForeignKeyDefinition(ForeignKeyConstraint $foreignKey, SQLConnectorInterface $connector): string
+    private function buildForeignKeyDefinition(ForeignKeyConstraint $foreignKey): string
     {
         // see https://www.sqlite.org/lang_createtable.html
         return "CONSTRAINT {$foreignKey->getName()} FOREIGN KEY ({$foreignKey->getColumn()}) "

@@ -4,7 +4,6 @@ namespace Curfle\Agreements\Database\Schema\Grammar;
 
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
-use Curfle\Agreements\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\Blueprint;
 
 interface Grammar

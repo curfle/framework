@@ -3,7 +3,6 @@
 namespace Curfle\Http;
 
 use Curfle\Support\Exceptions\Http\StatusNotFoundException;
-use Curfle\Support\Facades\App;
 
 class Response{
     public const HTTP_CONTINUE = 100;
@@ -169,12 +168,12 @@ class Response{
     /**
      * @var array
      */
-    private array $headers = [];
+    private array $headers;
 
     /**
      * @var array
      */
-    private array $cookies = [];
+    private array $cookies;
 
     /**
      * @param string|array $content

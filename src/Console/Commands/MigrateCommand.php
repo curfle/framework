@@ -2,7 +2,6 @@
 
 namespace Curfle\Console\Commands;
 
-use Closure;
 use Curfle\Database\Migrations\Migrator;
 use Curfle\Essence\Application;
 use Curfle\Console\Command;

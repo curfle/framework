@@ -16,5 +16,6 @@ class DummyClass extends Controller{
     public function get(int $id): mixed
     {
         // TODO: implement get() method.
+        return App\Models\DummyModel::get($id);
     }
 }

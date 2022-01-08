@@ -2,9 +2,7 @@
 
 namespace Curfle\DAO\Relationships;
 
-use Curfle\Agreements\DAO\DAOInterface;
 use Curfle\DAO\Model;
-use Exception;
 
 class OneToOneRelationship extends Relationship
 {

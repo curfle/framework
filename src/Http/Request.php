@@ -8,39 +8,39 @@ class Request
     /**
      * @var string|null
      */
-    private ?string $method = null;
+    private ?string $method;
 
     /**
      * @var string|null
      */
-    private ?string $uri = null;
+    private ?string $uri;
 
     /**
      * @var string|null
      */
-    private ?string $host = null;
+    private ?string $host;
 
     /**
      * @var bool|null
      */
-    private ?bool $https = null;
+    private ?bool $https;
 
     /**
      * @var array|null
      */
-    private ?array $headers = null;
+    private ?array $headers;
 
     /**
      * @var string|null
      */
-    private ?string $ip = null;
+    private ?string $ip;
 
     /**
      * All Inputs that were sent with the request.
      *
      * @var array
      */
-    private array $inputs = [];
+    private array $inputs;
 
     public function __construct(string $method = null, string $uri = null, string $host = null, bool $https = null, array $headers = null, array $inputs = [])
     {

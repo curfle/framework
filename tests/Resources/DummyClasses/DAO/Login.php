@@ -3,7 +3,6 @@
 namespace Curfle\Tests\Resources\DummyClasses\DAO;
 
 use Curfle\DAO\Relationships\ManyToOneRelationship;
-use Curfle\DAO\Relationships\OneToOneRelationship;
 
 /**
  * @property-read User $user

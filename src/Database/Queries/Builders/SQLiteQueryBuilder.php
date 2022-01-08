@@ -36,7 +36,7 @@ class SQLiteQueryBuilder extends SQLQueryBuilder
                 ", ") . " ";
         // bind params
         foreach ($this->insertData as $data) {
-            foreach ($data as $key => $value) {
+            foreach ($data as $value) {
                 $this->bindParam($value);
             }
         }

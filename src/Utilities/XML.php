@@ -57,7 +57,7 @@ class XML
             // check if $value is array and all nodes are leafs
             $allNodesAreLeafs = true;
             if (is_array($value)) {
-                foreach ($value as $inner_key => $inner_value)
+                foreach ($value as $inner_value)
                     if (is_array($inner_value))
                         $allNodesAreLeafs = false;
             }else{
@@ -66,7 +66,7 @@ class XML
 
             // handle array
             if($allNodesAreLeafs){
-                foreach($value as $inner_key => $inner_value){
+                foreach($value as $inner_value){
                     $xml_data->addChild((string)$key, htmlspecialchars((string)$inner_value));
                 }
             }else{

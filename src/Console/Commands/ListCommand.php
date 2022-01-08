@@ -2,8 +2,6 @@
 
 namespace Curfle\Console\Commands;
 
-use Closure;
-use Curfle\Essence\Application;
 use Curfle\Console\Command;
 use Curfle\Support\Facades\Buddy;
 

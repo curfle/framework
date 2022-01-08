@@ -6,7 +6,6 @@ use Curfle\Auth\JWT\JWT;
 use Curfle\Http\Request;
 use Curfle\Support\Exceptions\Auth\IncorrectJWTFormatException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
-use Curfle\Support\Facades\Auth;
 use Curfle\Support\Str;
 
 class JWTGuardian extends Guardian

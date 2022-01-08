@@ -2,10 +2,7 @@
 
 namespace Curfle\Database\Schema;
 
-use Closure;
-use Curfle\Agreements\Database\Schema\BuilderInterface;
 use Curfle\Database\Connectors\SQLiteConnector;
-use Curfle\Database\Schema\Grammar\MySQLGrammar;
 use Curfle\Database\Schema\Grammar\SQLiteGrammar;
 use Curfle\Support\Exceptions\Database\NoSuchStatementException;
 

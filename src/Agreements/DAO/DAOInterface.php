@@ -2,8 +2,6 @@
 
 namespace Curfle\Agreements\DAO;
 
-use Curfle\Database\Queries\Builders\SQLQueryBuilder;
-
 interface DAOInterface {
 
     /**

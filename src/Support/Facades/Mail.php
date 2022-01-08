@@ -2,9 +2,7 @@
 
 namespace Curfle\Support\Facades;
 
-use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Agreements\Mail\Mailer;
-use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 
 /**
  * @method static Mailer mailer(string $name)

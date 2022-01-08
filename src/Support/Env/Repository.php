@@ -12,7 +12,7 @@ class Repository implements RepositoryAgreement
      *
      * @var string|null
      */
-    private ?string $path = null;
+    private ?string $path;
 
     /**
      * The parsed content of the .env file.

@@ -8,7 +8,6 @@ use Curfle\DAO\Relationships\ManyToOneRelationship;
 use Curfle\DAO\Relationships\OneToManyRelationship;
 use Curfle\DAO\Relationships\OneToOneRelationship;
 use Curfle\DAO\Relationships\Relationship;
-use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 use Curfle\Database\Queries\Query;
@@ -299,7 +298,6 @@ abstract class Model implements DAOInterface
      */
     public function update(): bool
     {
-        $this_ = $this;
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
         return static::__callTableOnConnector($config["table"])
@@ -312,7 +310,6 @@ abstract class Model implements DAOInterface
      */
     public function store(): bool
     {
-        $this_ = $this;
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $primaryKeyField = array_flip($config["fields"])[$config["primaryKey"]];
         $success = static::__callTableOnConnector($config["table"])

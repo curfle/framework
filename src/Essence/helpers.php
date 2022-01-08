@@ -1,6 +1,5 @@
 <?php
 
-use Curfle\Config\Repository;
 use Curfle\Container\Container;
 use Curfle\Http\Response;
 use Curfle\Support\Env\Env;

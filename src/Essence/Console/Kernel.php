@@ -12,7 +12,6 @@ use Curfle\Essence\Bootstrap\LoadConfiguration;
 use Curfle\Essence\Bootstrap\LoadEnvironmentVariables;
 use Curfle\Essence\Bootstrap\RegisterFacade;
 use Curfle\Essence\Bootstrap\RegisterProviders;
-use Curfle\Essence\Exceptions\ExceptionHandler;
 use Curfle\Console\Input;
 use Curfle\Console\Output;
 use Curfle\Support\Exceptions\Console\CommandNotFoundException;

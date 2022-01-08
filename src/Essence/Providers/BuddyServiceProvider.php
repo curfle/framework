@@ -21,9 +21,7 @@ use Curfle\Console\Commands\MigrateResetCommand;
 use Curfle\Console\Commands\MigrateRollbackCommand;
 use Curfle\Console\Commands\MigrateStatusCommand;
 use Curfle\Console\Commands\ServeCommand;
-use Curfle\Essence\Application;
 use Curfle\Console\Commands\ListCommand;
-use Curfle\Http\Request;
 use Curfle\Support\Facades\Buddy;
 use Curfle\Support\ServiceProvider;
 

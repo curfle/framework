@@ -3,10 +3,7 @@
 namespace Curfle\Tests\Auth\JWT;
 
 
-use Curfle\Auth\JWT\JWT;
 use Curfle\Chronos\Chronos;
-use Curfle\Support\Env\Env;
-use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 

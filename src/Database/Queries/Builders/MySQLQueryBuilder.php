@@ -4,7 +4,6 @@ namespace Curfle\Database\Queries\Builders;
 
 use Curfle\Support\Arr;
 use Curfle\Support\Str;
-use Curfle\Utilities\Constants\IgnoreValue;
 
 class MySQLQueryBuilder extends SQLQueryBuilder
 {

@@ -2,7 +2,6 @@
 
 namespace Curfle\Tests\Supprt;
 
-use Curfle\Routing\Route;
 use Curfle\Support\Str;
 use PHPUnit\Framework\TestCase;
 

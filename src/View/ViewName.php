@@ -3,7 +3,6 @@
 namespace Curfle\View;
 
 use Curfle\Essence\Application;
-use Curfle\Support\Facades\App;
 use Curfle\Support\Str;
 
 class ViewName

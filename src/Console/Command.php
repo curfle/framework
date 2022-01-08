@@ -228,10 +228,9 @@ class Command
     /**
      * Calls the commands' resolver.
      *
-     * @param Input $input
      * @return Output
      */
-    public function run(Input $input): Output
+    public function run(): Output
     {
 
         if ($this->resolver !== null) {
@@ -277,10 +276,9 @@ class Command
      * Creates a prompt and returns the users' answer.
      *
      * @param string $message
-     * @param bool $addNewline
      * @return string
      */
-    protected function prompt(string $message, bool $addNewline = true): string
+    protected function prompt(string $message): string
     {
         return readline($message);
     }

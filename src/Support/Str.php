@@ -174,7 +174,7 @@ class Str
      */
     public static function find(string $haystack, string $needle, int $offset = 0): int
     {
-        return strpos($haystack, $needle);
+        return strpos($haystack, $needle, $offset);
     }
 
     /**

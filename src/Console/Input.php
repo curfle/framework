@@ -10,19 +10,12 @@ class Input
     /**
      * @var array
      */
-    private array $argv = [];
+    private array $argv;
 
     /**
      * @var array
      */
     private array $namedArguments = [];
-
-    /**
-     * All Inputs that were sent with the request.
-     *
-     * @var array
-     */
-    private array $inputs = [];
 
     public function __construct(array $argv = [])
     {

@@ -2,8 +2,6 @@
 
 namespace Curfle\Agreements\Database\Schema;
 
-use Closure;
-
 interface BuilderColumn
 {
 

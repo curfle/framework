@@ -2,16 +2,12 @@
 
 namespace Curfle\Database\Seeding;
 
-use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\FileSystem\FileSystem;
 use Curfle\Support\Exceptions\FileSystem\DirectoryNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
-use Curfle\Support\Facades\DB;
-use Curfle\Support\Facades\Schema;
 use Curfle\Utilities\Utilities;
-use Exception;
 use ReflectionException;
 
 class SeedingManager
@@ -76,8 +72,6 @@ class SeedingManager
      */
     public function run(): array
     {
-        $this_ = $this;
-
         // get all migrations
         $seeders = $this->getAllSeeders();
 

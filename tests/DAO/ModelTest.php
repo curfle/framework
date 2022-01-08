@@ -8,14 +8,11 @@ use Curfle\Container\Container;
 use Curfle\DAO\Model;
 use Curfle\DAO\Relationships\RelationshipCache;
 use Curfle\Database\Connectors\MySQLConnector;
-use Curfle\Database\Queries\MySQLQuery;
 use Curfle\Database\Schema\Blueprint;
-use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
 use Curfle\Essence\Application;
 use Curfle\Support\Facades\Facade;
-use Curfle\Tests\Resources\DummyClasses\DAO\Job;
 use Curfle\Tests\Resources\DummyClasses\DAO\Login;
 use Curfle\Tests\Resources\DummyClasses\DAO\Phone;
 use Curfle\Tests\Resources\DummyClasses\DAO\Role;
@@ -357,11 +354,13 @@ class ModelTest extends TestCase
             "email" => "jane.doe@example.dd"
         ]);
 
+        // create login
         $loginOne = Login::create([
             "user_id" => $user->id
         ]);
 
-        $loginTwo = Login::create([
+        // create second login
+        Login::create([
             "user_id" => $user->id
         ]);
 

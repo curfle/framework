@@ -5,12 +5,8 @@ namespace Curfle\Agreements\Container;
 use Closure;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
-use Curfle\Support\Exceptions\Misc\ClassNotFoundException;
 use Curfle\Support\Exceptions\Logic\LogicException;
-use Curfle\Utilities\Utilities;
-use ReflectionClass;
 use ReflectionException;
-use ReflectionParameter;
 
 interface Container
 {

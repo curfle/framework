@@ -27,7 +27,7 @@ class View
      *
      * @var array
      */
-    private array $data = [];
+    private array $data;
 
     /**
      * @param Application $app

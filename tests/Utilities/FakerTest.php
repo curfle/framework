@@ -2,7 +2,6 @@
 
 namespace Curfle\Tests\Utilities;
 
-use Curfle\Routing\Route;
 use Curfle\Utilities\Faker\Faker;
 use PHPUnit\Framework\TestCase;
 

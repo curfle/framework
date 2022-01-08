@@ -51,7 +51,7 @@ class MySQLGrammar extends SQLGrammar
 
         // foreign keys
         foreach ($blueprint->getForeignKeys() as $foreignKey) {
-            $sql .= $this->buildForeignKeyDefinition($foreignKey, $connector);
+            $sql .= $this->buildForeignKeyDefinition($foreignKey);
             $sql .= ", ";
         }
 
@@ -88,7 +88,7 @@ class MySQLGrammar extends SQLGrammar
 
         // add foreign keys
         foreach ($blueprint->getForeignKeys() as $foreignKey) {
-            $sql .= "ADD " . $this->buildForeignKeyDefinition($foreignKey, $connector);
+            $sql .= "ADD " . $this->buildForeignKeyDefinition($foreignKey);
             $sql .= ", ";
         }
 
@@ -153,10 +153,9 @@ class MySQLGrammar extends SQLGrammar
      * Builds a MySQL foreign key definition based on a ForeignKeyConstraint instance.
      *
      * @param ForeignKeyConstraint $foreignKey
-     * @param SQLConnectorInterface $connector
      * @return string
      */
-    private function buildForeignKeyDefinition(ForeignKeyConstraint $foreignKey, SQLConnectorInterface $connector): string
+    private function buildForeignKeyDefinition(ForeignKeyConstraint $foreignKey): string
     {
         // [CONSTRAINT [symbol]] FOREIGN KEY
         //    [index_name] (index_col_name, ...)

@@ -2,7 +2,6 @@
 
 namespace Curfle\Support\Exceptions\Http;
 
-use Curfle\Support\Exceptions\CurfleException;
 use Throwable;
 
 class HttpDispatchableException extends HttpException

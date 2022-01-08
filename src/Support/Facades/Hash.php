@@ -2,9 +2,7 @@
 
 namespace Curfle\Support\Facades;
 
-use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Agreements\Hash\HashAlgorithm;
-use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 
 /**
  * @method static HashAlgorithm algorithm(string $name = null)

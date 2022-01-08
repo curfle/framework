@@ -10,7 +10,6 @@ use Curfle\Support\Exceptions\FileSystem\FileAlreadyExists;
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Curfle\Support\Exceptions\Misc\InvalidArgumentException;
 use Curfle\Support\Str;
-use Curfle\Console\Input;
 
 abstract class MakeCommand extends Command
 {

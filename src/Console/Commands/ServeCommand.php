@@ -2,13 +2,10 @@
 
 namespace Curfle\Console\Commands;
 
-use Closure;
 use Curfle\Console\Input;
-use Curfle\Essence\Application;
 use Curfle\Console\Command;
 use Curfle\FileSystem\FileSystem;
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
-use Curfle\Support\Facades\Buddy;
 
 class ServeCommand extends Command
 {

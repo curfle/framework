@@ -2,8 +2,6 @@
 
 namespace Curfle\Support\Env;
 
-use Closure;
-use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Str;
 

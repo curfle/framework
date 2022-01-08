@@ -2,7 +2,6 @@
 
 namespace Curfle\DAO\Relationships;
 
-use Curfle\Agreements\DAO\DAOInterface;
 use Curfle\DAO\Model;
 
 class ManyToManyRelationship extends Relationship
@@ -55,7 +54,6 @@ class ManyToManyRelationship extends Relationship
      */
     function get(): array
     {
-        $modelConfig = $this->model::__getCleanedConfig();
         $targetConfig = $this->targetClass::__getCleanedConfig();
 
         $entries = $this->model::__callTableOnConnector($this->pivotTable)

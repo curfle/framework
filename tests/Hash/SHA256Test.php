@@ -2,8 +2,6 @@
 
 namespace Curfle\Tests\Hash;
 
-use Curfle\Hash\Algorithm\MD5;
-use Curfle\Hash\Algorithm\SHA1;
 use Curfle\Hash\Algorithm\SHA256;
 use PHPUnit\Framework\TestCase;
 

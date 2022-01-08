@@ -3,7 +3,6 @@
 namespace Curfle\Routing;
 
 use Curfle\Agreements\Container\Container;
-use Curfle\Essence\Application;
 use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;

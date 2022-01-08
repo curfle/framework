@@ -56,7 +56,7 @@ class Application
                 foreach ($command->getMatchedParameters() as $name => $value) {
                     $input->addNamedArgument($name, $value);
                 }
-                return $command->run($input);
+                return $command->run();
             }
         }
 

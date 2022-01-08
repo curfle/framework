@@ -4,9 +4,7 @@ namespace Curfle\Database\Connectors;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Agreements\Database\Schema\BuilderInterface;
-use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 use Curfle\Database\Queries\MySQLQuery;
-use Curfle\Database\Queries\Query;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
 use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Database\ConnectionFailedException;
@@ -18,7 +16,6 @@ use mysqli;
 use mysqli_sql_exception;
 use mysqli_stmt;
 use mysqli_result;
-use function React\Promise\map;
 
 /**
  * Class MySQL

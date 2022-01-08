@@ -3,7 +3,6 @@
 namespace Curfle\Routing;
 
 use Curfle\Agreements\Container\Container;
-use Curfle\Http\Middleware;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
@@ -205,8 +204,6 @@ class Route
         }
 
         // resolve the request
-        $response = null;
-
         // check for controller and resolve via the controller method if a controller is used
         if ($this->action["useController"]) {
             $controller = $this->container->make($this->action["controller"]);

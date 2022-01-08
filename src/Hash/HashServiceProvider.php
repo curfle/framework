@@ -2,7 +2,6 @@
 
 namespace Curfle\Hash;
 
-use Curfle\Support\Facades\Hash;
 use Curfle\Support\ServiceProvider;
 
 class HashServiceProvider extends ServiceProvider

@@ -3,7 +3,6 @@
 namespace Curfle\Tests\Hash;
 
 use Curfle\Hash\Algorithm\HMAC;
-use Curfle\Hash\Algorithm\MD5;
 use PHPUnit\Framework\TestCase;
 
 class HMACTest extends TestCase

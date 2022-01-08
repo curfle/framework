@@ -4,11 +4,9 @@ namespace Curfle\Tests\Database\Queries;
 
 use Curfle\Database\Connectors\SQLiteConnector;
 use Curfle\Database\Queries\Builders\SQLiteQueryBuilder;
-use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\Support\Facades\DB;
 use Curfle\Support\Facades\Facade;
-use Curfle\Support\Facades\Schema;
 use PHPUnit\Framework\TestCase;
 
 class SQLQueryBuilderTest extends TestCase
@@ -25,7 +23,7 @@ class SQLQueryBuilderTest extends TestCase
 
 
         DB::execute("DROP TABLE IF EXISTS users");
-        DB::execute("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(100))");
+        DB::execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name varchar(100))");
     }
 
     protected function tearDown(): void

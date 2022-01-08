@@ -2,7 +2,6 @@
 
 namespace Curfle\Database;
 
-use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\DAO\Model;
 use Curfle\Essence\Application;
 use Curfle\Support\ServiceProvider;

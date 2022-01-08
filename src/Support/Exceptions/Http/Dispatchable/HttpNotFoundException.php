@@ -3,7 +3,6 @@
 namespace Curfle\Support\Exceptions\Http\Dispatchable;
 
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
-use Exception;
 use Throwable;
 
 class HttpNotFoundException extends HttpDispatchableException

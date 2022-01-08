@@ -235,7 +235,7 @@ class FileSystem
                 if (!@unlink($path)) {
                     $success = false;
                 }
-            } catch (Exception $_) {
+            } catch (Exception) {
                 $success = false;
             }
         }

@@ -3,7 +3,6 @@
 namespace Curfle\Mail;
 
 use Curfle\Agreements\Mail\Mailable as MailableAgreement;
-use Curfle\Mail\MailContent;
 use Curfle\View\View;
 
 abstract class Mailable implements MailableAgreement

@@ -7,7 +7,6 @@ use Curfle\Auth\JWT\JWT;
 use Curfle\Auth\Middleware\Authenticate;
 use Curfle\Config\Repository;
 use Curfle\Database\Connectors\MySQLConnector;
-use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\Http\Middleware\AllowCors;
 use Curfle\Http\Request;
@@ -19,9 +18,7 @@ use Curfle\Support\Exceptions\Http\Dispatchable\HttpAccessDeniedException;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
 use Curfle\Support\Exceptions\Misc\SecretNotPresentException;
 use Curfle\Support\Facades\Auth;
-use Curfle\Support\Facades\DB;
 use Curfle\Support\Facades\Facade;
-use Curfle\Support\Facades\Schema;
 use Curfle\Tests\Resources\DummyClasses\DAO\User;
 use PHPUnit\Framework\TestCase;
 
@@ -148,7 +145,7 @@ class MiddlewareTest extends TestCase
         $this->expectException(HttpAccessDeniedException::class);
 
         // resolve request
-        $response = $route->resolve($request);
+        $route->resolve($request);
     }
 
     /**

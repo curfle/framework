@@ -3,7 +3,6 @@
 namespace Curfle\Database;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
-use Curfle\Database\Connectors\MySQLConnector;
 use Curfle\Essence\Application;
 use Curfle\Support\Exceptions\Database\ConnectionNotFoundException;
 use Curfle\Support\Exceptions\Database\DriverUnknownException;

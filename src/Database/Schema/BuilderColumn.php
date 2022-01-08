@@ -2,10 +2,6 @@
 
 namespace Curfle\Database\Schema;
 
-use Closure;
-use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
-use Curfle\Agreements\Database\Schema\BuilderInterface;
-use Curfle\Agreements\Database\Schema\Grammar\Grammar;
 use Curfle\Agreements\Database\Schema\BuilderColumn as BuilderColumnAgreement;
 
 class BuilderColumn implements BuilderColumnAgreement

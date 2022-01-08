@@ -2,11 +2,8 @@
 
 namespace Curfle\Console\Commands;
 
-use Closure;
 use Curfle\Console\Input;
-use Curfle\Essence\Application;
 use Curfle\Console\Command;
-use Curfle\Support\Facades\Buddy;
 use Curfle\Support\Facades\DB;
 use Curfle\Support\Str;
 

@@ -3,9 +3,7 @@
 namespace Curfle\Tests\Database;
 
 use Curfle\Database\Queries\Builders\MySQLQueryBuilder;
-use Curfle\Database\Queries\MySQLQuery;
 use PHPUnit\Framework\TestCase;
-use Curfle\Database\Connectors\SQLiteConnector;
 
 class SQLQueryBuilderTest extends TestCase
 {

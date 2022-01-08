@@ -5,8 +5,6 @@ namespace Curfle\Database\Queries\Builders;
 use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Support\Str;
-use Curfle\Utilities\Constants\IgnoreValue;
-use Exception;
 
 abstract class SQLQueryBuilder
 {
@@ -629,7 +627,7 @@ abstract class SQLQueryBuilder
                     Arr::keys($this->updateData)
                 ),
                 ", ") . " ";
-        foreach ($this->updateData as $key => $value) {
+        foreach ($this->updateData as $value) {
             $this->bindParam($value);
         }
 
@@ -682,7 +680,6 @@ abstract class SQLQueryBuilder
 
         $stringifiedWhereConditions = [];
         foreach ($conditions as $condition) {
-            $stringified = "";
             if (Arr::is($condition[0])) {
                 // containing multiple or statements
                 $stringified = $this->buildWhereCondition($condition, "", "OR");

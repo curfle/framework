@@ -3,7 +3,6 @@
 namespace Curfle\Support\Facades;
 
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
-use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 use Curfle\Database\Queries\Query;
 
 /**

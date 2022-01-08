@@ -2,7 +2,6 @@
 
 namespace Curfle\Essence\Providers;
 
-use Curfle\Http\Request;
 use Curfle\Support\AggregateServiceProvider;
 
 class EssenceServiceProvider extends AggregateServiceProvider

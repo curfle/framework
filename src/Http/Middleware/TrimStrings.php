@@ -2,10 +2,8 @@
 
 namespace Curfle\Http\Middleware;
 
-use Curfle\Console\Application;
 use Curfle\Http\Middleware;
 use Curfle\Http\Request;
-use Curfle\Http\Response;
 use Curfle\Support\Str;
 
 class TrimStrings extends Middleware

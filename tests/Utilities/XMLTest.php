@@ -29,7 +29,6 @@ class XMLTest extends TestCase
     public function testParse()
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?><data><hello>world</hello><this><is>a</is><nested>xml</nested><nested>array</nested></this></data>';
-        $data = ["hello" => "world", "this" => ["is" => "a", "nested" => ["xml", "array"]]];
 
         self::assertEquals(
             XML::parse($xml)->hello,

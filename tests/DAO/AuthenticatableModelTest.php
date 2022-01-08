@@ -7,18 +7,13 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Config\Repository;
 use Curfle\DAO\Model;
 use Curfle\Database\Connectors\MySQLConnector;
-use Curfle\Database\Queries\MySQLQuery;
 use Curfle\Database\Schema\Blueprint;
-use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
 use Curfle\Database\Schema\MySQLSchemaBuilder;
 use Curfle\Essence\Application;
 use Curfle\Hash\HashManager;
 use Curfle\Support\Facades\Facade;
 use Curfle\Support\Facades\Hash;
-use Curfle\Tests\Resources\DummyClasses\DAO\Job;
-use Curfle\Tests\Resources\DummyClasses\DAO\Login;
-use Curfle\Tests\Resources\DummyClasses\DAO\Role;
 use Curfle\Tests\Resources\DummyClasses\DAO\User;
 use PHPUnit\Framework\TestCase;
 
