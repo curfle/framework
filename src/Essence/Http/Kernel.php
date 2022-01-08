@@ -105,6 +105,14 @@ class Kernel implements KernelAgreement
     }
 
     /**
+     * @inheritDoc
+     */
+    public function terminate()
+    {
+        $this->app->terminate();
+    }
+
+    /**
      * Send the given request through the (middleware and) router.
      *
      * @param Request $request

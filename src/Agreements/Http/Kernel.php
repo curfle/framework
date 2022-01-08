@@ -24,6 +24,13 @@ interface Kernel
     public function handle(Request $request): Response;
 
     /**
+     * Terminate the application.
+     *
+     * @return mixed
+     */
+    public function terminate();
+
+    /**
      * Get the Curfle application instance.
      *
      * @return Application

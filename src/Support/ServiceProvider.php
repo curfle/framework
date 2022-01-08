@@ -117,4 +117,13 @@ abstract class ServiceProvider
     public function boot()
     {
     }
+
+    /**
+     * Terminates the service provider. Is called after the kernel has handled the request.
+     *
+     * @return void
+     */
+    public function terminate()
+    {
+    }
 }

@@ -33,6 +33,13 @@ class Application extends Container
     private bool $booted = false;
 
     /**
+     * The application's termination state.
+     *
+     * @var bool
+     */
+    private bool $terminated = false;
+
+    /**
      * The array of booting callbacks.
      *
      * @var callable[]
@@ -144,6 +151,16 @@ class Application extends Container
     }
 
     /**
+     * Returns whether application has been terminated or not.
+     *
+     * @return bool
+     */
+    public function isTerminated(): bool
+    {
+        return $this->terminated;
+    }
+
+    /**
      * Boot the application.
      *
      * @return void
@@ -203,6 +220,25 @@ class Application extends Container
         if ($this->isBooted()) {
             $this->fireAppCallbacks([$callback]);
         }
+    }
+
+    /**
+     * Terminate the application.
+     *
+     * @return void
+     */
+    public function terminate()
+    {
+        // skip if is already terminated
+        if ($this->isTerminated())
+            return;
+
+        // terminate all service providers
+        array_walk($this->serviceProviders, function (ServiceProvider $provider) {
+            $provider->terminate();
+        });
+
+        $this->terminated = true;
     }
 
     /**
