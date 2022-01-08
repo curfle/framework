@@ -10,7 +10,7 @@ interface Grammar
 {
 
     /**
-     * Turns the table blueprint into a prepared create statement in the connector.
+     * Turns the table blueprint into a prepared create-statement in the connector.
      *
      * @param string $name
      * @param Blueprint $blueprint

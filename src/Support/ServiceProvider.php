@@ -110,7 +110,7 @@ abstract class ServiceProvider
     }
 
     /**
-     * Boot the service provider. Is called after all service provider have ben registered.
+     * Boot the service provider. Is called after all service providers have been registered.
      *
      * @return void
      */

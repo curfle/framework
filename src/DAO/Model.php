@@ -110,7 +110,7 @@ abstract class Model implements DAOInterface
         if (!isset($config["softDelete"]))
             $config["softDelete"] = false;
 
-        // ensure fields are array
+        // ensure fields is an array
         $fields = $config["fields"] ?? [];
         $ignoreFields = array_merge($config["fields"] ?? [], ["connector"]);
         if (empty($fields)) {

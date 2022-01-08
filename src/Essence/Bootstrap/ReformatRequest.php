@@ -18,7 +18,7 @@ class ReformatRequest implements BootstrapInterface
      */
     function bootstrap(Application $app)
     {
-        // As curfle can be used inside subfolders a specific part of a url might not be wanted in the
+        // As curfle can be used inside subfolders a specific part of an url might not be wanted in the
         // request uri contained in the request. For example if the curfle project lives under /auth/ a
         // /auth/... prefix is always present but may not be wanted while resolving routes. For that reason
         // we need to remove this part of the request uri to use our routes properly.

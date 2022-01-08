@@ -32,7 +32,7 @@ class Faker
      */
     public static function lastname(): string
     {
-        $names = ["Larry", "Stapen", "Barrièr", "Dahle", "Mandle", "Frosch", "Spuli", "Qualis", "Mikrola", "Kett", "Tensit", "Erdal", "Kaisi", "Otto", "Protma", "Laurith", "Schmaurit", "Propül"];
+        $names = ["Larry", "Stapen", "Barrier", "Dahle", "Mandle", "Frosch", "Spuli", "Qualis", "Mikrola", "Kett", "Tensit", "Erdal", "Kaisi", "Otto", "Protma", "Laurith", "Schmaurit", "Propül"];
         return $names[rand(0, count($names) - 1)];
     }
 

@@ -104,7 +104,7 @@ class Route
     }
 
     /**
-     * Returns all matches of a uri and its parameters against this route.
+     * Returns all matches of an uri and its parameters against this route.
      *
      * @param string $uri
      * @return array|null
