@@ -24,6 +24,13 @@ interface Kernel
     public function run(Input $input): Output;
 
     /**
+     * Terminate the application.
+     *
+     * @return mixed
+     */
+    public function terminate(): void;
+
+    /**
      * Get the Curfle application instance.
      *
      * @return Application

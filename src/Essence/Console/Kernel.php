@@ -139,6 +139,14 @@ class Kernel implements KernelAgreement
             $this->commandsLoaded = true;
         }
     }
+    
+    /**
+     * @inheritDoc
+     */
+    public function terminate(): void
+    {
+        $this->app->terminate();
+    }
 
     /**
      * @inheritDoc
