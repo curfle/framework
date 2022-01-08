@@ -188,7 +188,7 @@ class SQLiteConnector implements SQLConnectorInterface
             throw new LogicException("The number of values passed as parameter must equal the number of types.");
 
         // cast bools to ints
-        array_walk($values, fn($value) => is_bool($value) ? (int)$value : $value);
+        $values = array_map(fn($value) => is_bool($value) ? (int)$value : $value, $values);
 
         // auto-detect types if null
         if ($types === null) {
