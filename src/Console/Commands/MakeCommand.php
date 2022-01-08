@@ -161,17 +161,6 @@ abstract class MakeCommand extends Command
     }
 
     /**
-     * Get the destination class path.
-     *
-     * @param string $name
-     * @return string
-     */
-    protected function getPath(string $name): string
-    {
-        return $this->files->dirname($name);
-    }
-
-    /**
      * Build the directory for the class if necessary.
      *
      * @param string $path
@@ -260,16 +249,6 @@ abstract class MakeCommand extends Command
     {
         $class = Str::replace($name, $this->getNamespace($name) . "\\", "");
         return Str::replace($template, ["DummyClass", "{{ class }}", "{{class}}"], $class);
-    }
-
-    /**
-     * Get the root namespace for the class.
-     *
-     * @return string
-     */
-    protected function rootNamespace(): string
-    {
-        return $this->app->namespace();
     }
 
     /**

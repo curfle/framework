@@ -93,35 +93,6 @@ class Container implements ContainerAgreement
      */
     public array $contextual = [];
 
-
-    /**
-     * Determine if the given abstract type has been bound.
-     *
-     * @param string $id
-     * @return bool
-     */
-    public function bound(string $id): bool
-    {
-        return isset($this->bindings[$id]) ||
-            isset($this->instances[$id]) ||
-            $this->isAlias($id);
-    }
-
-    /**
-     * Determine if the given abstract type has been resolved.
-     *
-     * @param string $id
-     * @return bool
-     */
-    public function resolved(string $id): bool
-    {
-        if ($this->isAlias($id)) {
-            $id = $this->getAlias($id);
-        }
-
-        return isset($this->resolved[$id]) || isset($this->instances[$id]);
-    }
-
     /**
      * Determine if a given type is shared.
      *

@@ -25,8 +25,6 @@ use const PHP_SAPI;
 
 class Application extends Container
 {
-    const VERSION = "8.0.0";
-
     /**
      * The application's boot state.
      *
