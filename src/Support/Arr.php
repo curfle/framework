@@ -17,6 +17,18 @@ class Arr
         return is_array($value) || $value instanceof ArrayAccess;
     }
 
+    /**
+     * Determine whether a given value is contained in the array.
+     *
+     * @param array $array
+     * @param mixed $value
+     * @param bool $strict
+     * @return bool
+     */
+    public static function in(array $array, mixed $value, bool $strict = false): bool
+    {
+        return in_array($value, $array, $strict);
+    }
 
     /**
      * Check if array is empty
