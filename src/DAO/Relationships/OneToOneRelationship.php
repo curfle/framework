@@ -61,11 +61,10 @@ class OneToOneRelationship extends Relationship
      */
     function get(): mixed
     {
-        $item = call_user_func(
+        return call_user_func(
             $this->targetClass . "::where",
             $this->fkColumnInClass, $this->model->primaryKey()
         )->first();
-        return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
     }
 
     /**

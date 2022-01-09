@@ -73,11 +73,10 @@ class ManyToOneRelationship extends Relationship
     {
         $targetConfig = call_user_func($this->targetClass . "::__getCleanedConfig");
         $modelPropertiesToColumns = array_flip($this->model->__getCleanedConfig()["fields"]);
-        $item = call_user_func(
+        return call_user_func(
             $this->targetClass . "::where",
             $targetConfig["primaryKey"], $this->model->{$modelPropertiesToColumns[$this->fkColumn] ?? $this->fkColumn}
         )->first();
-        return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
     }
 
     /**

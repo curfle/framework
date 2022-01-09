@@ -71,13 +71,10 @@ class OneToManyRelationship extends Relationship
      */
     function get(): array
     {
-        $items = call_user_func(
+        return call_user_func(
             $this->targetClass . "::where",
             $this->fkColumnInClass, $this->model->primaryKey()
         )->get();
-        return array_map(function($item){
-            return call_user_func($this->targetClass . "::__createInstanceFromArray", $item);
-        }, $items);
     }
 
     /**

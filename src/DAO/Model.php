@@ -20,26 +20,26 @@ use ReflectionParameter;
 use ReflectionProperty;
 
 /**
- * @method static Query distinct()
- * @method static Query select(string $column, string $alias = null)
- * @method static Query join(string $table, string $columnA, string $operator, string $columnB)
- * @method static Query leftJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static Query leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static Query rightJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static Query rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
- * @method static Query crossJoin(string $table)
- * @method static Query where(...$condition)
- * @method static Query orWhere()
- * @method static Query having()
- * @method static Query groupBy()
- * @method static Query orderBy()
- * @method static Query limit(int $n)
- * @method static Query offset(int $n)
+ * @method static ModelBuilder distinct()
+ * @method static ModelBuilder select(string $column, string $alias = null)
+ * @method static ModelBuilder join(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder leftJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder rightJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder crossJoin(string $table)
+ * @method static ModelBuilder where(...$condition)
+ * @method static ModelBuilder orWhere()
+ * @method static ModelBuilder having()
+ * @method static ModelBuilder groupBy()
+ * @method static ModelBuilder orderBy()
+ * @method static ModelBuilder limit(int $n)
+ * @method static ModelBuilder offset(int $n)
  * @method static bool insert(array $data)
  * @method static bool insertOrUpdate(array $data)
  * @method static bool insertOrIgnore(array $data)
  * @method static array|null first()
- * @method static array|null value(string $column)
+ * @method static mixed value(string $column)
  * @method static array|null find($id, string $column = "id")
  * @method static mixed count()
  * @method static mixed max()
@@ -199,12 +199,13 @@ abstract class Model implements DAOInterface
     /**
      * Calls the ::table function on the connector.
      *
-     * @param string $table
+     * @param string|null $table
      * @return Query
      */
-    public static function __callTableOnConnector(string $table): Query
+    public static function __callTableOnConnector(string $table = null): Query
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
+        $table = $table ?? $config["table"];
         $statement = self::$connector->table($table);
         if($config["softDelete"] && $table === $config["table"])
             $statement = $statement->where("deleted", null);
@@ -450,8 +451,10 @@ abstract class Model implements DAOInterface
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        $config = call_user_func(get_called_class() . "::__getCleanedConfig");
-        return static::__callTableOnConnector($config["table"])->{$name}(...$arguments);
+        return ModelBuilder::fromQuery(
+            static::__callTableOnConnector(),
+            static::class
+        )->{$name}(...$arguments);
     }
 
 }
