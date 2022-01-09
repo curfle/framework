@@ -24,6 +24,7 @@ use Curfle\Database\Queries\Query;
  * @method ModelBuilder limit(int $n)
  * @method ModelBuilder offset(int $n)
  * @method bool insert(array $data)
+ * @method bool update(array $data)
  * @method bool insertOrUpdate(array $data)
  * @method bool insertOrIgnore(array $data)
  * @method mixed value(string $column)
