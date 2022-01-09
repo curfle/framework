@@ -73,9 +73,9 @@ class ModelBuilder
     /**
      * Returns all rows as model entries.
      *
-     * @return array|null
+     * @return array
      */
-    public function get(): array|null
+    public function get(): array
     {
         return array_map(
             fn($item) => call_user_func($this->class . "::__createInstanceFromArray", $item),
@@ -85,10 +85,8 @@ class ModelBuilder
 
     /**
      * Returns the first row as model entry.
-     *
-     * @return array|null
      */
-    public function first(): object|null
+    public function first()
     {
         return call_user_func($this->class . "::__createInstanceFromArray", $this->query->first());
     }
@@ -96,11 +94,10 @@ class ModelBuilder
     /**
      * Returns the first row with the specified given identifier as model entry.
      *
-     * @param $id
+     * @param mixed $id
      * @param string $column
-     * @return array|null
      */
-    public function find($id, string $column = "id"): object|null
+    public function find(mixed $id, string $column = "id")
     {
         return call_user_func($this->class . "::__createInstanceFromArray", $this->query->find($id, $column));
     }

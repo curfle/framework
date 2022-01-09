@@ -207,11 +207,11 @@ abstract class Query
     /**
      * Returns the first row with the specified given identifier.
      *
-     * @param $id
+     * @param mixed $id
      * @param string $column
      * @return array|null
      */
-    public function find($id, string $column = "id"): array|null
+    public function find(mixed $id, string $column = "id"): array|null
     {
         $connector = $this->prepareStatement(
             $this->builder
