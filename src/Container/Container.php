@@ -625,14 +625,16 @@ class Container implements ContainerAgreement
     /**
      * Call the given Closure / class@method and inject its dependencies.
      *
-     * @param callable|string $callback
+     * @param callable|array|string $callback
      * @param array<string, mixed> $parameters
      * @param string|null $defaultMethod
      * @return mixed
      *
-     * @throws InvalidArgumentException
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
-    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null): mixed
+    public function call(callable|array|string $callback, array $parameters = [], string $defaultMethod = null): mixed
     {
         return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
     }

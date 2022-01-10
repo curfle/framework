@@ -3,6 +3,7 @@
 namespace Curfle\Container;
 
 use Closure;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Str;
@@ -19,7 +20,7 @@ class BoundMethod
      * Call the given Closure / class@method and inject its dependencies.
      *
      * @param Container $container
-     * @param callable|string $callback
+     * @param callable|array|string $callback
      * @param array $parameters
      * @param string|null $defaultMethod
      * @return mixed
@@ -28,7 +29,7 @@ class BoundMethod
      * @throws CircularDependencyException
      * @throws ReflectionException
      */
-    public static function call(Container $container, callable|string $callback, array $parameters = [], string $defaultMethod = null): mixed
+    public static function call(Container $container, callable|array|string $callback, array $parameters = [], string $defaultMethod = null): mixed
     {
         if (is_string($callback) && !$defaultMethod && method_exists($callback, '__invoke')) {
             $defaultMethod = '__invoke';
@@ -77,11 +78,11 @@ class BoundMethod
      * Call a method that has been bound to the container.
      *
      * @param Container $container
-     * @param callable $callback
+     * @param callable|array $callback
      * @param mixed $default
      * @return mixed
      */
-    protected static function callBoundMethod(Container $container, callable $callback, mixed $default): mixed
+    protected static function callBoundMethod(Container $container, callable|array $callback, mixed $default): mixed
     {
         if (!is_array($callback)) {
             return Utilities::unwrapIfClosure($default);
@@ -102,10 +103,10 @@ class BoundMethod
     /**
      * Normalize the given callback into a Class@method string.
      *
-     * @param callable $callback
+     * @param callable|array $callback
      * @return string
      */
-    protected static function normalizeMethod(callable $callback): string
+    protected static function normalizeMethod(callable|array $callback): string
     {
         $class = is_string($callback[0]) ? $callback[0] : get_class($callback[0]);
 
