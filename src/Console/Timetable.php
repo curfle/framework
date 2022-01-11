@@ -155,7 +155,7 @@ class Timetable
      */
     public function everyThirtyMinutes(): static
     {
-        $this->minutes = range(0, 59, 10);
+        $this->minutes = range(0, 59, 30);
         $this->hours = $this->days = $this->months = $this->weekdays = [];
         return $this;
     }
