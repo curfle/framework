@@ -222,12 +222,12 @@ class Route
         // if response is null, default it to the apps' singleton response instance,
         // else set the return value as content
         if ($response === null)
-            $response = $this->container->resolve("response");
+            $response = $this->container->make("response");
         else if (!$response instanceof Response) {
             if ($response instanceof View)
-                $response = $this->container->resolve("response")->setContent($response->render());
+                $response = $this->container->make("response")->setContent($response->render());
             else
-                $response = $this->container->resolve("response")->setContent($response);
+                $response = $this->container->make("response")->setContent($response);
         }
 
         return $response;

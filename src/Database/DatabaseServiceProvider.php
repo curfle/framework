@@ -12,7 +12,7 @@ class DatabaseServiceProvider extends ServiceProvider
      * @inheritDoc
      */
     public function boot(){
-        Model::setConnector($this->app->resolve("db.connection"));
+        Model::setConnector($this->app->make("db.connection"));
     }
 
     /**
@@ -25,7 +25,7 @@ class DatabaseServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('db.connection', function (Application $app) {
-            return $app->resolve('db')->connector();
+            return $app->make('db')->connector();
         });
     }
 
@@ -34,6 +34,6 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     public function terminate()
     {
-        $this->app->resolve('db')->disconnectConnectors();
+        $this->app->make('db')->disconnectConnectors();
     }
 }

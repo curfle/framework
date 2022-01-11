@@ -2,6 +2,8 @@
 
 namespace Curfle\Essence\Providers;
 
+use Curfle\Agreements\Console\Kernel;
+use Curfle\Console\Buddy;
 use Curfle\Console\Commands\DbCommand;
 use Curfle\Console\Commands\DbSeedCommand;
 use Curfle\Console\Commands\MakeControllerCommand;
@@ -22,7 +24,8 @@ use Curfle\Console\Commands\MigrateRollbackCommand;
 use Curfle\Console\Commands\MigrateStatusCommand;
 use Curfle\Console\Commands\ServeCommand;
 use Curfle\Console\Commands\ListCommand;
-use Curfle\Support\Facades\Buddy;
+use Curfle\Essence\Application;
+use Curfle\FileSystem\FileSystem;
 use Curfle\Support\ServiceProvider;
 
 class BuddyServiceProvider extends ServiceProvider
@@ -39,67 +42,14 @@ class BuddyServiceProvider extends ServiceProvider
         $this->registerCommands();
     }
 
-    private function registerCommands()
-    {
-        // db
-        Buddy::command(new DbCommand($this->app));
-
-        // db:seed
-        Buddy::command(new DbSeedCommand($this->app));
-
-        // list
-        Buddy::command(new ListCommand($this->app));
-
-        // make:controller
-        Buddy::command(new MakeControllerCommand($this->app));
-
-        // make:exception
-        Buddy::command(new MakeExceptionCommand($this->app));
-
-        // make:guardian
-        Buddy::command(new MakeGuardianCommand($this->app));
-
-        // make:mail
-        Buddy::command(new MakeMailCommand($this->app));
-
-        // make:middleware
-        Buddy::command(new MakeMiddlewareCommand($this->app));
-
-        // make:migration
-        Buddy::command(new MakeMigrationCommand($this->app));
-
-        // make:model
-        Buddy::command(new MakeModelCommand($this->app));
-
-        // make:secret
-        Buddy::command(new MakeSecretCommand($this->app));
-
-        // make:seeder
-        Buddy::command(new MakeSeederCommand($this->app));
-
-        // make:test
-        Buddy::command(new MakeTestCommand($this->app));
-
-        // migrate
-        Buddy::command(new MigrateCommand($this->app));
-
-        // migrate:fresh
-        Buddy::command(new MigrateFreshCommand($this->app));
-
-        // migrate:next
-        Buddy::command(new MigrateNextCommand($this->app));
-
-        // migrate:reset
-        Buddy::command(new MigrateResetCommand($this->app));
-
-        // migrate:rollback
-        Buddy::command(new MigrateRollbackCommand($this->app));
-
-        // migrate:status
-        Buddy::command(new MigrateStatusCommand($this->app));
-
-        // serve
-        Buddy::command(new ServeCommand($this->app));
-
+    /**
+     * Registers all built-in commands.
+     *
+     * @return void
+     */
+    private function registerCommands() {
+        $this->app
+            ->make(Kernel::class)
+            ->loadFromDirectory(__DIR__ . "/../../Console/Commands");
     }
 }

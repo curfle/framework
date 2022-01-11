@@ -26,12 +26,9 @@ class Schema extends Facade
      * Get the registered name of the component.
      *
      * @return mixed
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     protected static function getFacadeAccessor() : mixed
     {
-        return static::$app->resolve('db')->connector()->getSchemaBuilder();
+        return static::$app->make('db')->connector()->getSchemaBuilder();
     }
 }

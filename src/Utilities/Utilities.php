@@ -2,6 +2,8 @@
 
 namespace Curfle\Utilities;
 
+use Curfle\Support\Facades\File;
+use Curfle\Support\Str;
 use ReflectionNamedType;
 use ReflectionParameter;
 
@@ -36,24 +38,35 @@ class Utilities
     /**
      * Returns the classname of a class contained in a file.
      *
-     * @param string $filePathName
+     * @param string $file
+     * @param bool $includeNamespace
      * @return ?string
      */
-    public static function getClassNameFromFile(string $filePathName): ?string
+    public static function getClassNameFromFile(string $file, bool $includeNamespace = true): ?string
     {
-        $php_code = file_get_contents($filePathName);
+        $code = file_get_contents($file);
+        $class = $namespace = "";
 
-        $classes = array();
-        $tokens = token_get_all($php_code);
-        $count = count($tokens);
-        for ($i = 2; $i < $count; $i++) {
-            if ($tokens[$i - 2][0] == T_CLASS && $tokens[$i - 1][0] == T_WHITESPACE && $tokens[$i][0] == T_STRING) {
-                $class_name = $tokens[$i][1];
-                $classes[] = $class_name;
+        $tokens = token_get_all($code);
+
+        for ($i = 0; $i < count($tokens); $i++) {
+            // find namespace
+            if ($tokens[$i][0] === T_NAMESPACE) {
+                for ($j = $i + 1; $j < count($tokens) && Str::empty($namespace); $j++) {
+                    if ($tokens[$j][0] === T_NAME_QUALIFIED)
+                        $namespace = $tokens[$j][1] . "\\";
+                }
+            }
+
+            // find classname
+            if ($tokens[$i][0] === T_CLASS) {
+                for ($j = $i + 1; $j < count($tokens); $j++) {
+                    if ($tokens[$j] === '{')
+                        $class = $tokens[$i + 2][1];
+                }
             }
         }
-        return $classes[0] ?? null;
+
+        return $includeNamespace ? $namespace . $class : $class;
     }
-
-
 }

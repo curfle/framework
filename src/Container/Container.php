@@ -156,7 +156,7 @@ class Container implements ContainerAgreement
             if ($id == $resolver)
                 return $container->build($resolver);
 
-            return $container->resolve($resolver, $parameters);
+            return $container->make($resolver, $parameters);
         };
     }
 
@@ -188,11 +188,11 @@ class Container implements ContainerAgreement
      *
      * @param string $id
      * @param array $parameters
-     * @return object|string
+     * @return mixed
      * @throws BindingResolutionException
      * @throws ReflectionException|CircularDependencyException
      */
-    public function resolve(string $id, array $parameters = []): object|string
+    public function resolve(string $id, array $parameters = []): mixed
     {
         // resolve potential alias(es)
         $id = $this->getAlias($id);
@@ -580,11 +580,9 @@ class Container implements ContainerAgreement
      * Creates an instance of a bound class.
      *
      * @param string $id
-     * @return object|string
-     * @throws BindingResolutionException|ReflectionException
-     * @throws CircularDependencyException
+     * @return mixed
      */
-    public function make(string $id): object|string
+    public function make(string $id): mixed
     {
         return $this->resolve($id);
     }
@@ -651,7 +649,6 @@ class Container implements ContainerAgreement
             ? $this->getAlias($this->aliases[$id])
             : $id;
     }
-
 
 
     /**

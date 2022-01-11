@@ -2,18 +2,28 @@
 
 namespace Curfle\Console;
 
-use Curfle\Essence\Application as CurfleApplication;
+use Curfle\Essence\Application;
+use Curfle\FileSystem\FileSystem;
 use Curfle\Support\Exceptions\Console\CommandNotFoundException;
+use Curfle\Utilities\Utilities;
+use ReflectionException;
 
-class Application
+class Buddy
 {
 
     /**
-     * The application instance.
+     * The Application instance
      *
-     * @var CurfleApplication
+     * @var Application
      */
-    private CurfleApplication $app;
+    private Application $app;
+
+    /**
+     * The FileSystem instance
+     *
+     * @var FileSystem
+     */
+    private FileSystem $files;
 
     /**
      * List of all available commands.
@@ -23,11 +33,13 @@ class Application
     private array $commands = [];
 
     /**
-     * @param CurfleApplication $app
+     * @param Application $app
+     * @param FileSystem $files
      */
-    public function __construct(CurfleApplication $app)
+    public function __construct(Application $app, FileSystem $files)
     {
         $this->app = $app;
+        $this->files = $files;
     }
 
     /**
@@ -39,6 +51,28 @@ class Application
     public function add(Command $command): Command
     {
         return $this->commands[] = $command;
+    }
+
+
+    /**
+     * Loads commands from directory.
+     *
+     * @param string $directory
+     * @throws ReflectionException
+     */
+    public function loadFromDirectory(string $directory)
+    {
+        if (!$this->files->isDirectory($directory))
+            return;
+
+        foreach ($this->files->files($directory) as $file) {
+            $path = $directory . DIRECTORY_SEPARATOR . $file;
+            $class = Utilities::getClassNameFromFile($path);
+
+            if(is_subclass_of($class, Command::class)
+                && !(new \ReflectionClass($class))->isAbstract())
+                $this->add($this->app->make($class));
+        }
     }
 
     /**
@@ -68,7 +102,7 @@ class Application
      *
      * @return array
      */
-    public function commands(): array
+    public function getCommands(): array
     {
         return $this->commands;
     }

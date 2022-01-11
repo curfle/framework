@@ -3,7 +3,7 @@
 namespace Curfle\Essence\Console;
 
 use Curfle\Agreements\Console\Kernel as KernelAgreement;
-use Curfle\Console\Application as Buddy;
+use Curfle\Console\Buddy;
 use Curfle\Console\Command;
 use Curfle\Console\CommandFactory;
 use Curfle\Essence\Application;
@@ -14,6 +14,7 @@ use Curfle\Essence\Bootstrap\RegisterFacade;
 use Curfle\Essence\Bootstrap\RegisterProviders;
 use Curfle\Console\Input;
 use Curfle\Console\Output;
+use Curfle\FileSystem\FileSystem;
 use Curfle\Support\Exceptions\Console\CommandNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
@@ -30,11 +31,11 @@ class Kernel implements KernelAgreement
     protected Application $app;
 
     /**
-     * The buddy application.
+     * The console application.
      *
-     * @var Buddy|null
+     * @var Buddy
      */
-    protected ?Buddy $buddy = null;
+    protected Buddy $buddy;
 
     /**
      * The indicator if commands have been loaded.
@@ -60,11 +61,11 @@ class Kernel implements KernelAgreement
      * Create a new Console kernel instance.
      *
      * @param Application $app
-     * @return void
      */
     public function __construct(Application $app)
     {
         $this->app = $app;
+        $this->buddy = $app->make(Buddy::class);
     }
 
     /**
@@ -77,25 +78,41 @@ class Kernel implements KernelAgreement
     }
 
     /**
+     * Load commands from a directory.
+     *
+     * @param string $directory
+     * @return void
+     */
+    public function loadFromDirectory(string $directory)
+    {
+        $this->buddy->loadFromDirectory($directory);
+    }
+
+    /**
      * Register a Closure based command with the application.
      *
      * @param Command|string $signature
      * @param callable|null $resolver
      * @return Command
      */
-    public function command(Command|string $signature, callable $resolver=null): Command
+    public function command(Command|string $signature, callable $resolver = null): Command
     {
-        if($signature instanceof Command)
-            return $this->getBuddy()->add($signature);
+        if ($signature instanceof Command)
+            return $this->buddy->add($signature);
 
-        return $this->getBuddy()->add(
+        return $this->buddy->add(
             CommandFactory::fromCallable($this->app, $signature, $resolver)
         );
     }
 
+    /**
+     * Returns all commands.
+     *
+     * @return array
+     */
     public function getAllCommands(): array
     {
-        return $this->getBuddy()->commands();
+        return $this->buddy->getCommands();
     }
 
     /**
@@ -120,26 +137,25 @@ class Kernel implements KernelAgreement
 
         $this->bootstrap();
 
-        return $this->getBuddy()->run($input);
+        return $this->buddy->run($input);
     }
 
     /**
      * @inheritDoc
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function bootstrap()
     {
         if (!$this->app->hasBeenBootstrapped()) {
-            $this->app->bootstrapWith($this->bootstrappers());
+            $this->app->bootstrapWith($this->getBootstrappers());
         }
 
-        if (! $this->commandsLoaded) {
+        if (!$this->commandsLoaded) {
             $this->commands();
 
             $this->commandsLoaded = true;
         }
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -161,21 +177,8 @@ class Kernel implements KernelAgreement
      *
      * @return array
      */
-    protected function bootstrappers(): array
+    protected function getBootstrappers(): array
     {
         return $this->bootstrappers;
-    }
-
-    /**
-     * Get the Buddy application instance.
-     *
-     * @return Buddy
-     */
-    protected function getBuddy(): Buddy
-    {
-        if ($this->buddy === null)
-            return $this->buddy = new Buddy($this->app);
-
-        return $this->buddy;
     }
 }

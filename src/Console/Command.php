@@ -12,7 +12,7 @@ class Command
     /**
      * The commands' application instance.
      *
-     * @var Application
+     * @var Buddy
      */
     protected Application $app;
 
@@ -59,7 +59,7 @@ class Command
     protected Output $output;
 
     /**
-     * @param Application $app
+     * @param Buddy $app
      */
     public function __construct(Application $app)
     {
@@ -253,7 +253,7 @@ class Command
     /**
      * Returns the commands' application instance.
      *
-     * @return Application
+     * @return Buddy
      */
     public function getApplication(): Application
     {
@@ -263,7 +263,7 @@ class Command
     /**
      * Sets the commands' application instance.
      *
-     * @param Application $app
+     * @param Buddy $app
      * @return Command
      */
     public function setApplication(Application $app): static

@@ -15,42 +15,38 @@ class ApplicationTest extends TestCase
     /**
      * Tests app instance creation.
      *
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function testAppInstance()
     {
         $app = new Application();
-        $this->assertSame($app, $app->resolve("app"));
+        $this->assertSame($app, $app->make("app"));
     }
 
     /**
      * Tests $app->bind().
      *
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function testBind()
     {
         $app = new Application();
         $app->bind("ApplicationTest", ApplicationTest::class);
-        $this->assertNotSame($app->resolve("ApplicationTest"), $app->resolve("ApplicationTest"));
+        $this->assertNotSame($app->make("ApplicationTest"), $app->make("ApplicationTest"));
     }
 
     /**
      * Tests $app->singleton().
      *
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function testSingleton()
     {
         $app = new Application();
         $app->singleton("ApplicationTest", ApplicationTest::class);
-        $this->assertSame($app->resolve("ApplicationTest"), $app->resolve("ApplicationTest"));
+        $this->assertSame($app->make("ApplicationTest"), $app->make("ApplicationTest"));
     }
 
     /**
      * Tests app's singleton resolver.
      *
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function testSingletonResolve()
     {
@@ -59,13 +55,12 @@ class ApplicationTest extends TestCase
             return new SQLiteConnector(DB_SQLITE_FILENAME);
         });
 
-        $this->assertTrue($app->resolve("db") instanceof SQLiteConnector);
+        $this->assertTrue($app->make("db") instanceof SQLiteConnector);
     }
 
     /**
      * Tests $app->singleton().
      *
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function testDependencyInjection()
     {

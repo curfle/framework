@@ -99,7 +99,7 @@ abstract class MakeCommand extends Command
     public function __construct(Application $app)
     {
         parent::__construct($app);
-        $this->files = $app->resolve("files");
+        $this->files = $app->make("files");
     }
 
     /**

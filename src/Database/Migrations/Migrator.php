@@ -55,7 +55,7 @@ class Migrator
      */
     private function getMigrationTable(): string
     {
-        return $this->app->resolve("config")["database.migrations"];
+        return $this->app->make("config")["database.migrations"];
     }
 
     /**

@@ -373,7 +373,7 @@ class Application extends Container
      */
     public function viewPath(string $path = ''): string
     {
-        $basePath = $this->resolve('config')->get('view.paths')[0];
+        $basePath = $this->make('config')->get('view.paths')[0];
 
         return rtrim($basePath, DIRECTORY_SEPARATOR) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
@@ -429,7 +429,6 @@ class Application extends Container
      *
      * @param string[] $bootstrappers
      * @return void
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function bootstrapWith(array $bootstrappers)
     {
@@ -597,9 +596,6 @@ class Application extends Container
      * Register all the configured providers.
      *
      * @return void
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     public function registerConfiguredProviders()
     {

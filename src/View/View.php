@@ -49,7 +49,7 @@ class View
      */
     public function render(): string
     {
-        $filecontent = $this->app->resolve("files")->get(ViewName::normalize($this->path));
+        $filecontent = $this->app->make("files")->get(ViewName::normalize($this->path));
 
         // replace variables
         // TODO: add templating engine

@@ -58,18 +58,15 @@ class AuthenticationManager
 
     /**
      * @throws ProvidedGuardianNotGuardianInstanceException
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     private function loadGuardians()
     {
-        $guardians = $this->app->resolve("config")["auth.guardians"];
+        $guardians = $this->app->make("config")["auth.guardians"];
 
         foreach ($guardians as $name => $guardian) {
             // create instance of guardian
             $classname = $guardian["guardian"];
-            $instance = $this->app->resolve($classname);
+            $instance = $this->app->make($classname);
 
             if (!$instance instanceof Guardian)
                 throw new ProvidedGuardianNotGuardianInstanceException("The created instance of the provided guardian classname [$classname] is not an instance of Curfle\Agreements\Auth\Guardian.");

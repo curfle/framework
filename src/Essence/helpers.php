@@ -37,7 +37,7 @@ if (!function_exists('app')) {
             return Container::getInstance();
         }
 
-        return Container::getInstance()->resolve($id, $parameters);
+        return Container::getInstance()->make($id, $parameters);
     }
 }
 

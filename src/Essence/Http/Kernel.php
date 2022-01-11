@@ -118,7 +118,6 @@ class Kernel implements KernelAgreement
      * @param Request $request
      * @return Response
      * @throws BindingResolutionException|CircularDependencyException|ReflectionException
-     * @throws HttpNotFoundException
      */
     protected function sendRequestThroughRouter(Request $request): Response
     {
@@ -152,7 +151,6 @@ class Kernel implements KernelAgreement
 
     /**
      * @inheritDoc
-     * @throws BindingResolutionException|CircularDependencyException|ReflectionException
      */
     public function bootstrap()
     {
@@ -184,13 +182,10 @@ class Kernel implements KernelAgreement
      *
      * @param Throwable $e
      * @return void
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     protected function reportException(Throwable $e)
     {
-        $this->app->resolve(ExceptionHandler::class)->report($e);
+        $this->app->make(ExceptionHandler::class)->report($e);
     }
 
     /**
@@ -199,12 +194,9 @@ class Kernel implements KernelAgreement
      * @param Request $request
      * @param Throwable $e
      * @return Response
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     protected function renderException(Request $request, Throwable $e): Response
     {
-        return $this->app->resolve(ExceptionHandler::class)->render($request, $e);
+        return $this->app->make(ExceptionHandler::class)->render($request, $e);
     }
 }

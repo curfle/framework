@@ -40,9 +40,6 @@ abstract class Facade
     /**
      * Returns the aliased singleton instance of the facade
      * @return object
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     public static function getFacadeInstance(): object
     {
@@ -54,7 +51,7 @@ abstract class Facade
         if (isset(static::$instance[$name]))
             return static::$instance[$name];
 
-        return static::$instance[$name] = static::$app->resolve($name);
+        return static::$instance[$name] = static::$app->make($name);
     }
 
     /**
@@ -64,7 +61,6 @@ abstract class Facade
      * @return mixed
      *
      * @throws RuntimeException
-     * @throws BindingResolutionException
      */
     public static function __callStatic(string $method, array $args)
     {

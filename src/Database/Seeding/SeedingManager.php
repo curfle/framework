@@ -76,7 +76,7 @@ class SeedingManager
         $seeders = $this->getAllSeeders();
 
         foreach ($seeders as $seeder) {
-            $seeder = $this->app->build("\\Database\\Seeders\\$seeder");
+            $seeder = $this->app->build($seeder);
             $seeder->run();
         }
 

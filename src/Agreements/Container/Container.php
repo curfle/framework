@@ -32,11 +32,9 @@ interface Container
      * Creates an instance of a bound class.
      *
      * @param string $id
-     * @return object|string
-     * @throws BindingResolutionException|ReflectionException
-     * @throws CircularDependencyException
+     * @return mixed
      */
-    public function make(string $id): object|string;
+    public function make(string $id): mixed;
 
 
     /**

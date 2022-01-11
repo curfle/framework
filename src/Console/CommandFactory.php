@@ -9,7 +9,7 @@ class CommandFactory
     /**
      * Creates a Connector based on a config.
      *
-     * @param Application $app
+     * @param Buddy $app
      * @param string $signature
      * @param callable $resolver
      * @param string $description

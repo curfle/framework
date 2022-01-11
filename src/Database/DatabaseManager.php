@@ -44,7 +44,7 @@ class DatabaseManager
      */
     public function getDefaultConnectionName(): string
     {
-        return $this->app->resolve("config")["database.default"];
+        return $this->app->make("config")["database.default"];
     }
 
     /**
@@ -58,7 +58,7 @@ class DatabaseManager
      */
     public function setDefaultConnectionName(string $name)
     {
-        $this->app->resolve("config")["database.default"] = $name;
+        $this->app->make("config")["database.default"] = $name;
     }
 
     /**
@@ -90,7 +90,7 @@ class DatabaseManager
      */
     private function createConnector(string $name): SQLConnectorInterface
     {
-        $possibleConnections = $this->app->resolve("config")["database.connections"];
+        $possibleConnections = $this->app->make("config")["database.connections"];
         if (!isset($possibleConnections[$name]))
             throw new ConnectionNotFoundException("The connection [$name] could not be found in the projects configuration.");
 

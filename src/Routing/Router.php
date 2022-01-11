@@ -391,9 +391,6 @@ class Router
      * @param string $alias
      * @return Middleware
      * @throws MiddlewareNotFoundException
-     * @throws BindingResolutionException
-     * @throws CircularDependencyException
-     * @throws ReflectionException
      */
     public function getMiddleware(string $alias): Middleware
     {
@@ -402,11 +399,11 @@ class Router
         $parameters = array_slice($parts, 1);
 
         if (array_key_exists($alias, $this->routeMiddleware))
-            return $this->container->resolve($this->routeMiddleware[$alias])
+            return $this->container->make($this->routeMiddleware[$alias])
                 ->setParameters($parameters);
 
         if (class_exists($alias))
-            return $this->container->resolve($alias)
+            return $this->container->make($alias)
                 ->setParameters($parameters);
 
         throw new MiddlewareNotFoundException("The middleware [$alias] could not be found.");
