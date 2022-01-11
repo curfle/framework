@@ -15,6 +15,7 @@ use Curfle\Database\Queries\Query;
  * @method ModelBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method ModelBuilder rightJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method ModelBuilder rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method ModelBuilder innerJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method ModelBuilder crossJoin(string $table)
  * @method ModelBuilder where(...$condition)
  * @method ModelBuilder orWhere()

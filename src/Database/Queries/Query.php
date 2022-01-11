@@ -17,6 +17,7 @@ use Curfle\Support\Exceptions\Logic\LogicException;
  * @method static leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static rightJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static innerJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static crossJoin(string $table)
  * @method static where(...$condition)
  * @method static orWhere()

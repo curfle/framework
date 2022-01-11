@@ -239,6 +239,21 @@ abstract class SQLQueryBuilder
     }
 
     /**
+     * Adds an inner join to the query.
+     *
+     * @param string $table
+     * @param string $columnA
+     * @param string $operator
+     * @param string $columnB
+     * @return $this
+     */
+    public function innerJoin(string $table, string $columnA, string $operator, string $columnB): SQLQueryBuilder
+    {
+        $this->addJoin("INNER JOIN", $table, $columnA, $operator, $columnB);
+        return $this;
+    }
+
+    /**
      * Adds a cross join to the query.
      *
      * @param string $table

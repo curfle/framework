@@ -27,6 +27,7 @@ use ReflectionProperty;
  * @method static ModelBuilder leftOuterJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static ModelBuilder rightJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static ModelBuilder rightOuterJoin(string $table, string $columnA, string $operator, string $columnB)
+ * @method static ModelBuilder innerJoin(string $table, string $columnA, string $operator, string $columnB)
  * @method static ModelBuilder crossJoin(string $table)
  * @method static ModelBuilder where(...$condition)
  * @method static ModelBuilder orWhere()
