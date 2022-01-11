@@ -4,6 +4,7 @@ namespace Curfle\Console;
 
 use Closure;
 use Curfle\Essence\Application;
+use Curfle\Support\Arr;
 use Curfle\Support\Str;
 
 class Command
@@ -217,7 +218,9 @@ class Command
 
         // search for optional parameters
         $signature = preg_replace_callback('~ {([^}]*)\?}~', function ($m) {
-            return $this->where[$m[1]] ?? $this->where[$m[1]] = "( \w+)?";
+            return Arr::exists($this->where, $m[1])
+                ? "( " . $this->where[$m[1]] . "?)"
+                : $this->where[$m[1]] = "( \w+)?";
         }, $signature);
 
         // search for necessary parameters
@@ -225,8 +228,13 @@ class Command
             return $this->where[$m[1]] ?? $this->where[$m[1]] = "(\w+)";
         }, $signature);
 
+        // replace backslashes
         $signature = Str::replace($signature, "\/", "/");
         $signature = Str::replace($signature, "/", "\/");
+
+        // replace dashes
+        $signature = Str::replace($signature, "\-", "-");
+        $signature = Str::replace($signature, "-", "\-");
 
         return "/^$signature$/m";
     }
