@@ -38,7 +38,7 @@ class Command
     protected Closure|null $resolver = null;
 
     /**
-     * The conditions for the parameter.
+     * The conditions for the arguments.
      *
      * @var array
      */
@@ -189,13 +189,13 @@ class Command
             );
 
             // get index in matches
-            $index = $i + 1;
-            for ($j = 0; $j < $i; $j++) {
+            $index = 0;
+            for ($j = 0; $j <= $i; $j++) {
                 $index += substr_count($this->where[array_keys($this->where)[$j]], "(");
             }
 
             // set parameter value
-            $value = Str::trim($matches[$index][0][0]);
+            $value = Str::trim($matches[$index][0][0] ?? "");
             if ($value !== "")
                 $parameters[$name] = $value;
         }
@@ -207,7 +207,7 @@ class Command
     }
 
     /**
-     * Compiles the commands' signature.
+     * Compiles the commands' signature and fills in missing $this->where entries.
      *
      * @return string
      */
@@ -217,12 +217,12 @@ class Command
 
         // search for optional parameters
         $signature = preg_replace_callback('~ {([^}]*)\?}~', function ($m) {
-            return $this->where[$m[1]] ?? "( \w+)?";
+            return $this->where[$m[1]] ?? $this->where[$m[1]] = "( \w+)?";
         }, $signature);
 
         // search for necessary parameters
         $signature = preg_replace_callback('~{([^}]*)}~', function ($m) {
-            return $this->where[$m[1]] ?? "(\w+)";
+            return $this->where[$m[1]] ?? $this->where[$m[1]] = "(\w+)";
         }, $signature);
 
         $signature = Str::replace($signature, "\/", "/");
