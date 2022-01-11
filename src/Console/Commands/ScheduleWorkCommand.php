@@ -45,7 +45,7 @@ class ScheduleWorkCommand extends Command
 
             // execute command and write result
             $output = $this->executeSchedule();
-            $this->write($output, false)->flush();
+            $this->write($output)->flush();
 
             // determine next run
             $nextRun = $this->getNextMinute($nextRun);

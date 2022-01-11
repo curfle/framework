@@ -39,6 +39,13 @@ class Event
     private Closure|string $resolver;
 
     /**
+     * The event's description.
+     *
+     * @var string
+     */
+    private string $description;
+
+    /**
      * The application instance.
      *
      * @var Application
@@ -64,18 +71,6 @@ class Event
     }
 
     /**
-     * Sets the event's resolver.
-     *
-     * @param Closure|string $resolver
-     * @return Event
-     */
-    public function setResolver(Closure|string $resolver): static
-    {
-        $this->resolver = $resolver;
-        return $this;
-    }
-
-    /**
      * Returns wether the event should be run or not.
      *
      * @param Chronos $timestamp
@@ -97,7 +92,41 @@ class Event
     }
 
     /**
-     * Forwards the call to the timetable instance.
+     * Return the event's description.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the event's description.
+     *
+     * @param string $description
+     * @return Event
+     */
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Set the event's resolver.
+     *
+     * @param Closure|string $resolver
+     * @return Event
+     */
+    public function setResolver(Closure|string $resolver): static
+    {
+        $this->resolver = $resolver;
+        return $this;
+    }
+
+    /**
+     * Forward the call to the timetable instance.
      *
      * @param string $name
      * @param array $arguments

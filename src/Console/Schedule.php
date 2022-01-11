@@ -5,6 +5,7 @@ namespace Curfle\Console;
 use Closure;
 use Curfle\Chronos\Chronos;
 use Curfle\Essence\Application;
+use Curfle\Support\Str;
 
 class Schedule
 {
@@ -57,7 +58,8 @@ class Schedule
     public function shell(string $command): Event
     {
         return $this->event($this->app->make(Event::class))
-            ->setResolver(fn() => Shell::run($command));
+            ->setResolver(fn() => Shell::run($command))
+            ->setDescription($command);
     }
 
     /**
@@ -69,7 +71,8 @@ class Schedule
     public function command(string $command): Event
     {
         return $this->event($this->app->make(Event::class))
-            ->setResolver(fn() => Shell::runCommand($command));
+            ->setResolver(fn() => Shell::runCommand($command))
+            ->setDescription("php buddy $command");
     }
 
     /**
@@ -81,7 +84,8 @@ class Schedule
     public function call(Closure|string $resolver): Event
     {
         return $this->event($this->app->make(Event::class))
-            ->setResolver($resolver);
+            ->setResolver($resolver)
+            ->setDescription($resolver instanceof Closure ? "Anonymous closure" : $resolver);
     }
 
     /**
@@ -92,10 +96,20 @@ class Schedule
      */
     public function run(Chronos $timestamp): Output
     {
+        $numberOfRunnedCommands = 0;
         foreach ($this->events as $event) {
             if ($event->isDue($timestamp)) {
+                $this->output->write("Running scheduled event: " . $event->getDescription());
                 $this->output->write((string)$event->run());
+                $numberOfRunnedCommands++;
             }
+        }
+        if ($numberOfRunnedCommands > 0)
+            $this->output->success($numberOfRunnedCommands. " event"
+                . ($numberOfRunnedCommands > 1 ? "s have" : " has")
+                . " run in total.");
+        else {
+            $this->output->success("No scheduled events are ready to run.");
         }
         return $this->output;
     }
