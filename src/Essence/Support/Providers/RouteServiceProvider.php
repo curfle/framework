@@ -3,7 +3,10 @@
 namespace Curfle\Essence\Support\Providers;
 
 use Closure;
+use Curfle\Support\Exceptions\Misc\BindingResolutionException;
+use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\ServiceProvider;
+use ReflectionException;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -43,6 +46,9 @@ class RouteServiceProvider extends ServiceProvider
      * Load the application routes.
      *
      * @return void
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
+     * @throws ReflectionException
      */
     public function loadRoutes()
     {
