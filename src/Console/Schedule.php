@@ -3,6 +3,7 @@
 namespace Curfle\Console;
 
 use Closure;
+use Curfle\Chronos\Chronos;
 use Curfle\Essence\Application;
 
 class Schedule
@@ -86,12 +87,13 @@ class Schedule
     /**
      * Runs the schedule.
      *
+     * @param Chronos $timestamp
      * @return Output
      */
-    public function run(): Output
+    public function run(Chronos $timestamp): Output
     {
         foreach ($this->events as $event) {
-            if ($event->isDue()) {
+            if ($event->isDue($timestamp)) {
                 $this->output->write((string)$event->run());
             }
         }
