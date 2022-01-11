@@ -225,7 +225,9 @@ class Command
 
         // search for necessary parameters
         $signature = preg_replace_callback('~{([^}]*)}~', function ($m) {
-            return $this->where[$m[1]] ?? $this->where[$m[1]] = "(\w+)";
+            return Arr::exists($this->where, $m[1])
+                ? "(" . $this->where[$m[1]] . ")"
+                : $this->where[$m[1]] = "(\w+)";
         }, $signature);
 
         // replace backslashes
