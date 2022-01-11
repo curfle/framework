@@ -6,6 +6,32 @@ use Curfle\Console\Input;
 
 class MakeExceptionCommand extends MakeCommand
 {
+    /**
+     * The name and the signature of the command.
+     *
+     * @var string
+     */
+    protected string $signature = "make:exception {name}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Creates a new exception class.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Input $input) {
+        // get name and create file
+        $name = "App\Exceptions\\" . $input->argument("name");
+        $filename = $this->app->basePath("app/Exceptions/") . $this->createFileName($name);
+        $this->makeFile(
+            $name,
+            $filename
+        );
+    }
 
     /**
      * @inheritDoc
@@ -13,24 +39,5 @@ class MakeExceptionCommand extends MakeCommand
     protected function getTemplate(): string
     {
         return __DIR__ . "/../Templates/Exception.template";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function install()
-    {
-        $this->signature("make:exception {name}")
-            ->where("name", "([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*")
-            ->description("Creates a new exception file")
-            ->resolver(function (Input $input) {
-                // get name and create file
-                $name = "App\Exceptions\\" . $input->namedArgument("name");
-                $filename = $this->app->basePath("app/Exceptions/") . $this->createFileName($name);
-                $this->makeFile(
-                    $name,
-                    $filename
-                );
-            });
     }
 }

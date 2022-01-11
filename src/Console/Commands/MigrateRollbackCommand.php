@@ -10,26 +10,35 @@ use Curfle\FileSystem\FileSystem;
 class MigrateRollbackCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
-    {
-        $this->signature("migrate:rollback")
-            ->description("Rolls back the last migration that has been run")
-            ->resolver(function (Application $app, FileSystem $files) {
-                $migrator = new Migrator($app, $files);
-                $migrationsRun = $migrator->rollback(1);
+    protected string $signature = "migrate:rollback";
 
-                // send feedback to the user
-                if(empty($migrationsRun)){
-                    $this->warning("no migration was rolled back");
-                }else{
-                    $this->write("migration rolled back:");
-                    foreach ($migrationsRun as $migration) {
-                        $this->write("- $migration");
-                    }
-                    $this->success("successfully rolled back the migration");
-                }
-            });
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Rolls back the last migration that has been run.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Application $app, FileSystem $files) {
+        $migrator = new Migrator($app, $files);
+        $migrationsRun = $migrator->rollback(1);
+
+        // send feedback to the user
+        if(empty($migrationsRun)){
+            $this->warning("no migration was rolled back");
+        }else{
+            $this->write("migration rolled back:");
+            foreach ($migrationsRun as $migration) {
+                $this->write("- $migration");
+            }
+            $this->success("successfully rolled back the migration");
+        }
     }
 }

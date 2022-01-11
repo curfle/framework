@@ -10,26 +10,35 @@ use Curfle\FileSystem\FileSystem;
 class MigrateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
-    {
-        $this->signature("migrate")
-            ->description("Runs all migrations that have not been run yet")
-            ->resolver(function (Application $app, FileSystem $files) {
-                $migrator = new Migrator($app, $files);
-                $migrationsRun = $migrator->run();
+    protected string $signature = "migrate";
 
-                // send feedback to the user
-                if(empty($migrationsRun)){
-                    $this->warning("no migrations were run");
-                }else{
-                    $this->write("migrations run:");
-                    foreach ($migrationsRun as $migration) {
-                        $this->write("- $migration");
-                    }
-                    $this->success("successfully run all migrations");
-                }
-            });
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Runs all migrations that have not been run yet.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Application $app, FileSystem $files) {
+        $migrator = new Migrator($app, $files);
+        $migrationsRun = $migrator->run();
+
+        // send feedback to the user
+        if(empty($migrationsRun)){
+            $this->warning("no migrations were run");
+        }else{
+            $this->write("migrations run:");
+            foreach ($migrationsRun as $migration) {
+                $this->write("- $migration");
+            }
+            $this->success("successfully run all migrations");
+        }
     }
 }

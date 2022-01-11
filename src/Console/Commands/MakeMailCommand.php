@@ -6,6 +6,32 @@ use Curfle\Console\Input;
 
 class MakeMailCommand extends MakeCommand
 {
+    /**
+     * The name and the signature of the command.
+     *
+     * @var string
+     */
+    protected string $signature = "make:mail {name}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Creates a new mail class.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Input $input) {
+        // get name and create file
+        $name = "App\\Mail\\" . $input->argument("name");
+        $filename = $this->app->basePath("app/Mail/") . $this->createFileName($name);
+        $this->makeFile(
+            $name,
+            $filename
+        );
+    }
 
     /**
      * @inheritDoc
@@ -13,24 +39,5 @@ class MakeMailCommand extends MakeCommand
     protected function getTemplate(): string
     {
         return __DIR__ . "/../Templates/Mailable.template";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function install()
-    {
-        $this->signature("make:mail {name}")
-            ->where("name", "([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*")
-            ->description("Creates a new mail file")
-            ->resolver(function (Input $input) {
-                // get name and create file
-                $name = "App\\Mail\\" . $input->namedArgument("name");
-                $filename = $this->app->basePath("app/Mail/") . $this->createFileName($name);
-                $this->makeFile(
-                    $name,
-                    $filename
-                );
-            });
     }
 }

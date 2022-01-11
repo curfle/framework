@@ -207,17 +207,23 @@ class Command
     }
 
     /**
-     * Compiles the comamnds' signature.
+     * Compiles the commands' signature.
      *
      * @return string
      */
     protected function compileSignature(): string
     {
         $signature = $this->signature;
-        foreach ($this->where as $parameter => $regex) {
-            $signature = Str::replace($signature, "{{$parameter}}", "($regex)");
-            $signature = Str::replace($signature, " {{$parameter}?}", "( $regex)?");
-        }
+
+        // search for optional parameters
+        $signature = preg_replace_callback('~ {([^}]*)\?}~', function ($m) {
+            return $this->where[$m[1]] ?? "( \w+)?";
+        }, $signature);
+
+        // search for necessary parameters
+        $signature = preg_replace_callback('~{([^}]*)}~', function ($m) {
+            return $this->where[$m[1]] ?? "(\w+)";
+        }, $signature);
 
         $signature = Str::replace($signature, "\/", "/");
         $signature = Str::replace($signature, "/", "\/");
@@ -236,7 +242,11 @@ class Command
         if ($this->resolver !== null) {
             $closure = Closure::bind($this->resolver, $this, static::class);
             $this->app->call($closure);
+        }else if(method_exists($this, "handle")){
+            $this->app->call([$this, "handle"]);
         }
+
+
         return $this->output;
     }
 
@@ -270,6 +280,16 @@ class Command
     public function getSignature(): string
     {
         return $this->signature;
+    }
+
+    /**
+     * Returns the commands'signature.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     /**

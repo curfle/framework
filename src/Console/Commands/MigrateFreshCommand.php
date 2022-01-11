@@ -10,42 +10,51 @@ use Curfle\FileSystem\FileSystem;
 class MigrateFreshCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
-    {
-        $this->signature("migrate:fresh")
-            ->description("Rolls back all migration that were run and runs all migrations that are available")
-            ->resolver(function (Application $app, FileSystem $files) {
-                $migrator = new Migrator($app, $files);
+    protected string $signature = "migrate:fresh";
 
-                // roll back migrations
-                $migrationsRun = $migrator->rollback();
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Rolls back all migration that were run and runs all migrations that are available.";
 
-                // send feedback to the user
-                if(empty($migrationsRun)){
-                    $this->warning("no migrations were rolled back");
-                }else{
-                    $this->write("migrations rolled back:");
-                    foreach ($migrationsRun as $migration) {
-                        $this->write("- $migration");
-                    }
-                    $this->success("successfully rolled back all migrations");
-                }
+    /**
+     * Execute the console command.
+     */
+    public function handle(Application $app, FileSystem $files) {
+        $migrator = new Migrator($app, $files);
 
-                // run migrations
-                $migrationsRun = $migrator->run();
+        // roll back migrations
+        $migrationsRun = $migrator->rollback();
 
-                // send feedback to the user
-                if(empty($migrationsRun)){
-                    $this->warning("no migrations were run");
-                }else{
-                    $this->write("migrations run:");
-                    foreach ($migrationsRun as $migration) {
-                        $this->write("- $migration");
-                    }
-                    $this->success("successfully run all migrations");
-                }
-            });
+        // send feedback to the user
+        if(empty($migrationsRun)){
+            $this->warning("no migrations were rolled back");
+        }else{
+            $this->write("migrations rolled back:");
+            foreach ($migrationsRun as $migration) {
+                $this->write("- $migration");
+            }
+            $this->success("successfully rolled back all migrations");
+        }
+
+        // run migrations
+        $migrationsRun = $migrator->run();
+
+        // send feedback to the user
+        if(empty($migrationsRun)){
+            $this->warning("no migrations were run");
+        }else{
+            $this->write("migrations run:");
+            foreach ($migrationsRun as $migration) {
+                $this->write("- $migration");
+            }
+            $this->success("successfully run all migrations");
+        }
     }
 }

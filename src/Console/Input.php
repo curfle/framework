@@ -15,7 +15,7 @@ class Input
     /**
      * @var array
      */
-    private array $namedArguments = [];
+    private array $arguments = [];
 
     public function __construct(array $argv = [])
     {
@@ -120,9 +120,9 @@ class Input
      * @param mixed $value
      * @return void;
      */
-    public function addNamedArgument(string $name, string $value)
+    public function addArgument(string $name, string $value)
     {
-        $this->namedArguments[$name] = $value;
+        $this->arguments[$name] = $value;
     }
 
     /**
@@ -131,8 +131,8 @@ class Input
      * @param string $name
      * @return ?string
      */
-    public function namedArgument(string $name): ?string
+    public function argument(string $name): ?string
     {
-        return $this->namedArguments[$name] ?? null;
+        return $this->arguments[$name] ?? null;
     }
 }

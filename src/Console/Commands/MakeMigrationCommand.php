@@ -6,6 +6,32 @@ use Curfle\Console\Input;
 
 class MakeMigrationCommand extends MakeCommand
 {
+    /**
+     * The name and the signature of the command.
+     *
+     * @var string
+     */
+    protected string $signature = "make:migration {name}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Creates a new migration class.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Input $input) {
+        // get name and create file
+        $name = $input->argument("name");
+        $filename = $this->app->basePath("database/migrations/") . $this->createFileName($name, true);
+        $this->makeFile(
+            $name,
+            $filename
+        );
+    }
 
     /**
      * @inheritDoc
@@ -13,24 +39,5 @@ class MakeMigrationCommand extends MakeCommand
     protected function getTemplate(): string
     {
         return __DIR__ . "/../Templates/Migration.template";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function install()
-    {
-        $this->signature("make:migration {name}")
-            ->where("name", "([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*")
-            ->description("Creates a new migration file")
-            ->resolver(function (Input $input) {
-                // get name and create file
-                $name = $input->namedArgument("name");
-                $filename = $this->app->basePath("database/migrations/") . $this->createFileName($name, true);
-                $this->makeFile(
-                    $name,
-                    $filename
-                );
-            });
     }
 }

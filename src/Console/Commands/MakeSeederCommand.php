@@ -6,6 +6,32 @@ use Curfle\Console\Input;
 
 class MakeSeederCommand extends MakeCommand
 {
+    /**
+     * The name and the signature of the command.
+     *
+     * @var string
+     */
+    protected string $signature = "make:seeder {name}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Creates a new seeder class.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Input $input) {
+        // get name and create file
+        $name = "Database\\Seeders\\" . $input->argument("name");
+        $filename = $this->app->basePath("database/seeders/") . $this->createFileName($name);
+        $this->makeFile(
+            $name,
+            $filename
+        );
+    }
 
     /**
      * @inheritDoc
@@ -13,24 +39,5 @@ class MakeSeederCommand extends MakeCommand
     protected function getTemplate(): string
     {
         return __DIR__ . "/../Templates/Seeder.template";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function install()
-    {
-        $this->signature("make:seeder {name}")
-            ->where("name", "([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*")
-            ->description("Creates a new seeder file")
-            ->resolver(function (Input $input) {
-                // get name and create file
-                $name = "Database\\Seeders\\" . $input->namedArgument("name");
-                $filename = $this->app->basePath("database/seeders/") . $this->createFileName($name);
-                $this->makeFile(
-                    $name,
-                    $filename
-                );
-            });
     }
 }

@@ -11,39 +11,47 @@ use Exception;
 class DbCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
+    protected string $signature = "db {connector?}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Starts a new database CLI session.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Input $input)
     {
-        $this->signature("db {connector?}")
-            ->where("connector", "([a-z]|[A-Z]|[0-9])+")
-            ->description("Starts a new database CLI session")
-            ->resolver(function (Input $input) {
-                // load connection from parameter and connect
-                $connectorName = $input->namedArgument("connector") ?? "database";
-                $connector = DB::connector($input->namedArgument("connector"));
-                $connector->connect();
+        // load connection from parameter and connect
+        $connectorName = $input->argument("connector") ?? "database";
+        $connector = DB::connector($input->argument("connector"));
+        $connector->connect();
 
-                while (true) {
-                    $query = $this->prompt("$connectorName> ");
+        while (true) {
+            $query = $this->prompt("$connectorName> ");
 
-                    // exit comdition
-                    if (in_array($query, ["exit", "exit;", "quit", "quit;"]))
-                        break;
+            // exit comdition
+            if (in_array($query, ["exit", "exit;", "quit", "quit;"]))
+                break;
 
-                    try {
-                        $result = $connector->rows($query);
-                        $content = Str::replace(print_r($result, true), "\n        ", "\n    ");
-                        $this->write($content, false);
-                        $this->flush();
-                    } catch (Exception $e) {
-                        $this->error($e->getMessage())->flush();
-                    }
-                }
+            try {
+                $result = $connector->rows($query);
+                $content = Str::replace(print_r($result, true), "\n        ", "\n    ");
+                $this->write($content, false);
+                $this->flush();
+            } catch (Exception $e) {
+                $this->error($e->getMessage())->flush();
+            }
+        }
 
-                // disconnect fro database
-                $connector->disconnect();
-                $this->success("$connectorName connection closed");
-            });
+        // disconnect from database
+        $this->success("$connectorName connection closed");
     }
 }

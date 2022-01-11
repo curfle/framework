@@ -10,27 +10,36 @@ use Curfle\FileSystem\FileSystem;
 class DbSeedCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
+    protected string $signature = "db:seed";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Seeds the database.";
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(Application $app, FileSystem $files)
     {
-        $this->signature("db:seed")
-            ->description("Seeds the database")
-            ->resolver(function (Application $app, FileSystem $files) {
-                $manager = new SeedingManager($app, $files);
-                $seedersRun = $manager->run();
+        $manager = new SeedingManager($app, $files);
+        $seedersRun = $manager->run();
 
-                // send feedback to the user
-                if (empty($seedersRun)) {
-                    $this->warning("no seeders were run");
-                } else {
-                    $this->write("seeders run:");
-                    foreach ($seedersRun as $seeder) {
-                        $this->write("- " . $files->basename($seeder));
-                    }
-                    $this->success("successfully run all seeders");
-                }
-
-            });
+        // send feedback to the user
+        if (empty($seedersRun)) {
+            $this->warning("no seeders were run");
+        } else {
+            $this->write("seeders run:");
+            foreach ($seedersRun as $seeder) {
+                $this->write("- " . $files->basename($seeder));
+            }
+            $this->success("successfully run all seeders");
+        }
     }
 }

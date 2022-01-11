@@ -4,29 +4,44 @@ namespace Curfle\Console\Commands;
 
 use Curfle\Console\Command;
 use Curfle\Support\Facades\Buddy;
+use Curfle\Support\Str;
 
 class ListCommand extends Command
 {
     /**
-     * @inheritDoc
+     * The name and the signature of the command.
+     *
+     * @var string
      */
-    protected function install()
-    {
-        $this->signature("list")
-            ->description("Lists all commands")
-            ->resolver(function () {
-                // write header
-                $this->write("All commands:");
+    protected string $signature = "list";
 
-                // get all commands
-                $commands = Buddy::getAllCommands();
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Lists all commands.";
 
-                // sort commands by signature
-                usort($commands, fn($a, $b) =>  strcmp($a->getSignature(), $b->getSignature()));
+    /**
+     * Execute the console command.
+     */
+    public function handle() {
+        // write header
+        $this->write("All commands:");
 
-                // print command information
-                foreach ($commands as $command)
-                    $this->write(" - ". $command->getSignature());
-            });
+        // get all commands
+        $commands = Buddy::getAllCommands();
+
+        // sort commands by signature
+        usort($commands, fn($a, $b) =>  strcmp($a->getSignature(), $b->getSignature()));
+
+        // print command information
+        foreach ($commands as $command){
+            $signature = $command->getSignature();
+            $description = $command->getDescription();
+            $this->write(" - $signature");
+            if(!Str::empty($description))
+                $this->write("    ". $description);
+        }
     }
 }
