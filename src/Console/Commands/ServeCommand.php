@@ -21,7 +21,7 @@ class ServeCommand extends Command
      *
      * @var array|string[]
      */
-    protected array $where = ["address" => "([a-z]|[A-Z]|[0-9])+\/?(\:([0-9])+)?\/?"];
+    protected array $where = ["address" => "\w+(\:[0-9]+)?"];
 
     /**
      * The description of the command.
