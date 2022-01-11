@@ -32,6 +32,8 @@ class ServeCommand extends Command
 
     /**
      * Execute the console command.
+     * 
+     * @return void
      */
     public function handle(Input $input, FileSystem $files) {
         // get serving address or default it to "http://localhost:PORT"

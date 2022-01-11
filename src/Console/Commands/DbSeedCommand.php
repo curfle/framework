@@ -25,6 +25,8 @@ class DbSeedCommand extends Command
 
     /**
      * Execute the console command.
+     * 
+     * @return void
      */
     public function handle(Application $app, FileSystem $files)
     {

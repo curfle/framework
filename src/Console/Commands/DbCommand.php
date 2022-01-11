@@ -26,10 +26,12 @@ class DbCommand extends Command
 
     /**
      * Execute the console command.
+     * 
+     * @return void
      */
     public function handle(Input $input)
     {
-        // load connection from parameter and connect
+        // load connection from argument and connect
         $connectorName = $input->argument("connector") ?? "database";
         $connector = DB::connector($input->argument("connector"));
         $connector->connect();

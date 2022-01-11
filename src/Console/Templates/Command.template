@@ -1,0 +1,32 @@
+<?php
+
+namespace DummyNamespace;
+
+use Curfle\Console\Command;
+use Curfle\Console\Input;
+
+class DummyClass extends Command
+{
+    /**
+     * The name and the signature of the command.
+     *
+     * @var string
+     */
+    protected string $signature = "name {argument} {optional?}";
+
+    /**
+     * The description of the command.
+     *
+     * @var string
+     */
+    protected string $description = "Description of your command.";
+
+    /**
+     * Execute the console command.
+     * 
+     * @return void
+     */
+    public function handle(Input $input) {
+        // TODO: Implement handle() method.
+    }
+}

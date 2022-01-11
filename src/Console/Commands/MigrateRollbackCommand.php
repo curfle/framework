@@ -25,6 +25,8 @@ class MigrateRollbackCommand extends Command
 
     /**
      * Execute the console command.
+     * 
+     * @return void
      */
     public function handle(Application $app, FileSystem $files) {
         $migrator = new Migrator($app, $files);
