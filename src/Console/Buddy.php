@@ -90,7 +90,7 @@ class Buddy
                 foreach ($command->getMatchedParameters() as $name => $value) {
                     $input->addArgument($name, $value);
                 }
-                return $command->run();
+                return $command->newOutput()->run();
             }
         }
 
