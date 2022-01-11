@@ -219,7 +219,7 @@ class Command
         // search for optional parameters
         $signature = preg_replace_callback('~ {([^}]*)\?}~', function ($m) {
             return Arr::exists($this->where, $m[1])
-                ? "( " . $this->where[$m[1]] . "?)"
+                ? "( " . $this->where[$m[1]] . ")?"
                 : $this->where[$m[1]] = "( \w+)?";
         }, $signature);
 
@@ -233,10 +233,6 @@ class Command
         // replace backslashes
         $signature = Str::replace($signature, "\/", "/");
         $signature = Str::replace($signature, "/", "\/");
-
-        // replace dashes
-        $signature = Str::replace($signature, "\-", "-");
-        $signature = Str::replace($signature, "-", "\-");
 
         return "/^$signature$/m";
     }
