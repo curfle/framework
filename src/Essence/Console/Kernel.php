@@ -6,6 +6,7 @@ use Curfle\Agreements\Console\Kernel as KernelAgreement;
 use Curfle\Console\Buddy;
 use Curfle\Console\Command;
 use Curfle\Console\CommandFactory;
+use Curfle\Console\Schedule;
 use Curfle\Essence\Application;
 use Curfle\Essence\Bootstrap\BootProviders;
 use Curfle\Essence\Bootstrap\LoadConfiguration;
@@ -113,6 +114,13 @@ class Kernel implements KernelAgreement
     public function getAllCommands(): array
     {
         return $this->buddy->getCommands();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function schedule(Schedule $schedule): void
+    {
     }
 
     /**

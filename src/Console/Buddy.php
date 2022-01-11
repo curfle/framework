@@ -12,7 +12,7 @@ class Buddy
 {
 
     /**
-     * The Application instance
+     * The application instance.
      *
      * @var Application
      */

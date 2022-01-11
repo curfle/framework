@@ -5,6 +5,7 @@ namespace Curfle\Console\Commands;
 use Curfle\Chronos\Chronos;
 use Curfle\Console\Command;
 use Curfle\Console\Input;
+use Curfle\Console\Shell;
 use Curfle\Support\Facades\Buddy;
 use Curfle\Support\Str;
 use Exception;
@@ -54,14 +55,12 @@ class ScheduleWorkCommand extends Command
 
     /**
      * Executes the `schedule:run` command.
-     * 
+     *
      * @return string
      */
     private function executeSchedule(): string
     {
-        $binary = PHP_BINARY;
-        $file = base_path("buddy");
-        return shell_exec("$binary $file schedule:run");
+        return (string)Shell::runCommand("schedule:run");
     }
 
     /**

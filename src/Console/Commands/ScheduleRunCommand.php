@@ -2,8 +2,10 @@
 
 namespace Curfle\Console\Commands;
 
+use Curfle\Agreements\Console\Kernel as Buddy;
 use Curfle\Console\Command;
-use Curfle\Support\Facades\Buddy;
+use Curfle\Console\Schedule;
+use Curfle\Essence\Application;
 use Curfle\Support\Str;
 
 class ScheduleRunCommand extends Command
@@ -22,13 +24,21 @@ class ScheduleRunCommand extends Command
      */
     protected string $description = "Runs the schedule.";
 
+
+
     /**
      * Execute the console command.
      * 
      * @return void
      */
-    public function handle() {
-        // write header
-        $this->success("Successfully run schedule.");
+    public function handle(Buddy $buddy, Schedule $schedule) {
+        // collect the scheduled jobs
+        $buddy->schedule($schedule);
+
+        // run the schedule
+        $result = $schedule->run();
+
+        // write output
+        $this->write(Str::trim($result->getContent()));
     }
 }
