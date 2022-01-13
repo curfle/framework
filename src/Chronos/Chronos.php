@@ -196,4 +196,14 @@ class Chronos extends DateTime
     {
         return $this->format($format ?? "Y-m-d H:i:s");
     }
+
+    /**
+     * Returns the formatted date in fomrat `Y-m-d`.
+     *
+     * @return string
+     */
+    public function date(): string
+    {
+        return $this->format("Y-m-d");
+    }
 }
