@@ -468,7 +468,7 @@ abstract class SQLQueryBuilder
             $this->insertData = [$data];
         } else {
             // check if rows share the same keys
-            $allRowsShareSameKeys = count($data[0]) !== count(call_user_func_array("array_intersect_key", $data));
+            $allRowsShareSameKeys = Arr::length($data[0]) === Arr::length(array_intersect_key(...$data));
             if (!$allRowsShareSameKeys) {
                 throw new LogicException("All arrays must share the same key, when inserting multiple entries at once");
             }
