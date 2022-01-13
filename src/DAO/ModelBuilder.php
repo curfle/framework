@@ -28,6 +28,7 @@ use Curfle\Database\Queries\Query;
  * @method bool insertOrUpdate(array $data)
  * @method bool insertOrIgnore(array $data)
  * @method bool update(array $data)
+ * @method bool delete()
  * @method mixed value(string $column)
  * @method mixed count()
  * @method mixed max()
