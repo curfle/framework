@@ -10,10 +10,12 @@ use Curfle\Support\Str;
 class Command
 {
 
+    private const DEFAULT_PARAMETER_REGEX = "\w+";
+
     /**
      * The commands' application instance.
      *
-     * @var Buddy
+     * @var Application
      */
     protected Application $app;
 
@@ -182,7 +184,8 @@ class Command
         $parameterRegex = '/{(-|[a-z]|[A-Z]|[0-9])*\??}/m';
         preg_match_all($parameterRegex, $this->signature, $whereMatches, PREG_OFFSET_CAPTURE);
 
-        foreach ($whereMatches[0] as $i => $match) {
+        $whereMatches = $whereMatches[0];
+        foreach ($whereMatches as $i => $match) {
             // get the name of the parameter
             $name = rtrim(
                 Str::trim($match[0], "{}"),
@@ -190,9 +193,13 @@ class Command
             );
 
             // get index in matches
-            $index = 0;
-            for ($j = 0; $j <= $i; $j++) {
-                $index += substr_count($this->where[array_keys($this->where)[$j]], "(");
+            $index = 1 + $i;
+            for ($j = 0; $j < $i; $j++) {
+                $matchName = rtrim(
+                    Str::trim($whereMatches[$j][0], "{}"),
+                    "?"
+                );
+                $index += preg_match("/\([^\?][^=]/", $this->where[$matchName] ?? self::DEFAULT_PARAMETER_REGEX);
             }
 
             // set parameter value
@@ -218,16 +225,12 @@ class Command
 
         // search for optional parameters
         $signature = preg_replace_callback('~ {([^}]*)\?}~', function ($m) {
-            return Arr::exists($this->where, $m[1])
-                ? "( " . $this->where[$m[1]] . ")?"
-                : $this->where[$m[1]] = "( \w+)?";
+            return "( " . ($this->where[$m[1]] ?? self::DEFAULT_PARAMETER_REGEX) . ")?";
         }, $signature);
 
         // search for necessary parameters
         $signature = preg_replace_callback('~{([^}]*)}~', function ($m) {
-            return Arr::exists($this->where, $m[1])
-                ? "(" . $this->where[$m[1]] . ")"
-                : $this->where[$m[1]] = "(\w+)";
+            return "(" . ($this->where[$m[1]] ?? self::DEFAULT_PARAMETER_REGEX) . ")?";
         }, $signature);
 
         // replace backslashes
@@ -248,7 +251,7 @@ class Command
         if ($this->resolver !== null) {
             $closure = Closure::bind($this->resolver, $this, static::class);
             $this->app->call($closure);
-        }else if(method_exists($this, "handle")){
+        } else if (method_exists($this, "handle")) {
             $this->app->call([$this, "handle"]);
         }
 
