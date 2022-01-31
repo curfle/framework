@@ -83,7 +83,10 @@ class SQLiteGrammar extends SQLGrammar
         foreach ($blueprint->getColumns() as $column) {
             if (!$column->isChanged()) {
                 $sql .= "ADD COLUMN " . $this->buildColumnDefinition($column, $connector);
-            } else {
+            } else if($column->isRenamed()) {
+                $sql .= "RENAME COLUMN {$column->getName()} TO {$column->getNewName()}";
+            }
+            else {
                 throw new NoSuchStatementException("SQLite does not support changing columns");
             }
             $sql .= ", ";

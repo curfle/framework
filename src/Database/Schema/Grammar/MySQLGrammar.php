@@ -77,15 +77,20 @@ class MySQLGrammar extends SQLGrammar
 
         // change columns
         foreach ($blueprint->getColumns() as $column) {
-            if (!$column->isChanged()) {
+            // add or change (including rename) column
+            if (!$column->isChanged() && !$column->isRenamed()) {
                 $sql .= "ADD COLUMN " . $this->buildColumnDefinition($column, $connector);
-                if($column->getAfter() !== null)
-                    $sql .= "AFTER `{$column->getAfter()}` ";
-                if($column->isFirst())
-                    $sql .= "FIRST ";
             } else {
                 $sql .= "CHANGE {$column->getName()} " . $this->buildColumnDefinition($column, $connector);
             }
+
+            // check for positional instructions
+            if ($column->getAfter() !== null)
+                $sql .= "AFTER `{$column->getAfter()}` ";
+            if ($column->isFirst())
+                $sql .= "FIRST ";
+
+
             $sql .= ", ";
         }
 
@@ -130,7 +135,7 @@ class MySQLGrammar extends SQLGrammar
         //      [STORAGE {DISK | MEMORY}]
         //      [reference_definition]
         //      [check_constraint_definition]
-        return $column->getName() . " "
+        return ($column->isRenamed() ? $column->getNewName() : $column->getName()) . " "
             . $this->typeMapping[$column->getType()]
             . ($column->getLength() !== null ? "({$column->getLength()}) " : " ")
             . ($column->getValues() !== null ? "(" . implode(",", array_map(fn($x) => "\"$x\"", $column->getValues())) . ") " : " ")

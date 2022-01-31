@@ -54,7 +54,7 @@ class BuilderColumn implements BuilderColumnAgreement
      *
      * @var int|null
      */
-    private ?int $length = null;
+    private int|null $length = null;
 
     /**
      * Indicates if the column is unsigned or not (integer only)
@@ -117,7 +117,7 @@ class BuilderColumn implements BuilderColumnAgreement
      *
      * @var string|null
      */
-    private ?string $indexName = null;
+    private string|null $indexName = null;
 
     /**
      * Marks the column as autoincrement.
@@ -138,7 +138,7 @@ class BuilderColumn implements BuilderColumnAgreement
      *
      * @var string|null
      */
-    private ?string $after = null;
+    private string|null $after = null;
 
     /**
      * Indicates that the column should be added as first column.
@@ -146,6 +146,13 @@ class BuilderColumn implements BuilderColumnAgreement
      * @var bool
      */
     private bool $first = false;
+
+    /**
+     * Indicates that the column should be renamed and holds the new name.
+     *
+     * @var string|null
+     */
+    private string|null $renameTo = null;
 
     /**
      * Indicates that the column exists and should be changed.
@@ -159,7 +166,7 @@ class BuilderColumn implements BuilderColumnAgreement
      *
      * @var array|null
      */
-    private ?array $values = null;
+    private array|null $values = null;
 
     /**
      * @param string $name
@@ -299,6 +306,18 @@ class BuilderColumn implements BuilderColumnAgreement
     }
 
     /**
+     * Renames the column to another name.
+     *
+     * @param string $name
+     * @return BuilderColumn
+     */
+    public function rename(string $name): static
+    {
+        $this->renameTo = $name;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function change(): static
@@ -415,6 +434,14 @@ class BuilderColumn implements BuilderColumnAgreement
     /**
      * @return bool
      */
+    public function isRenamed(): bool
+    {
+        return $this->renameTo !== null;
+    }
+
+    /**
+     * @return bool
+     */
     public function isChanged(): bool
     {
         return $this->changed;
@@ -434,6 +461,14 @@ class BuilderColumn implements BuilderColumnAgreement
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNewName(): string|null
+    {
+        return $this->renameTo;
     }
 
     /**

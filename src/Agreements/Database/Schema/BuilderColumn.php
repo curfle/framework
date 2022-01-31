@@ -95,6 +95,14 @@ interface BuilderColumn
     public function first(): static;
 
     /**
+     * Renames the column to another name.
+     *
+     * @param string $name
+     * @return BuilderColumn
+     */
+    public function rename(string $name): static;
+
+    /**
      * Indicates that the column should be altered.
      *
      * @return BuilderColumn
@@ -113,6 +121,26 @@ interface BuilderColumn
      * @return bool
      */
     public function isUnique(): bool;
+
+    /**
+     * @return int|null
+     */
+    public function getLength(): int|null;
+
+    /**
+     * @return bool
+     */
+    public function isUnsigned(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isUnsignable(): bool;
+
+    /**
+     * @return bool
+     */
+    public function hasDefault(): bool;
 
     /**
      * @return mixed
@@ -157,6 +185,16 @@ interface BuilderColumn
     /**
      * @return bool
      */
+    public function isFirst(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isRenamed(): bool;
+
+    /**
+     * @return bool
+     */
     public function isChanged(): bool;
 
     /**
@@ -168,6 +206,11 @@ interface BuilderColumn
      * @return string
      */
     public function getName(): string;
+
+    /**
+     * @return string|null
+     */
+    public function getNewName(): string|null;
 
     /**
      * @return array|null

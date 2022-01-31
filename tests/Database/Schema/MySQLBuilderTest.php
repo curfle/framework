@@ -347,7 +347,7 @@ class MySQLBuilderTest extends TestCase
     }
 
     /**
-     * test ->enum()
+     * test ->index()
      */
     public function testIndex()
     {
@@ -358,5 +358,29 @@ class MySQLBuilderTest extends TestCase
                 $table->int("age")->unsigned()->index();
             })
         );
+    }
+
+    /**
+     * test ->rename()
+     */
+    public function testRename()
+    {
+        self::assertSame(
+            $this->builder,
+            $this->builder->create("user", function (Blueprint $table) {
+                $table->id("id");
+                $table->int("age")->unsigned()->index();
+            })
+        );
+
+        self::assertSame(
+            $this->builder,
+            $this->builder->table("user", function (Blueprint $table) {
+                $table->int("age")->unsigned()->rename("person_age");
+            })
+        );
+
+        self::assertFalse($this->builder->hasColumn("user", "age"));
+        self::assertTrue($this->builder->hasColumn("user", "person_age"));
     }
 }
