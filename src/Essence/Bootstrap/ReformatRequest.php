@@ -18,22 +18,23 @@ class ReformatRequest implements BootstrapInterface
      */
     function bootstrap(Application $app)
     {
-        // As curfle can be used inside subfolders a specific part of an url might not be wanted in the
+        // as curfle can be used inside subfolders a specific part of an url might not be wanted in the
         // request uri contained in the request. For example if the curfle project lives under /auth/ a
-        // /auth/... prefix is always present but may not be wanted while resolving routes. For that reason
+        // /auth/... suffix is always present but may not be wanted while resolving routes. For that reason
         // we need to remove this part of the request uri to use our routes properly.
 
         $appUrl = Env::get("APP_URL", "");
 
-        $prefix = preg_replace(
-            "/https?:\/\/(www\.)?([-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b|localhost|127\.0\.0\.1):?[0-9]{0,5}/",
+        // get the suffix from the APP_URL - e.g. "/auth" from "https://curfle.org/auth"
+        $suffix = preg_replace(
+            "/https?:\/\/(www\.)?([-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,63}\b|localhost|127\.0\.0\.1):?[0-9]{0,5}/",
             "",
             $appUrl
         );
 
         $request = App::resolve("request");
         $request->setUri(
-            Str::replace($request->uri(), $prefix, "")
+            Str::replace($request->uri(), $suffix, "")
         );
     }
 }
