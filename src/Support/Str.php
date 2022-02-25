@@ -8,12 +8,12 @@ class Str
     /**
      * Returns whether the argument is a string.
      *
-     * @param string $string
+     * @param mixed $value
      * @return bool
      */
-    public static function is(string $string): bool
+    public static function is(mixed $value): bool
     {
-        return is_string($string);
+        return is_string($value);
     }
 
     /**
