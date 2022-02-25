@@ -2,6 +2,7 @@
 
 namespace Curfle\Utilities;
 
+use Curfle\Support\Arr;
 use SimpleXMLElement;
 
 class XML
@@ -56,9 +57,9 @@ class XML
         foreach ($data as $key => $value) {
             // check if $value is array and all nodes are leafs
             $allNodesAreLeafs = true;
-            if (is_array($value)) {
+            if (Arr::is($value)) {
                 foreach ($value as $inner_value)
-                    if (is_array($inner_value))
+                    if (Arr::is($inner_value))
                         $allNodesAreLeafs = false;
             }else{
                 $allNodesAreLeafs = false;
@@ -75,7 +76,7 @@ class XML
                     $key = "item$key";
 
                 // check if is leaf node or has childs
-                if (is_array($value)) {
+                if (Arr::is($value)) {
                     $subnode = $xml_data->addChild($key);
                     static::arrayToXML($value, $subnode);
                 } else {

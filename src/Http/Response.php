@@ -2,6 +2,7 @@
 
 namespace Curfle\Http;
 
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Http\StatusNotFoundException;
 
 class Response{
@@ -199,7 +200,7 @@ class Response{
     public function setContent(string|array $content) : static
     {
         // check if response should be JSON encoded
-        if(is_array($content)){
+        if(Arr::is($content)){
             $content = json_encode($content);
             $this->setHeader("Content-Type", "application/json");
         }

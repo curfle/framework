@@ -2,6 +2,7 @@
 
 namespace Curfle\FileSystem;
 
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\FileSystem\FileNotFoundException;
 use Curfle\Support\Str;
 use Exception;
@@ -226,7 +227,7 @@ class FileSystem
      */
     public function delete(array|string $paths): bool
     {
-        $paths = is_array($paths) ? $paths : func_get_args();
+        $paths = Arr::is($paths) ? $paths : func_get_args();
 
         $success = true;
 

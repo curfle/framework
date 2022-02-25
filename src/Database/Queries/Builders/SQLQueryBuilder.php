@@ -356,7 +356,7 @@ abstract class SQLQueryBuilder
             return null;
 
         // check if simple array or OR-clause
-        if (!is_array($args[0])) {
+        if (!Arr::is($args[0])) {
             // simple where condition (e.g. ["id", "=", 5])
             return $this->prepareWhereCondition($concatenator, $args);
         } else {
@@ -462,7 +462,7 @@ abstract class SQLQueryBuilder
         $this->operation = self::INSERT;
 
         // check if one or multiple rows are inserted
-        $isSingleRow = !is_array($data[array_keys($data)[0]]);
+        $isSingleRow = !Arr::is($data[array_keys($data)[0]]);
 
         if ($isSingleRow) {
             $this->insertData = [$data];

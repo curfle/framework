@@ -84,7 +84,7 @@ class BoundMethod
      */
     protected static function callBoundMethod(Container $container, callable|array $callback, mixed $default): mixed
     {
-        if (!is_array($callback)) {
+        if (!Arr::is($callback)) {
             return Utilities::unwrapIfClosure($default);
         }
 
@@ -150,7 +150,7 @@ class BoundMethod
             $callback = [$callback, '__invoke'];
         }
 
-        return is_array($callback)
+        return Arr::is($callback)
             ? new ReflectionMethod($callback[0], $callback[1])
             : new ReflectionFunction($callback);
     }

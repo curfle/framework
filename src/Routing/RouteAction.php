@@ -3,6 +3,7 @@
 namespace Curfle\Routing;
 
 use Closure;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Support\Exceptions\Routing\MissingControllerInformationException;
 
@@ -33,7 +34,7 @@ class RouteAction
             ];
 
         // check for enough information for controller method
-        if (!is_array($action) || count($action) != 2)
+        if (!Arr::is($action) || count($action) != 2)
             throw new MissingControllerInformationException("The [action] parameter of the route [$uri] should consist of an array of form [Controller:class, \"method\"]");
 
         // set controller action

@@ -416,7 +416,7 @@ class Container implements ContainerAgreement
                 : $this->resolveClass($dependency);
 
             if ($dependency->isVariadic()) {
-                $results = array_merge($results, is_array($result) ? $result : [$result]);
+                $results = array_merge($results, Arr::is($result) ? $result : [$result]);
             } else {
                 $results[] = $result;
             }
@@ -532,7 +532,7 @@ class Container implements ContainerAgreement
 
         $id = $this->getAlias($className);
 
-        if (!is_array($resolver = $this->getContextualConcrete($id))) {
+        if (!Arr::is($resolver = $this->getContextualConcrete($id))) {
             return $this->make($className);
         }
 

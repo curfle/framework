@@ -4,6 +4,7 @@ namespace Curfle\Mail\Mailer;
 
 use Curfle\Agreements\Mail\Mailable;
 use Curfle\Agreements\Mail\Mailer;
+use Curfle\Support\Arr;
 use Curfle\Support\Facades\Config;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -97,7 +98,7 @@ class SMTPMailer implements Mailer
      */
     public function to(array|string $recipient): static
     {
-        if(is_array($recipient))
+        if(Arr::is($recipient))
             foreach ($recipient as $r)
                 $this->PHPMailer->addAddress($r);
         else
@@ -111,7 +112,7 @@ class SMTPMailer implements Mailer
      */
     public function cc(array|string $recipient): static
     {
-        if(is_array($recipient))
+        if(Arr::is($recipient))
             foreach ($recipient as $r)
                 $this->PHPMailer->addCC($r);
         else
@@ -125,7 +126,7 @@ class SMTPMailer implements Mailer
      */
     public function bcc(array|string $recipient): static
     {
-        if(is_array($recipient))
+        if(Arr::is($recipient))
             foreach ($recipient as $r)
                 $this->PHPMailer->addBCC($r);
         else
@@ -139,7 +140,7 @@ class SMTPMailer implements Mailer
      */
     public function replyTo(array|string $recipient): static
     {
-        if(is_array($recipient))
+        if(Arr::is($recipient))
             foreach ($recipient as $r)
                 $this->PHPMailer->addReplyTo($r);
         else
@@ -161,7 +162,7 @@ class SMTPMailer implements Mailer
         $this->PHPMailer->AltBody = $content->plain();
         foreach($content->attachments() as $name => $attachment){
             $name = is_string($name) ? $name : "";
-            if(is_array($attachment))
+            if(Arr::is($attachment))
                 $this->PHPMailer->addStringAttachment(
                     $attachment["content"],
                     $name,

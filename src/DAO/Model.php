@@ -123,7 +123,7 @@ abstract class Model implements DAOInterface
             });
         }
 
-        if (!is_array($fields))
+        if (!Arr::is($fields))
             throw new Exception("The SQL config's \"fields\" property must be an array");
 
         // make array assoc if not already

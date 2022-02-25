@@ -5,6 +5,7 @@ namespace Curfle\Routing;
 use Curfle\Agreements\Container\Container;
 use Curfle\Http\Request;
 use Curfle\Http\Response;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Http\MiddlewareNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
@@ -80,7 +81,7 @@ class Route
     public function __construct(array|string $methods, string $uri, callable|array|null $action)
     {
         $this->setUri($uri)
-            ->setMethods(is_array($methods) ? $methods : [$methods])
+            ->setMethods(Arr::is($methods) ? $methods : [$methods])
             ->setAction($action);
     }
 

@@ -46,7 +46,7 @@ class Repository implements ArrayAccess, ConfigAgreement
      */
     public function get(array|string $key, mixed $default = null) : mixed
     {
-        if (is_array($key)) {
+        if (Arr::is($key)) {
             return $this->getMany($key);
         }
 
@@ -83,7 +83,7 @@ class Repository implements ArrayAccess, ConfigAgreement
      */
     public function set(array|string $key, mixed $value = null)
     {
-        $keys = is_array($key) ? $key : [$key => $value];
+        $keys = Arr::is($key) ? $key : [$key => $value];
 
         foreach ($keys as $key => $value) {
             Arr::set($this->items, $key, $value);
