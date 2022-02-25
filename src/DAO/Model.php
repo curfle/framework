@@ -11,6 +11,7 @@ use Curfle\DAO\Relationships\Relationship;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Queries\Builders\SQLQueryBuilder;
 use Curfle\Database\Queries\Query;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\DAO\UndefinedPropertyException;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Exception;
@@ -150,9 +151,7 @@ abstract class Model implements DAOInterface
         if ($constructor === null)
             return [];
 
-        return array_map(function (ReflectionParameter $arg) {
-            return $arg->getName();
-        }, $constructor->getParameters());
+        return Arr::map($constructor->getParameters(), fn(ReflectionParameter $arg) => $arg->getName());
     }
 
     /**
@@ -182,9 +181,7 @@ abstract class Model implements DAOInterface
 
         // create instance of class and pass all possible values by constructor
         $instance = empty($arguments) ? new $className() : (new ReflectionClass(get_called_class()))->newInstanceArgs(
-            array_map(function ($argument) use ($arr) {
-                return $arr[$argument] ?? null;
-            }, $arguments));
+            Arr::map($arguments, fn($argument) => $arr[$argument] ?? null));
 
         // set values that are left here
         foreach ($arguments as $argument)
@@ -208,7 +205,7 @@ abstract class Model implements DAOInterface
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $table = $table ?? $config["table"];
         $statement = self::$connector->table($table);
-        if($config["softDelete"] && $table === $config["table"])
+        if ($config["softDelete"] && $table === $config["table"])
             $statement = $statement->where("deleted", null);
         return $statement;
     }
@@ -227,9 +224,7 @@ abstract class Model implements DAOInterface
         $filteredFields = array_filter($flippedFields, function ($field) use ($this_) {
             return (new ReflectionProperty($this_, $field))->isInitialized($this_);
         });
-        return array_map(function ($field) use ($this_) {
-            return $this_->$field ?? null;
-        }, $filteredFields);
+        return Arr::map($filteredFields, fn($field) => $this_->$field ?? null);
     }
 
     /**
@@ -261,9 +256,7 @@ abstract class Model implements DAOInterface
         $entries = static::__callTableOnConnector($config["table"])
             ->get();
 
-        return array_map(function ($entry) {
-            return self::__createInstanceFromArray($entry);
-        }, $entries);
+        return Arr::map($entries, fn($entry) => self::__createInstanceFromArray($entry));
     }
 
     /**
@@ -433,9 +426,9 @@ abstract class Model implements DAOInterface
      */
     public function __get(string $name)
     {
-        if (method_exists($this, $name)){
+        if (method_exists($this, $name)) {
             $value = $this->{$name}();
-            if($value instanceof Relationship)
+            if ($value instanceof Relationship)
                 return $value->get();
             else
                 return $value;

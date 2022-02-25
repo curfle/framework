@@ -5,6 +5,7 @@ namespace Curfle\Database\Migrations;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Essence\Application;
 use Curfle\FileSystem\FileSystem;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\FileSystem\DirectoryNotFoundException;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
@@ -82,7 +83,7 @@ class Migrator
                 "filename" => $filename,
                 "timestamp" => DB::table($this->getMigrationTable())->where("migration", $filename)->value("timestamp")
             ];
-        }, $migrations, array_keys($migrations));
+        }, $migrations, Arr::keys($migrations));
     }
 
     /**
@@ -108,7 +109,7 @@ class Migrator
                 "name" => $migration,
                 "filename" => $filename,
             ];
-        }, $migrations, array_keys($migrations));
+        }, $migrations, Arr::keys($migrations));
     }
 
     /**

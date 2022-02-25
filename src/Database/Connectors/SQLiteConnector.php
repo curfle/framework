@@ -188,25 +188,31 @@ class SQLiteConnector implements SQLConnectorInterface
             throw new LogicException("The number of values passed as parameter must equal the number of types.");
 
         // cast bools to ints
-        $values = array_map(fn($value) => is_bool($value) ? (int)$value : $value, $values);
+        $values = Arr::map($values, fn($value) => is_bool($value) ? (int)$value : $value);
 
         // auto-detect types if null
         if ($types === null) {
-            $types = array_map(fn($value) => match (gettype($value)) {
-                "boolean", "integer" => self::INTEGER,
-                "double" => self::FLOAT,
-                "string" => self::STRING,
-                default => self::BLOB,
-            }, $values);
+            $types = Arr::map(
+                $values,
+                fn($value) => match (gettype($value)) {
+                    "boolean", "integer" => self::INTEGER,
+                    "double" => self::FLOAT,
+                    "string" => self::STRING,
+                    default => self::BLOB,
+                }
+            );
         }
 
         // cast types to SQLITE types
-        $types = array_map(fn($type) => match ($type) {
-            static::INTEGER => SQLITE3_INTEGER,
-            static::FLOAT => SQLITE3_FLOAT,
-            static::BLOB => SQLITE3_BLOB,
-            default => SQLITE3_TEXT,
-        }, $types);
+        $types = Arr::map(
+            $types,
+            fn($type) => match ($type) {
+                static::INTEGER => SQLITE3_INTEGER,
+                static::FLOAT => SQLITE3_FLOAT,
+                static::BLOB => SQLITE3_BLOB,
+                default => SQLITE3_TEXT,
+            }
+        );
 
         // check for null type
         for ($i = 0; $i < Arr::length($values); $i++) {

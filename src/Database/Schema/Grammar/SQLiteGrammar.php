@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Database\NoSuchStatementException;
 use Curfle\Support\Exceptions\Misc\GuessException;
 use Curfle\Support\Exceptions\Misc\NotImplementedException;
@@ -129,7 +130,7 @@ class SQLiteGrammar extends SQLGrammar
         return $column->getName() . " "
             . $this->typeMapping[$column->getType()]
             . (($column->getLength() !== null && !$column->isPrimary()) ? "({$column->getLength()}) " : " ")
-            . (($column->getValues() !== null) ? "CHECK ({$column->getName()} IN (" . implode(",", array_map(fn($x) => "\"$x\"", $column->getValues())) . ")) " : " ")
+            . (($column->getValues() !== null) ? "CHECK ({$column->getName()} IN (" . implode(",", Arr::map($column->getValues(), fn($x) => "\"$x\"")) . ")) " : " ")
             . (!$column->isNullable() ? "NOT NULL " : "")
             . ($column->hasDefault() ? "DEFAULT " . (
                 $column->shouldUseCurrent()

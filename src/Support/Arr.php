@@ -12,7 +12,7 @@ class Arr
      * @param mixed $value
      * @return bool
      */
-    public static function accessible(mixed $value): bool
+    public static function is(mixed $value): bool
     {
         return is_array($value) || $value instanceof ArrayAccess;
     }
@@ -28,17 +28,6 @@ class Arr
     public static function in(array $array, mixed $value, bool $strict = false): bool
     {
         return in_array($value, $array, $strict);
-    }
-
-    /**
-     * Check if array is empty
-     *
-     * @param array $array
-     * @return bool
-     */
-    public static function empty(array $array): bool
-    {
-        return static::length($array) === 0;
     }
 
     /**
@@ -58,32 +47,14 @@ class Arr
     }
 
     /**
-     * Return the first element in an array passing a given truth test.
+     * Return whether the array is empty.
      *
-     * @param iterable $array
-     * @param callable|null $callback
-     * @param mixed|null $default
-     * @return mixed
+     * @param array $array
+     * @return bool
      */
-    public static function first(iterable $array, callable $callback = null, mixed $default = null): mixed
+    public static function empty(array $array): bool
     {
-        if (is_null($callback)) {
-            if (empty($array)) {
-                return (is_callable($default) ? $default() : $default);
-            }
-
-            foreach ($array as $item) {
-                return $item;
-            }
-        }
-
-        foreach ($array as $key => $value) {
-            if ($callback($value, $key)) {
-                return $value;
-            }
-        }
-
-        return (is_callable($default) ? $default() : $default);
+        return static::length($array) === 0;
     }
 
 
@@ -99,51 +70,80 @@ class Arr
     }
 
     /**
-     * Remove one or many array items from a given array using "dot" notation.
+     * Returns the array keys.
      *
      * @param array $array
-     * @param array|string $keys
-     * @return void
+     * @return array
      */
-    public static function forget(array &$array, array|string $keys)
+    public static function keys(array $array): array
     {
-        $original = &$array;
-
-        $keys = (array)$keys;
-
-        if (count($keys) === 0) {
-            return;
-        }
-
-        foreach ($keys as $key) {
-            // if the exact key exists in the top-level, remove it
-            if (static::exists($array, $key)) {
-                unset($array[$key]);
-
-                continue;
-            }
-
-            $parts = Str::split($key, '.');
-
-            // clean up before each pass
-            $array = &$original;
-
-            while (count($parts) > 1) {
-                $part = array_shift($parts);
-
-                if (isset($array[$part]) && is_array($array[$part])) {
-                    $array = &$array[$part];
-                } else {
-                    continue 2;
-                }
-            }
-
-            unset($array[array_shift($parts)]);
-        }
+        return array_keys($array);
     }
 
     /**
-     * Get an item from an array using "dot" notation.
+     * Filters the array using the given callback.
+     *
+     * @param array $array
+     * @param callable $callback
+     * @return array
+     */
+    public static function filter(array $array, callable $callback): array
+    {
+        return array_filter($array, $callback, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
+     * Maps a given callback to the array.
+     *
+     * @param array $array
+     * @param callable $callback
+     * @return array
+     */
+    public static function map(array $array, callable $callback): array
+    {
+        return array_map($callback, $array);
+    }
+
+    /**
+     * Applies a user supplied function to every member of an array.
+     *
+     * @param array $array
+     * @param callable $callback
+     * @return bool
+     */
+    public static function walk(array &$array, callable $callback): bool
+    {
+        return array_walk($array, $callback);
+    }
+
+    /**
+     * Sort an array in ascending order if no function is passed. If a function is passed, it will be used for sorting
+     * the array in a custom order.
+     *
+     * @param array $array
+     * @param callable|null $fn
+     * @return bool
+     */
+    public static function sort(array &$array, callable $fn = null): bool
+    {
+        return $fn === null ? sort($array) : usort($array, $fn);
+    }
+
+    /**
+     * Iteratively reduces the array to a single value using a callback function.
+     *
+     * @param array $array
+     * @param callable $callback
+     * @param mixed $initial
+     * @return array
+     */
+    public static function reduce(array $array, callable $callback, mixed $initial): array
+    {
+        return array_reduce($array, $callback, $initial);
+    }
+
+    /**
+     * Gets an item from an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
      * @param int|string|null $key
@@ -152,29 +152,63 @@ class Arr
      */
     public static function get(ArrayAccess|array $array, int|string|null $key, mixed $default = null): mixed
     {
-        if (!static::accessible($array)) {
+        if (!static::is($array))
             return (is_callable($default) ? $default() : $default);
-        }
 
-        if (is_null($key)) {
+        if ($key === null)
             return $array;
-        }
 
-        if (static::exists($array, $key)) {
+        if (static::exists($array, $key))
             return $array[$key];
-        }
 
         if (!str_contains($key, '.')) {
             return $array[$key] ?? (is_callable($default) ? $default() : $default);
         }
 
         foreach (Str::split($key, '.') as $segment) {
-            if (static::accessible($array) && static::exists($array, $segment)) {
+            if (static::is($array) && static::exists($array, $segment)) {
                 $array = $array[$segment];
             } else {
                 return (is_callable($default) ? $default() : $default);
             }
         }
+
+        return $array;
+    }
+
+    /**
+     * Sets an array item to a given value using "dot" notation.
+     *
+     * If no key is given to the method, the entire array will be replaced.
+     *
+     * @param array $array
+     * @param string|null $key
+     * @param mixed $value
+     * @return array
+     */
+    public static function set(array &$array, ?string $key, mixed $value): array
+    {
+        if (is_null($key))
+            return $array = $value;
+
+        $keys = Str::split($key, '.');
+
+        foreach ($keys as $i => $key) {
+            if (count($keys) === 1)
+                break;
+
+            unset($keys[$i]);
+
+            // If the key doesn't exist at this depth, we will just create an empty array
+            // to hold the next value, allowing us to create the arrays to hold final
+            // values at the correct depth. Then we'll keep digging into the array.
+            if (!isset($array[$key]) || !is_array($array[$key]))
+                $array[$key] = [];
+
+            $array = &$array[$key];
+        }
+
+        $array[array_shift($keys)] = $value;
 
         return $array;
     }
@@ -190,19 +224,17 @@ class Arr
     {
         $keys = (array)$keys;
 
-        if (!$array || $keys === []) {
+        if (!$array || $keys === [])
             return false;
-        }
 
         foreach ($keys as $key) {
             $subKeyArray = $array;
 
-            if (static::exists($array, $key)) {
+            if (static::exists($array, $key))
                 continue;
-            }
 
             foreach (Str::split($key, '.') as $segment) {
-                if (static::accessible($subKeyArray) && static::exists($subKeyArray, $segment)) {
+                if (static::is($subKeyArray) && static::exists($subKeyArray, $segment)) {
                     $subKeyArray = $subKeyArray[$segment];
                 } else {
                     return false;
@@ -211,79 +243,5 @@ class Arr
         }
 
         return true;
-    }
-
-    /**
-     * Determine whether the given array is an array.
-     *
-     * @param mixed $array
-     * @return bool
-     */
-    public static function is(mixed $array): bool
-    {
-        return is_array($array);
-    }
-
-    /**
-     * Returns the array keys.
-     *
-     * @param array $array
-     * @return array
-     */
-    public static function keys(array $array): array
-    {
-        return array_keys($array);
-    }
-
-    /**
-     * Set an array item to a given value using "dot" notation.
-     *
-     * If no key is given to the method, the entire array will be replaced.
-     *
-     * @param array $array
-     * @param string|null $key
-     * @param mixed $value
-     * @return array
-     */
-    public static function set(array &$array, ?string $key, mixed $value): array
-    {
-        if (is_null($key)) {
-            return $array = $value;
-        }
-
-        $keys = Str::split($key, '.');
-
-        foreach ($keys as $i => $key) {
-            if (count($keys) === 1) {
-                break;
-            }
-
-            unset($keys[$i]);
-
-            // If the key doesn't exist at this depth, we will just create an empty array
-            // to hold the next value, allowing us to create the arrays to hold final
-            // values at the correct depth. Then we'll keep digging into the array.
-            if (!isset($array[$key]) || !is_array($array[$key])) {
-                $array[$key] = [];
-            }
-
-            $array = &$array[$key];
-        }
-
-        $array[array_shift($keys)] = $value;
-
-        return $array;
-    }
-
-    /**
-     * Filter the array using the given callback.
-     *
-     * @param array $array
-     * @param callable $callback
-     * @return array
-     */
-    public static function where(array $array, callable $callback): array
-    {
-        return array_filter($array, $callback, ARRAY_FILTER_USE_BOTH);
     }
 }

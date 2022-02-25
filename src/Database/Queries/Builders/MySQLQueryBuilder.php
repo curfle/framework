@@ -28,12 +28,13 @@ class MySQLQueryBuilder extends SQLQueryBuilder
         // values
         $statement .= self::VALUES . " ";
         $statement .= Str::concat(
-                array_map(
-                    fn($insert) => "(" . Str::concat(array_map(fn() => static::getBindParameterName(), $insert), ", ") . ")",
-                    $this->insertData),
+                Arr::map(
+                    $this->insertData,
+                    fn($insert) => "(" . Str::concat(Arr::map($insert, fn() => static::getBindParameterName()), ", ") . ")"
+                ),
                 ", ") . " ";
         // bind params
-        foreach ($this->insertData as $data){
+        foreach ($this->insertData as $data) {
             foreach ($data as $value) {
                 $this->bindParam($value);
             }
@@ -42,7 +43,7 @@ class MySQLQueryBuilder extends SQLQueryBuilder
         // update on duplicate key
         $statement .= $this->updateOnDuplicateKey
             ? self::ON_DUPLICATE_KEY_UPDATE . " " . Str::concat(
-                array_map(fn($column) => " $column = " . self::VALUES . "($column)", Arr::keys($this->insertData[0])),
+                Arr::map(Arr::keys($this->insertData[0]), fn($column) => " $column = " . self::VALUES . "($column)"),
                 ", "
             )
             : "";

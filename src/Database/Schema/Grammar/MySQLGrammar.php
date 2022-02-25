@@ -6,6 +6,7 @@ use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Schema\Blueprint;
 use Curfle\Database\Schema\BuilderColumn;
 use Curfle\Database\Schema\ForeignKeyConstraint;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Misc\GuessException;
 use Curfle\Support\Str;
 
@@ -138,7 +139,7 @@ class MySQLGrammar extends SQLGrammar
         return ($column->isRenamed() ? $column->getNewName() : $column->getName()) . " "
             . $this->typeMapping[$column->getType()]
             . ($column->getLength() !== null ? "({$column->getLength()}) " : " ")
-            . ($column->getValues() !== null ? "(" . implode(",", array_map(fn($x) => "\"$x\"", $column->getValues())) . ") " : " ")
+            . ($column->getValues() !== null ? "(" . implode(",", Arr::map($column->getValues(), fn($x) => "\"$x\"")) . ") " : " ")
             . ($column->isUnsignable() && $column->isUnsigned() ? "UNSIGNED " : "")
             . (!$column->isNullable() ? "NOT NULL " : "NULL ")
             . ($column->hasDefault() ? "DEFAULT " . (

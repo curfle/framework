@@ -2,6 +2,7 @@
 
 use Curfle\Container\Container;
 use Curfle\Http\Response;
+use Curfle\Support\Arr;
 use Curfle\Support\Env\Env;
 use Curfle\Support\Exceptions\Http\HttpDispatchableException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
@@ -185,14 +186,12 @@ if (!function_exists('url')) {
     function url(string $path, bool $encode = false): string
     {
         $url = env("APP_URL");
-        $path = implode(
-            "/",
+        $path = Str::concat(
             $encode
-                ? array_map(
-                "urlencode",
-                Str::split($path, "/")
-            )
-                : Str::split($path, "/")
+                ? Arr::map(Str::split($path, "/"), fn($s) => urlencode($s))
+                : Str::split($path, "/"),
+            "/",
+
         );
         return Str::trim($url, "/") . "/" . ltrim($path, "/");
     }

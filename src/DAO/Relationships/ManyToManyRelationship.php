@@ -3,6 +3,7 @@
 namespace Curfle\DAO\Relationships;
 
 use Curfle\DAO\Model;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Logic\LogicException;
 
 class ManyToManyRelationship extends Relationship
@@ -75,9 +76,10 @@ class ManyToManyRelationship extends Relationship
         $entries = $entries->get();
 
         $targetClass = $this->targetClass;
-        return array_map(function ($entry) use ($targetClass) {
-            return call_user_func($targetClass . "::__createInstanceFromArray", $entry);
-        }, $entries);
+        return Arr::map(
+            $entries,
+            fn ($entry) => call_user_func($targetClass . "::__createInstanceFromArray", $entry)
+        );
     }
 
     /**

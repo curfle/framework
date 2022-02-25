@@ -5,6 +5,7 @@ namespace Curfle\DAO;
 use Curfle\Agreements\Database\Connectors\SQLConnectorInterface;
 use Curfle\Database\Queries\Builders\StatementData;
 use Curfle\Database\Queries\Query;
+use Curfle\Support\Arr;
 
 /**
  * @method ModelBuilder table(string $table)
@@ -80,9 +81,9 @@ class ModelBuilder
      */
     public function get(): array
     {
-        return array_map(
-            fn($item) => call_user_func($this->class . "::__createInstanceFromArray", $item),
-            $this->query->get()
+        return Arr::map(
+            $this->query->get(),
+            fn($item) => call_user_func($this->class . "::__createInstanceFromArray", $item)
         );
     }
 

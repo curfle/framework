@@ -6,6 +6,17 @@ class Str
 {
 
     /**
+     * Returns whether the argument is a string.
+     *
+     * @param string $string
+     * @return bool
+     */
+    public static function is(string $string): bool
+    {
+        return is_string($string);
+    }
+
+    /**
      * Determine if a given string contains a given substring.
      *
      * @param string $haystack

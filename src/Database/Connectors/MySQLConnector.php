@@ -217,25 +217,31 @@ class MySQLConnector implements SQLConnectorInterface
             throw new LogicException("The number of values passed as parameter must equal the number of types.");
 
         // cast bools to ints
-        $values = array_map(fn($value) => is_bool($value) ? (int)$value : $value, $values);
+        $values = Arr::map($values, fn($value) => is_bool($value) ? (int)$value : $value);
 
         // auto-detect types if null
         if ($types === null) {
-            $types = array_map(fn($value) => match (gettype($value)) {
-                "boolean", "integer" => self::INTEGER,
-                "double" => self::FLOAT,
-                "string" => self::STRING,
-                default => self::BLOB,
-            }, $values);
+            $types = Arr::map(
+                $values,
+                fn($value) => match (gettype($value)) {
+                    "boolean", "integer" => self::INTEGER,
+                    "double" => self::FLOAT,
+                    "string" => self::STRING,
+                    default => self::BLOB,
+                }
+            );
         }
 
         // cast types to MYSQL types
-        $types = array_map(fn($type) => match ($type) {
-            static::INTEGER => "i",
-            static::FLOAT => "d",
-            static::BLOB => "b",
-            default => "s",
-        }, $types);
+        $types = Arr::map(
+            $types,
+            fn($type) => match ($type) {
+                static::INTEGER => "i",
+                static::FLOAT => "d",
+                static::BLOB => "b",
+                default => "s",
+            }
+        );
 
         // bind the params
         $this->stmt->bind_param(Str::concat($types, ""), ...$values);

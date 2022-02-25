@@ -30,9 +30,10 @@ class SQLiteQueryBuilder extends SQLQueryBuilder
         // values
         $statement .= self::VALUES . " ";
         $statement .= Str::concat(
-                array_map(
-                    fn($insert) => "(" . Str::concat(array_map(fn() => static::getBindParameterName(), $insert), ", ") . ")",
-                    $this->insertData),
+                Arr::map(
+                    $this->insertData,
+                    fn($insert) => "(" . Str::concat(Arr::map($insert, fn() => static::getBindParameterName()), ", ") . ")"
+                    ),
                 ", ") . " ";
         // bind params
         foreach ($this->insertData as $data) {

@@ -5,6 +5,7 @@ namespace Curfle\Container;
 use ArrayAccess;
 use Closure;
 use Curfle\Agreements\Container\Container as ContainerAgreement;
+use Curfle\Support\Arr;
 use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Logic\LogicException;
@@ -535,9 +536,7 @@ class Container implements ContainerAgreement
             return $this->make($className);
         }
 
-        return array_map(function ($id) {
-            return $this->resolve($id);
-        }, $resolver);
+        return Arr::map($resolver, fn($id) => $this->resolve($id));
     }
 
     /**

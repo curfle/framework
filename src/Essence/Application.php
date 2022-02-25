@@ -19,6 +19,7 @@ use Curfle\Support\Exceptions\Misc\BindingResolutionException;
 use Curfle\Support\Exceptions\Misc\CircularDependencyException;
 use Curfle\Support\Exceptions\Logic\LogicException;
 use Curfle\Support\ServiceProvider;
+use Curfle\Support\Str;
 use ReflectionException;
 use RuntimeException;
 use const PHP_SAPI;
@@ -501,9 +502,9 @@ class Application extends Container
      */
     public function getProviders(ServiceProvider|string $provider): array
     {
-        $name = is_string($provider) ? $provider : get_class($provider);
+        $name = Str::is($provider) ? $provider : get_class($provider);
 
-        return Arr::where($this->serviceProviders, function ($value) use ($name) {
+        return Arr::filter($this->serviceProviders, function ($value) use ($name) {
             return $value instanceof $name;
         });
     }

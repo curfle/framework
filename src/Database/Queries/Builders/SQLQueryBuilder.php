@@ -363,7 +363,7 @@ abstract class SQLQueryBuilder
             // concatenated where
             return array_map(function ($condition, $i) use ($concatenator) {
                 return call_user_func_array([$this, "parseWhereCondition"], [$i == 0 ? $concatenator : "OR", $condition]);
-            }, $args, array_keys($args));
+            }, $args, Arr::keys($args));
         }
     }
 
@@ -560,11 +560,11 @@ abstract class SQLQueryBuilder
 
         // select
         $statement .= Str::concat(
-                array_map(
+                Arr::map(
+                    $this->select ?? [["*", null]],
                     fn($column) => $column[1] === null
                         ? $column[0]
-                        : $column[0] . " AS " . $column[1],
-                    $this->select ?? [["*", null]]
+                        : $column[0] . " AS " . $column[1]
                 ),
                 ", ") . " ";
 
@@ -572,14 +572,21 @@ abstract class SQLQueryBuilder
         $statement .= self::FROM . " $this->table ";
 
         // joins
-        $statement .= !Arr::empty($this->join)
-            ? Str::concat(array_map(function ($join) {
-                if (!Str::empty($join[2])) {
-                    $join[2] = static::ON . " " . $join[2];
-                }
-                return Str::concat($join);
-            }, $this->join)) . " "
-            : "";
+        if (!Arr::empty($this->join)) {
+            // create all joins
+            $statement .= Str::concat(
+                    Arr::map(
+                        $this->join,
+                        function ($join) {
+                            // create "ON" clause of JOIN
+                            if (!Str::empty($join[2])) {
+                                $join[2] = static::ON . " " . $join[2];
+                            }
+                            return Str::concat($join);
+                        },
+                    )
+                ) . " ";
+        }
 
         // where
         $statement .= $this->buildWhereCondition($this->where, self::WHERE);
@@ -594,9 +601,10 @@ abstract class SQLQueryBuilder
 
         // order by
         $statement .= !Arr::empty($this->orderBy)
-            ? self::ORDER_BY . " " . Str::concat(array_map(function ($condition) {
-                return implode(" ", $condition);
-            }, $this->orderBy), ", ") . " "
+            ? self::ORDER_BY . " " . Str::concat(
+                Arr::map($this->orderBy, fn ($condition) => Str::concat($condition)),
+                ", "
+            ) . " "
             : "";
 
         // limit
