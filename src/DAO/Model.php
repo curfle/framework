@@ -200,12 +200,12 @@ abstract class Model implements DAOInterface
      * @param string|null $table
      * @return Query
      */
-    public static function __callTableOnConnector(string $table = null): Query
+    public static function __callTableOnConnector(string $table = null, bool $withThrashed = false): Query
     {
         $config = call_user_func(get_called_class() . "::__getCleanedConfig");
         $table = $table ?? $config["table"];
         $statement = self::$connector->table($table);
-        if ($config["softDelete"] && $table === $config["table"])
+        if (!$withThrashed && $config["softDelete"] && $table === $config["table"])
             $statement = $statement->where("deleted", null);
         return $statement;
     }
@@ -248,7 +248,6 @@ abstract class Model implements DAOInterface
 
     /**
      * @inheritDoc
-     * @throws ReflectionException
      */
     public static function all(): array
     {
@@ -434,6 +433,19 @@ abstract class Model implements DAOInterface
                 return $value;
         }
         throw new UndefinedPropertyException("Undefined property [" . get_class($this) . "::${$name}]");
+    }
+
+    /**
+     * Allows the return of trashed objects.
+     *
+     * @return ModelBuilder
+     */
+    public static function withTrashed(): ModelBuilder
+    {
+        return ModelBuilder::fromQuery(
+            static::__callTableOnConnector(withThrashed: true),
+            static::class
+        );
     }
 
     /**
