@@ -70,7 +70,8 @@ class ManyToManyRelationship extends Relationship
             ->where($this->fkColumnOfCurrentModelInPivotTable, $this->model->primaryKey())
             ->orderBy("{$this->pivotTable}.id", "ASC");
 
-        if ($targetConfig["softDelete"])
+        // check if model soft deletes and trashed enries should not be included
+        if (!$this->withTrashed && $targetConfig["softDelete"])
             $entries->where("deleted", null);
 
         $entries = $entries->get();

@@ -12,9 +12,27 @@ abstract class Relationship
      */
     protected RelationshipCache $relationshipCache;
 
+    /**
+     * Determines wether connections to trashed objects are taken into account.
+     *
+     * @var bool
+     */
+    protected bool $withTrashed = false;
+
     public function __construct()
     {
         $this->relationshipCache = App::resolve("relationshipcache");
+    }
+
+    /**
+     * Takes trashed objects into account.
+     *
+     * @return $this
+     */
+    public function withTrashed(): static
+    {
+        $this->withTrashed = true;
+        return $this;
     }
 
     /**

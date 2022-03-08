@@ -73,10 +73,24 @@ class ManyToOneRelationship extends Relationship
     {
         $targetConfig = call_user_func($this->targetClass . "::__getCleanedConfig");
         $modelPropertiesToColumns = array_flip($this->model->__getCleanedConfig()["fields"]);
-        return call_user_func(
-            $this->targetClass . "::where",
-            $targetConfig["primaryKey"], $this->model->{$modelPropertiesToColumns[$this->fkColumn] ?? $this->fkColumn}
-        )->first();
+
+        // get primary column and key of target class
+        $targetPkColumn = $targetConfig["primaryKey"];
+        $targetPkValue = $this->model->{$modelPropertiesToColumns[$this->fkColumn] ?? $this->fkColumn};
+
+        // check if trashed objects should be taken into account
+        if ($this->withTrashed) {
+            $statement = call_user_func(
+                $this->targetClass . "::withTrashed",
+            )->where($targetPkColumn, $targetPkValue);
+        } else {
+            $statement = call_user_func(
+                $this->targetClass . "::where",
+                $targetPkColumn, $targetPkValue
+            );
+        }
+
+        return $statement->first();
     }
 
     /**

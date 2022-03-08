@@ -71,10 +71,19 @@ class OneToManyRelationship extends Relationship
      */
     function get(): array
     {
-        return call_user_func(
-            $this->targetClass . "::where",
-            $this->fkColumnInClass, $this->model->primaryKey()
-        )->get();
+        // check if trashed objects should be taken into account
+        if ($this->withTrashed) {
+            $statement = call_user_func(
+                $this->targetClass . "::withTrashed",
+            )->where($this->fkColumnInClass, $this->model->primaryKey());
+        } else {
+            $statement = call_user_func(
+                $this->targetClass . "::where",
+                $this->fkColumnInClass, $this->model->primaryKey()
+            );
+        }
+
+        return $statement->get();
     }
 
     /**
