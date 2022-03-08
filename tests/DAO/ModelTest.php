@@ -56,6 +56,7 @@ class ModelTest extends TestCase
             $table->id("id");
             $table->string("number");
             $table->int("user_id")->unsigned()->nullable()->unique();
+            $table->softDeletes();
         });
 
         $this->builder->create("user", function (Blueprint $table) {
@@ -76,6 +77,7 @@ class ModelTest extends TestCase
             $table->id("id");
             $table->int("user_id")->unsigned()->nullable();
             $table->timestamp("timestamp")->defaultCurrent();
+            $table->softDeletes();
             $table->foreign("user_id")
                 ->references("id")
                 ->on("user");
@@ -84,6 +86,7 @@ class ModelTest extends TestCase
         $this->builder->create("role", function (Blueprint $table) {
             $table->id("id");
             $table->string("name");
+            $table->softDeletes();
         });
 
         $this->builder->create("user_role", function (Blueprint $table) {
@@ -182,6 +185,24 @@ class ModelTest extends TestCase
     }
 
     /**
+     * Tests the ->delete() function.
+     */
+    public function testSoftDeleteWithTrash()
+    {
+        User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $this->assertCount(1, User::all());
+
+        User::get(1)->delete();
+
+        $this->assertCount(1, User::withTrashed()->get());
+    }
+
+    /**
      * Tests the ->delete() function but assert that it is only soft deleted.
      */
     public function testDeleteButAssertSoftDelete()
@@ -204,7 +225,7 @@ class ModelTest extends TestCase
 
         $this->assertCount(1, User::all());
 
-        $this->assertCount(2, User::$connector->table("user")->get());
+        $this->assertCount(2, User::withTrashed()->get());
     }
 
     /**
@@ -243,6 +264,34 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertEquals($phone, User::get(1)->phone);
+    }
+
+
+
+    /**
+     * Tests one-to-one relationships
+     */
+    public function testOneToOneDeletion()
+    {
+
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $phone = Phone::create([
+            "number" => "+49 1234 56789",
+            "user_id" => $user->id
+        ]);
+
+        // delete and refresh data from database
+        $phone->delete();
+        $phone = Phone::withTrashed()->find(1);
+
+        // check if entry was soft deleted but is still available via `withTrashed()`
+        $this->assertNull(User::get(1)->phone);
+        $this->assertEquals($phone, User::get(1)->phone()->withTrashed()->get());
     }
 
     /**
@@ -308,8 +357,6 @@ class ModelTest extends TestCase
         $john->phone()->set($phone);
         $this->assertEquals($phone->id, $john->phone()->lazy()->id);
 
-        //
-
         // detatch object and ensure cache is still active
         $john->phone()->detach();
         $this->assertEquals($phone->id, $jane->phone()->lazy()->id);
@@ -339,6 +386,34 @@ class ModelTest extends TestCase
         ]);
 
         $this->assertCount(2, $user->logins);
+    }
+
+
+    /**
+     * Tests one-to-many relationship deletion
+     */
+    public function testOneToManyDeletion()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        Login::create([
+            "user_id" => $user->id
+        ]);
+
+        $lastLogin = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        // delete
+        $lastLogin->delete();
+
+        // assert soft deletion
+        $this->assertCount(1, $user->logins);
+        $this->assertCount(2, $user->logins()->withTrashed()->get());
     }
 
 
@@ -422,6 +497,30 @@ class ModelTest extends TestCase
         $this->assertEquals($user, $login->user);
     }
 
+    /**
+     * Tests many-to-one relationships
+     */
+    public function testManyToOneDeletion()
+    {
+        $user = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe",
+            "email" => "jane.doe@example.dd"
+        ]);
+
+        $login = Login::create([
+            "user_id" => $user->id
+        ]);
+
+        // delete and refresh data from database
+        $user->delete();
+        $user = User::withTrashed()->find(1);
+
+        // check if entry was soft deleted but is still available via `withTrashed()`
+        $this->assertNull($login->user);
+        $this->assertEquals($user, $login->user()->withTrashed()->get());
+    }
+
 
     /**
      * Tests many-to-one relationship edits
@@ -493,9 +592,45 @@ class ModelTest extends TestCase
         $jane->roles()->attach($userRole);
         $john->roles()->attach($userRole);
 
-        self::assertEquals($adminRole, $jane->roles[0]);
-        self::assertEquals($userRole, $jane->roles[1]);
-        self::assertEquals($userRole, $john->roles[0]);
+        $this->assertEquals($adminRole, $jane->roles[0]);
+        $this->assertEquals($userRole, $jane->roles[1]);
+        $this->assertEquals($userRole, $john->roles[0]);
+    }
+
+    /**
+     * Tests many-to-many relationships
+     */
+    public function testManyToManyDeletion()
+    {
+        $jane = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe"
+        ]);
+
+        $john = User::create([
+            "firstname" => "Jane",
+            "lastname" => "Doe"
+        ]);
+
+        $userRole = Role::create(["name" => "user"]);
+        $adminRole = Role::create(["name" => "admin"]);
+
+        $jane->roles()->attach($adminRole);
+        $jane->roles()->attach($userRole);
+        $john->roles()->attach($userRole);
+
+        // delete and refresh data from database
+        $adminRole->delete();
+        $adminRole = Role::withTrashed()->find($adminRole->id);
+
+        // assert soft deletion worked and role `admin` is omitted in the default realtions
+        $this->assertEquals($userRole, $jane->roles[0]);
+        $this->assertEquals($userRole, $john->roles[0]);
+
+        // assert that the `admin` relation is still available with trashed entries
+        $this->assertEquals($adminRole, $jane->roles()->withTrashed()->get()[0]);
+        $this->assertEquals($userRole, $jane->roles()->withTrashed()->get()[1]);
+        $this->assertEquals($userRole, $john->roles()->withTrashed()->get()[0]);
     }
 
 
@@ -521,23 +656,23 @@ class ModelTest extends TestCase
         $jane->roles()->attach($userRole);
         $john->roles()->attach($userRole);
 
-        self::assertCount(2, $jane->roles);
-        self::assertCount(1, $john->roles);
+        $this->assertCount(2, $jane->roles);
+        $this->assertCount(1, $john->roles);
 
-        self::assertEquals($adminRole, $jane->roles[0]);
-        self::assertEquals($userRole, $jane->roles[1]);
-        self::assertEquals($userRole, $john->roles[0]);
+        $this->assertEquals($adminRole, $jane->roles[0]);
+        $this->assertEquals($userRole, $jane->roles[1]);
+        $this->assertEquals($userRole, $john->roles[0]);
 
         $john->roles()->detach($userRole);
-        self::assertCount(0, $john->roles);
-        self::assertCount(2, $jane->roles);
+        $this->assertCount(0, $john->roles);
+        $this->assertCount(2, $jane->roles);
 
         $john->roles()->attach($userRole);
-        self::assertEquals($userRole, $john->roles[0]);
+        $this->assertEquals($userRole, $john->roles[0]);
 
         $jane->roles()->detach();
-        self::assertCount(0, $jane->roles);
-        self::assertEquals($userRole, $john->roles[0]);
+        $this->assertCount(0, $jane->roles);
+        $this->assertEquals($userRole, $john->roles[0]);
 
     }
 }

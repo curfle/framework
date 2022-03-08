@@ -30,7 +30,8 @@ class Login extends Model
     static function config(): array
     {
         return [
-            "table" => "login"
+            "table" => "login",
+            "softDelete" => true,
         ];
     }
 

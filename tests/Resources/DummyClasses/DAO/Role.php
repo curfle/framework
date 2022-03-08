@@ -26,7 +26,8 @@ class Role extends Model
     static function config(): array
     {
         return [
-            "table" => "role"
+            "table" => "role",
+            "softDelete" => true
         ];
     }
 

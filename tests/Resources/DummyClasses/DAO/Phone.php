@@ -22,7 +22,8 @@ class Phone extends Model
     static function config(): array
     {
         return [
-            "table" => "phone"
+            "table" => "phone",
+            "softDelete" => true
         ];
     }
 }
