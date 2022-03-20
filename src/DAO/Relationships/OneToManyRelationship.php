@@ -35,7 +35,7 @@ class OneToManyRelationship extends Relationship
         // set model property
         if($success){
             $modelPropertiesToColumns = array_flip($object->__getCleanedConfig()["fields"]);
-            $object->{$modelPropertiesToColumns[$this->fkColumnInClass]} = $this->model->primaryKey();
+            $object->{$modelPropertiesToColumns[$this->fkColumnInClass] ?? $this->fkColumnInClass} = $this->model->primaryKey();
         }
 
         return $success;
@@ -60,7 +60,7 @@ class OneToManyRelationship extends Relationship
         // reset model property
         if($success){
             $modelPropertiesToColumns = array_flip($object->__getCleanedConfig()["fields"]);
-            $object->{$modelPropertiesToColumns[$this->fkColumnInClass]} = null;
+            $object->{$modelPropertiesToColumns[$this->fkColumnInClass] ?? $this->fkColumnInClass} = null;
         }
 
         return $success;
