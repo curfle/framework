@@ -158,7 +158,6 @@ class SQLiteConnector implements SQLConnectorInterface
      */
     function prepare(string $query): static
     {
-        $this->stmttxt = $query;
         $this->stmt = $this->connect()->prepare($query);
         return $this;
     }
